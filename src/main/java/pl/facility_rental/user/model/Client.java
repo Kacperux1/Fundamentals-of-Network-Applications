@@ -7,7 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Getter
-@BsonDiscriminator(key="_clazz", value = "Client")
+@BsonDiscriminator( value = "Client")
 public class Client extends User {
     @BsonProperty("first_name")
     private String firstName;
@@ -18,9 +18,9 @@ public class Client extends User {
 
     @BsonCreator
     public Client(@BsonProperty("login") String login, @BsonProperty("email")String email,
-                  @BsonProperty("status") boolean status, @BsonProperty("first_name") String firstName,
+                  @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
                   @BsonProperty("last_name") String lastName,@BsonProperty("phone") String phone) {
-        super(login, email, status);
+        super(login, email, active);
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
