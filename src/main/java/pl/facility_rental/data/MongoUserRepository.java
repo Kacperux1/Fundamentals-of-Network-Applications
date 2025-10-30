@@ -8,6 +8,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import jakarta.annotation.PostConstruct;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -15,6 +16,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import pl.facility_rental.model.User;
@@ -27,21 +29,31 @@ import java.util.UUID;
 @Component("mongo_user_repo")
 class MongoUserRepository implements UserRepository {
 
-    private final ConnectionString connectionString = new ConnectionString(
-            "mongodb://mongodb1:27017,mongodb2:27018,mongodb3:27019/?replicaSet=replica_set_single");
 
-    private MongoCredential credential = MongoCredential.createCredential(
-            "admin", "admin", "adminpassword".toCharArray());
+    private final ConnectionString connectionString;
 
-    private CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(
-            PojoCodecProvider.builder()
-                    .automatic(true)
-                    .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
-                    .build());
+    private final MongoCredential credential;
 
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
+    private final CodecRegistry pojoCodecRegistry;
 
+    public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
+                               //@Value("${mongo.database}") String databaseName,
+                               @Value("${mongo.user}") String user,
+                               @Value("${mongo.password}") String password) {
+        this.connectionString = new ConnectionString(connectionPlainString);
+        credential = MongoCredential.createCredential(
+                user, "admin", password.toCharArray());
+        pojoCodecRegistry = CodecRegistries.fromProviders(
+                PojoCodecProvider.builder()
+                        .register("pl.facility_rental.model")
+                        .automatic(true)
+                        .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
+                        .build());
+    }
+
+    @PostConstruct
     private void initDbConnection() {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .credential(credential)
@@ -55,9 +67,7 @@ class MongoUserRepository implements UserRepository {
         mongoClient = MongoClients.create(settings);
         sportFacilityRentalDatabase = mongoClient.getDatabase("facility_rental");
     }
-        {
-        initDbConnection();
-    }
+
     @Override
     public User save(User user) {
         MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users",  User.class);

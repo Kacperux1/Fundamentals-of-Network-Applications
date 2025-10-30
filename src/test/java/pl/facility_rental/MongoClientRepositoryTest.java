@@ -1,33 +1,78 @@
 package pl.facility_rental;
 
+import com.mongodb.client.MongoClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.facility_rental.data.UserRepository;
 import pl.facility_rental.model.Client;
 import pl.facility_rental.model.User;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Testcontainers
 public class MongoClientRepositoryTest {
+
+
+    // do zmiany na mongodb container
+    @Container
+//    static MongoDBContainer mongo = new MongoDBContainer("mongo:6.0.5")
+//            .withEnv("MONGO_INITDB_ROOT_USERNAME", "admin")
+//            .withEnv("MONGO_INITDB_ROOT_PASSWORD", "adminpassword")
+//            .withEnv("MONGO_INITDB_DATABASE", "facility_rental")
+//             .withCommand("--replSet rs0 --bind_ip_all")
+//            .withStartupTimeout(Duration.ofMinutes(5));
+    private static GenericContainer mongo = new GenericContainer("mongo:6")
+            .withExposedPorts(27017)
+            .withEnv("MONGO_INITDB_ROOT_USERNAME", "admin")
+            .withEnv("MONGO_INITDB_ROOT_PASSWORD", "adminpassword")
+            .withEnv("MONGO_INITDB_DATABASE", "facility_rental");
+
+
+    @DynamicPropertySource
+    static void setMongoUri(DynamicPropertyRegistry registry) {
+        registry.add("mongo.uri",
+                () -> "mongodb://localhost:" + mongo.getMappedPort(27017) + "/testdb?authSource=admin"
+        );
+        // registry.add("mongo.uri", mongo::getReplicaSetUrl);
+        registry.add("mongo.database", () -> "facility_rental");
+        registry.add("mongo.user", () -> "admin");
+        registry.add("mongo.password", () -> "adminpassword");
+    }
 
     @Autowired
     private UserRepository userRepository;
+
+    @AfterEach
+    void tearDown() throws IOException, InterruptedException {
+        mongo.execInContainer("mongosh", "-u", "admin", "-p",
+                "adminpassword", "--eval", "db.getSiblingDB('facility_rental').dropDatabase()");
+    }
+
 
     @Test
     public void shouldSaveUserToDatabase() {
         //given
         User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
-        ,"123456789");
+                , "123456789");
         //when
         userRepository.save(user);
         //then
         List<User> users = userRepository.findAll();
-        assertEquals(2, users.size());
+        assertEquals(1, users.size());
 
     }
 
@@ -37,7 +82,7 @@ public class MongoClientRepositoryTest {
         //when
         List<User> users = userRepository.findAll();
         //then
-        assertEquals(3, users.size());
+        assertEquals(1, users.size());
         assertInstanceOf(Client.class, users.getFirst());
     }
 

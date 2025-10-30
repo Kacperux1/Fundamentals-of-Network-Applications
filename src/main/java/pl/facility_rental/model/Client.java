@@ -7,7 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Getter
-@BsonDiscriminator(key="_class", value = "client")
+@BsonDiscriminator(key="_clazz", value = "Client")
 public class Client extends User{
     @BsonProperty("first_name")
     private String firstName;

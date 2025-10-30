@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-@BsonDiscriminator(key="_class", value = "user")
+@BsonDiscriminator(key="_clazz", value="user")
 public abstract class User {
 
     @BsonId
