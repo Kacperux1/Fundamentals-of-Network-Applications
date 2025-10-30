@@ -1,4 +1,4 @@
-package pl.facility_rental.model;
+package pl.facility_rental.user.model;
 
 
 import lombok.Getter;
@@ -8,7 +8,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Getter
 @BsonDiscriminator(key="_class", value="resourceMgr")
-public class ResourceMgr extends User{
+public class ResourceMgr extends User {
     @BsonProperty
     private String firstName;
     @BsonProperty("last_name")

@@ -1,4 +1,4 @@
-package pl.facility_rental.data;
+package pl.facility_rental.user.data;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -18,8 +18,8 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import pl.facility_rental.user.model.User;
 
-import pl.facility_rental.model.User;
 
 import java.util.ArrayList;
 import java.util.List;

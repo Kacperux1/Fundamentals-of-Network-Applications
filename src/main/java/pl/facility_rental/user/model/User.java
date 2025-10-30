@@ -1,4 +1,4 @@
-package pl.facility_rental.model;
+package pl.facility_rental.user.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,15 +26,15 @@ public abstract class User {
     @BsonProperty("email")
     private String email;
     @Setter
-    @BsonProperty("status")
-    private boolean status;
+    @BsonProperty("active")
+    private boolean active;
     @BsonCreator
     public User(@BsonProperty("login") String login,@BsonProperty("email") String email,
-                @BsonProperty("status") boolean status) {
+                @BsonProperty("active") boolean active) {
         this.uuid = UUID.randomUUID();
         this.login = login;
         this.email = email;
-        this.status = status;
+        this.active = active;
     }
 
 }

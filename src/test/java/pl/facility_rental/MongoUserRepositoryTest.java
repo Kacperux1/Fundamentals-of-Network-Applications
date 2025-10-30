@@ -1,30 +1,29 @@
 package pl.facility_rental;
 
-import com.mongodb.client.MongoClient;
+
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import pl.facility_rental.data.UserRepository;
-import pl.facility_rental.model.Client;
-import pl.facility_rental.model.User;
+import pl.facility_rental.user.data.UserRepository;
+import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.model.User;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 @SpringBootTest
 @Testcontainers
-public class MongoClientRepositoryTest {
+public class MongoUserRepositoryTest {
 
 
     // do zmiany na mongodb container
@@ -79,12 +78,32 @@ public class MongoClientRepositoryTest {
     @Test
     public void shouldFindAllUsers() {
         //given
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+                , "123456789");
+        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+                "987654321");
+        userRepository.save(user);
+        userRepository.save(user1);
         //when
         List<User> users = userRepository.findAll();
         //then
-        assertEquals(1, users.size());
+        assertEquals(2, users.size());
         assertInstanceOf(Client.class, users.getFirst());
+        assertEquals("987654321",((Client) users.getLast()).getPhone());
     }
 
+    @Test
+    public void shouldFindUserById() {
+        //given
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+                , "123456789");
+        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+                "987654321");
+        userRepository.save(user);
+        userRepository.save(user1);
+        UUID id = userRepository.findAll().getFirst().getUuid();
+
+
+    }
 
 }
