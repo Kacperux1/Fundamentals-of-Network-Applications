@@ -18,28 +18,21 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import pl.facility_rental.user.model.User;
-
+import pl.facility_rental.user.model.Address;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-@Component("mongo_user_repo")
-class MongoUserRepository implements UserRepository {
-
+public class MongoAddressRepository implements AddressRepository{
 
     private final ConnectionString connectionString;
-
+    private final CodecRegistry pojoCodecRegistry;
     private final MongoCredential credential;
-
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
-    private final CodecRegistry pojoCodecRegistry;
 
-    public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
+    public MongoAddressRepository(@Value("${mongo.uri}") String connectionPlainString,
                                //@Value("${mongo.database}") String databaseName,
                                @Value("${mongo.user}") String user,
                                @Value("${mongo.password}") String password) {
@@ -69,41 +62,44 @@ class MongoUserRepository implements UserRepository {
         sportFacilityRentalDatabase = mongoClient.getDatabase("facility_rental");
     }
 
+
+
+
     @Override
-    public User save(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users",  User.class);
-        userCollection.insertOne(user);
-        return user;
+    public Address save(Address address){
+        MongoCollection<Address> addressColletcion = sportFacilityRentalDatabase.getCollection("addresses", Address.class);
+        addressColletcion.insertOne(address);
+        return address;
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
+    public Optional<Address> findById(Long id) {
+        MongoCollection<Address> addressColletcion = sportFacilityRentalDatabase.getCollection("addresses", Address.class);
         Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(userCollection.find(filter).first());
-
+        return Optional.ofNullable(addressColletcion.find(filter).first());
     }
 
     @Override
-    public User update(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
+    public Address update(Address address) {
+        MongoCollection<Address> addressColletcion = sportFacilityRentalDatabase.getCollection("addresses", Address.class);
 
-        Bson filter = Filters.eq("_id", user.getUuid());
+        Bson filter = Filters.eq("_id", address.getId());
 
         Bson update = Updates.combine(
-                Updates.set("emial", user.getEmail()),
-                Updates.set("login", user.getLogin())
-                );
+                    Updates.set("city", address.getCity()),
+                    Updates.set("street", address.getStreet()),
+                    Updates.set("street_number", address.getStreetNumber()),
+                    Updates.set("postal_code", address.getPostalCode())
+                    );
 
-        userCollection.updateOne(filter, update);
+        addressColletcion.updateOne(filter, update);
 
-        return userCollection.find(filter).first();
+        return addressColletcion.find(filter).first();
     }
 
     @Override
-    public List<User> findAll() {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
-        return userCollection.find().into(new ArrayList<>());
+    public List<Address> findAll() {
+        MongoCollection<Address> addressColletcion = sportFacilityRentalDatabase.getCollection("addresses", Address.class);
+        return addressColletcion.find().into(new ArrayList<>());
     }
-
 }

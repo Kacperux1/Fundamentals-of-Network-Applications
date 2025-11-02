@@ -18,31 +18,25 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import pl.facility_rental.user.model.User;
-
+import pl.facility_rental.user.model.Address;
+import pl.facility_rental.user.model.SportsFacility;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-@Component("mongo_user_repo")
-class MongoUserRepository implements UserRepository {
-
+public class MongoFacilityRepository implements FacilityRepository{
 
     private final ConnectionString connectionString;
-
+    private final CodecRegistry pojoCodecRegistry;
     private final MongoCredential credential;
-
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
-    private final CodecRegistry pojoCodecRegistry;
 
-    public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
-                               //@Value("${mongo.database}") String databaseName,
-                               @Value("${mongo.user}") String user,
-                               @Value("${mongo.password}") String password) {
+    public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
+                                  //@Value("${mongo.database}") String databaseName,
+                                  @Value("${mongo.user}") String user,
+                                  @Value("${mongo.password}") String password) {
         this.connectionString = new ConnectionString(connectionPlainString);
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
@@ -70,40 +64,39 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users",  User.class);
-        userCollection.insertOne(user);
-        return user;
+    public SportsFacility save(SportsFacility facility){
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
+        facilitiesColletcion.insertOne(facility);
+        return facility;
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
+    public Optional<SportsFacility> findById(Long id) {
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
         Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(userCollection.find(filter).first());
-
+        return Optional.ofNullable(facilitiesColletcion.find(filter).first());
     }
 
     @Override
-    public User update(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
+    public SportsFacility update(SportsFacility facility) {
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
 
-        Bson filter = Filters.eq("_id", user.getUuid());
+        Bson filter = Filters.eq("_id", facility.getId());
 
         Bson update = Updates.combine(
-                Updates.set("emial", user.getEmail()),
-                Updates.set("login", user.getLogin())
-                );
+                    Updates.set("name", facility.getName()),
+                    Updates.set("address_id", facility.getAddress()),
+                    Updates.set("base_price", facility.getBasePrice())
+        );
 
-        userCollection.updateOne(filter, update);
+        facilitiesColletcion.updateOne(filter, update);
 
-        return userCollection.find(filter).first();
+        return facilitiesColletcion.find(filter).first();
     }
 
     @Override
-    public List<User> findAll() {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
-        return userCollection.find().into(new ArrayList<>());
+    public List<SportsFacility> findAll() {
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
+        return facilitiesColletcion.find().into(new ArrayList<>());
     }
-
 }
