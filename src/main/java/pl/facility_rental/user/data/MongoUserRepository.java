@@ -91,8 +91,9 @@ class MongoUserRepository implements UserRepository {
         Bson filter = Filters.eq("_id", user.getUuid());
 
         Bson update = Updates.combine(
-                Updates.set("emial", user.getEmail()),
-                Updates.set("login", user.getLogin())
+                Updates.set("email", user.getEmail()),
+                Updates.set("login", user.getLogin()),
+                Updates.set("active", user.isActive())
                 );
 
         userCollection.updateOne(filter, update);

@@ -1,7 +1,9 @@
 package pl.facility_rental;
 
 
+import com.mongodb.client.MongoCollection;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,8 +18,11 @@ import pl.facility_rental.user.model.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -72,7 +77,7 @@ public class MongoUserRepositoryTest {
         //then
         List<User> users = userRepository.findAll();
         assertEquals(1, users.size());
-
+        assertEquals("mak", users.getFirst().getLogin());
     }
 
     @Test
@@ -103,7 +108,35 @@ public class MongoUserRepositoryTest {
         userRepository.save(user1);
         UUID id = userRepository.findAll().getFirst().getUuid();
 
-
     }
 
+    @Test
+    public void updateTest() {
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+                , "123456789");
+
+        userRepository.save(user);
+        List<User> users = userRepository.findAll();
+        Assertions.assertFalse(users.isEmpty());
+
+        user.setActive(false);
+        userRepository.update(user);
+
+        users = userRepository.findAll();
+        Assertions.assertFalse(users.isEmpty());
+        Assertions.assertFalse(users.getFirst().isActive());
+    }
+
+    @Test
+    public void conversionTest() {
+        User original = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+                , "123456789");
+
+        userRepository.save(original);
+
+        User loaded = userRepository.findAll().getFirst();
+
+        assertEquals(original.getEmail(), loaded.getEmail());
+        assertEquals(original.getLogin(), loaded.getLogin());
+    }
 }
