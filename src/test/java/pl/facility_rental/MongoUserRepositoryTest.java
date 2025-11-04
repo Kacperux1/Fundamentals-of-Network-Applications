@@ -94,7 +94,12 @@ public class MongoUserRepositoryTest {
         //then
         assertEquals(2, users.size());
         assertInstanceOf(Client.class, users.getFirst());
+
+        assertEquals("123456789",((Client) users.getFirst()).getPhone());
+        assertEquals("Janusz",((Client) users.getFirst()).getFirstName());
+
         assertEquals("987654321",((Client) users.getLast()).getPhone());
+        assertEquals("Stanisław",((Client) users.getLast()).getFirstName());
     }
 
     @Test
@@ -108,6 +113,12 @@ public class MongoUserRepositoryTest {
         userRepository.save(user1);
         UUID id = userRepository.findAll().getFirst().getUuid();
 
+        Optional<User> foundList = userRepository.findById(id);
+        //Assertions.assertFalse(foundList.isEmpty());
+
+        User found = foundList.get();
+        assertEquals(id, found.getUuid());
+        assertEquals(user.getUuid(), found.getUuid());
     }
 
     @Test

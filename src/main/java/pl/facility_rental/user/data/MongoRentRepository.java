@@ -18,12 +18,14 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import pl.facility_rental.user.model.Rent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component("mongo_rent_repo")
 public class MongoRentRepository implements RentRepository{
     private final ConnectionString connectionString;
     private final CodecRegistry pojoCodecRegistry;

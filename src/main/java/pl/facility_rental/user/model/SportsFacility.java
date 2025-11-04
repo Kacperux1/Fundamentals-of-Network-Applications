@@ -17,8 +17,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @BsonDiscriminator("facilities")
-public abstract class SportsFacility  {
+public class SportsFacility  {
     @BsonId
+    @BsonProperty("_id")
     private Long id;
     @BsonProperty("name")
     private String name;

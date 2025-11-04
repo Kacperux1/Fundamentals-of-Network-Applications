@@ -18,6 +18,7 @@ import java.util.UUID;
 public abstract class User {
 
     @BsonId
+    @BsonProperty("_id")
     private UUID uuid ;
     @BsonProperty("login")
     @NotNull

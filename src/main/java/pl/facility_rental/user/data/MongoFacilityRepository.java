@@ -18,12 +18,14 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import pl.facility_rental.user.model.SportsFacility;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component("mongo_facility_repo")
 public class MongoFacilityRepository implements FacilityRepository{
 
     private final ConnectionString connectionString;
