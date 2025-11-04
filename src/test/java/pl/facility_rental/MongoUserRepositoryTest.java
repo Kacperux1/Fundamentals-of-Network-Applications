@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.facility_rental.user.data.UserRepository;
@@ -17,6 +18,7 @@ import pl.facility_rental.user.model.Client;
 import pl.facility_rental.user.model.User;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,14 +46,14 @@ public class MongoUserRepositoryTest {
             .withEnv("MONGO_INITDB_ROOT_USERNAME", "admin")
             .withEnv("MONGO_INITDB_ROOT_PASSWORD", "adminpassword")
             .withEnv("MONGO_INITDB_DATABASE", "facility_rental");
-
+//
 
     @DynamicPropertySource
     static void setMongoUri(DynamicPropertyRegistry registry) {
         registry.add("mongo.uri",
                 () -> "mongodb://localhost:" + mongo.getMappedPort(27017) + "/testdb?authSource=admin"
         );
-        // registry.add("mongo.uri", mongo::getReplicaSetUrl);
+//         registry.add("mongo.uri", mongo::getReplicaSetUrl);
         registry.add("mongo.database", () -> "facility_rental");
         registry.add("mongo.user", () -> "admin");
         registry.add("mongo.password", () -> "adminpassword");
@@ -114,7 +116,7 @@ public class MongoUserRepositoryTest {
         UUID id = userRepository.findAll().getFirst().getUuid();
 
         Optional<User> foundList = userRepository.findById(id);
-        //Assertions.assertFalse(foundList.isEmpty());
+        Assertions.assertFalse(foundList.isEmpty());
 
         User found = foundList.get();
         assertEquals(id, found.getUuid());

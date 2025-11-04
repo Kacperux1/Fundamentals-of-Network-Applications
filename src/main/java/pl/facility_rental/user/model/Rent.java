@@ -18,7 +18,7 @@ import java.util.UUID;
 @BsonDiscriminator("rents")
 public class Rent {
     @BsonId
-    private Long id;
+    private UUID id;
     @BsonProperty("client")
     private Client client;
     @BsonProperty("facility")
@@ -33,6 +33,7 @@ public class Rent {
     @BsonCreator
     public Rent(@BsonProperty("client") Client client, @BsonProperty("facility") SportsFacility sportsFacility,
                 @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate) {
+        this.id =  UUID.randomUUID();
         this.client = client;
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;

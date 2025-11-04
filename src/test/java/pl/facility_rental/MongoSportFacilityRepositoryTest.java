@@ -72,9 +72,9 @@ public class MongoSportFacilityRepositoryTest {
 
         facilityRepository.save(facility);
         //then
-//        List<SportsFacility> facilities = facilityRepository.findAll();
-//        assertEquals(1, facilities.size());
-//        assertEquals("boisko", facilities.getFirst().getName());
+        List<SportsFacility> facilities = facilityRepository.findAll();
+        assertEquals(1, facilities.size());
+        assertEquals("boisko", facilities.getFirst().getName());
     }
 
     @Test
@@ -85,16 +85,16 @@ public class MongoSportFacilityRepositoryTest {
         facilityRepository.save(facility);
         facilityRepository.save(facility1);
         //when
-        //List<SportsFacility> facilities = facilityRepository.findAll();
+        List<SportsFacility> facilities = facilityRepository.findAll();
         //then
-//        assertEquals(2, facilities.size());
-//        assertInstanceOf(SportsFacility.class, facilities.getFirst());
-//
-//        assertEquals("boisko", facilities.getFirst().getName());
-//        assertEquals("pomidorowa", facilities.getFirst().getStreet());
-//
-//        assertEquals("kort tenisowy", facilities.getLast().getName());
-//        assertEquals("jarzynowa", facilities.getLast().getStreet());
+        assertEquals(2, facilities.size());
+        assertInstanceOf(SportsFacility.class, facilities.getFirst());
+
+        assertEquals("boisko", facilities.getFirst().getName());
+        assertEquals("pomidorowa", facilities.getFirst().getStreet());
+
+        assertEquals("kort tenisowy", facilities.getLast().getName());
+        assertEquals("jarzynowa", facilities.getLast().getStreet());
     }
 
     @Test
@@ -107,45 +107,51 @@ public class MongoSportFacilityRepositoryTest {
 
         facilityRepository.save(facility);
         facilityRepository.save(facility1);
-        //Long id = facilityRepository.findAll().getFirst().getId();
+        //when
+        UUID id = facilityRepository.findAll().getFirst().getId();
 
-//        Optional<SportsFacility> foundList = facilityRepository.findById(id);
-//
-//        assertFalse(foundList.isEmpty());
-//
-//        SportsFacility found = foundList.get();
-//        assertEquals(id, found.getId());
-//        assertEquals(found.getId(), facility.getId());
+        //then
+        Optional<SportsFacility> foundList = facilityRepository.findById(id);
+
+        Assertions.assertFalse(foundList.isEmpty());
+
+        SportsFacility found = foundList.get();
+        assertEquals(id, found.getId());
+        assertEquals(found.getId(), facility.getId());
 
     }
 
     @Test
     public void updateTest() {
+        //given
         SportsFacility facility = new SportsFacility("boisko", "24", "pomidorowa", "Warszawa",
                 "92-208", new BigDecimal(30));
 
         facilityRepository.save(facility);
-//        List<SportsFacility> facilities = facilityRepository.findAll();
-//        Assertions.assertFalse(facilities.isEmpty());
-//
-//        facility.setStreet("Gruszkowa");
-//        facilityRepository.update(facility);
+        List<SportsFacility> facilities = facilityRepository.findAll();
+        Assertions.assertFalse(facilities.isEmpty());
 
-//        facilities = facilityRepository.findAll();
-//        Assertions.assertFalse(facilities.isEmpty());
-//        assertEquals("Gruszkowa", facilities.getFirst().getStreet());
+        //when
+        facility.setStreet("Gruszkowa");
+        facilityRepository.update(facility);
+
+        facilities = facilityRepository.findAll();
+        //then
+        Assertions.assertFalse(facilities.isEmpty());
+        assertEquals("Gruszkowa", facilities.getFirst().getStreet());
     }
 
     @Test
     public void conversionTest() {
+        //given
         SportsFacility original = new SportsFacility("boisko", "24", "pomidorowa", "Warszawa",
                 "92-208", new BigDecimal(30));
-
+        //when
         facilityRepository.save(original);
-        //SportsFacility loaded = facilityRepository.findAll().getFirst();
-
-//        assertEquals(original.getId(), loaded.getId());
-//        assertEquals(original.getCity(), loaded.getCity());
-//        assertEquals(original.getName(), loaded.getName());
+        SportsFacility loaded = facilityRepository.findAll().getFirst();
+        //then
+        assertEquals(original.getId(), loaded.getId());
+        assertEquals(original.getCity(), loaded.getCity());
+        assertEquals(original.getName(), loaded.getName());
     }
 }

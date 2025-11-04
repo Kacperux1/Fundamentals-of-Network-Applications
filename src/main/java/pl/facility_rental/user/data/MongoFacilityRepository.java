@@ -24,6 +24,7 @@ import pl.facility_rental.user.model.SportsFacility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component("mongo_facility_repo")
 public class MongoFacilityRepository implements FacilityRepository{
@@ -72,7 +73,7 @@ public class MongoFacilityRepository implements FacilityRepository{
     }
 
     @Override
-    public Optional<SportsFacility> findById(Long id) {
+    public Optional<SportsFacility> findById(UUID id) {
         MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(facilitiesColletcion.find(filter).first());

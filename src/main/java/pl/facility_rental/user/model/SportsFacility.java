@@ -20,7 +20,7 @@ import java.util.UUID;
 public class SportsFacility  {
     @BsonId
     @BsonProperty("_id")
-    private Long id;
+    private UUID id;
     @BsonProperty("name")
     private String name;
     @BsonProperty("street_number")
@@ -38,6 +38,7 @@ public class SportsFacility  {
     public SportsFacility(@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
                           @BsonProperty("street") String street, @BsonProperty("city") String city,
                           @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
+        this.id = UUID.randomUUID();
         this.name = name;
         this.streetNumber = streetNumber;
         this.street = street;

@@ -24,6 +24,7 @@ import pl.facility_rental.user.model.Rent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component("mongo_rent_repo")
 public class MongoRentRepository implements RentRepository{
@@ -71,7 +72,7 @@ public class MongoRentRepository implements RentRepository{
     }
 
     @Override
-    public Optional<Rent> findById(Long id) {
+    public Optional<Rent> findById(UUID id) {
         MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(rentCollection.find(filter).first());
