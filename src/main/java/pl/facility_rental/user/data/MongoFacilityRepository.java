@@ -18,7 +18,6 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
-import pl.facility_rental.user.model.Address;
 import pl.facility_rental.user.model.SportsFacility;
 
 import java.util.ArrayList;
@@ -85,7 +84,10 @@ public class MongoFacilityRepository implements FacilityRepository{
 
         Bson update = Updates.combine(
                     Updates.set("name", facility.getName()),
-                    Updates.set("address_id", facility.getAddress()),
+                    Updates.set("street", facility.getStreet()),
+                    Updates.set("street_number", facility.getStreetNumber()),
+                    Updates.set("city", facility.getCity()),
+                    Updates.set("postal_code", facility.getPostalCode()),
                     Updates.set("base_price", facility.getBasePrice())
         );
 

@@ -22,16 +22,26 @@ public abstract class SportsFacility  {
     private Long id;
     @BsonProperty("name")
     private String name;
-    @BsonProperty("address_id")
-    private Address address;
+    @BsonProperty("street_number")
+    private String streetNumber;
+    @BsonProperty("street")
+    private String street;
+    @BsonProperty("city")
+    private String city;
+    @BsonProperty("postal_code")
+    private String postalCode;
     @BsonProperty("base_price")
     private BigDecimal basePrice;
 
     @BsonCreator
-    public SportsFacility(@BsonProperty("name") String name, @BsonProperty("address_id") Address address,
-                          @BsonProperty("base_price") BigDecimal basePrice) {
+    public SportsFacility(@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
+                          @BsonProperty("street") String street, @BsonProperty("city") String city,
+                          @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
         this.name = name;
-        this.address = address;
+        this.streetNumber = streetNumber;
+        this.street = street;
+        this.city = city;
+        this.postalCode = postalCode;
         this.basePrice = basePrice;
     }
 
