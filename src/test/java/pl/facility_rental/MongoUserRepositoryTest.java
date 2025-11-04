@@ -1,7 +1,6 @@
 package pl.facility_rental;
 
 
-import com.mongodb.client.MongoCollection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.facility_rental.user.data.UserRepository;
@@ -18,13 +16,11 @@ import pl.facility_rental.user.model.Client;
 import pl.facility_rental.user.model.User;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -113,14 +109,14 @@ public class MongoUserRepositoryTest {
                 "987654321");
         userRepository.save(user);
         userRepository.save(user1);
-        UUID id = userRepository.findAll().getFirst().getUuid();
+        UUID id = userRepository.findAll().getFirst().getId();
 
         Optional<User> foundList = userRepository.findById(id);
         Assertions.assertFalse(foundList.isEmpty());
 
         User found = foundList.get();
-        assertEquals(id, found.getUuid());
-        assertEquals(user.getUuid(), found.getUuid());
+        assertEquals(id, found.getId());
+        assertEquals(user.getId(), found.getId());
     }
 
     @Test

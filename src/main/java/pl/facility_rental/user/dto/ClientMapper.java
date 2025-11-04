@@ -13,7 +13,7 @@ public class ClientMapper {
     }
 
     public ReturnedClientDto getClientDetails(Client client) {
-        return new ReturnedClientDto(client.getUuid(), client.getLogin(), client.getEmail(),
+        return new ReturnedClientDto(client.getId(), client.getLogin(), client.getEmail(),
                 client.isActive(), client.getFirstName(), client.getLastName(), client.getPhone());
     }
 

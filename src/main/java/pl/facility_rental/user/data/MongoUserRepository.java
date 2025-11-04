@@ -88,7 +88,7 @@ class MongoUserRepository implements UserRepository {
     public User update(User user) {
         MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
 
-        Bson filter = Filters.eq("_id", user.getUuid());
+        Bson filter = Filters.eq("_id", user.getId());
 
         Bson update = Updates.combine(
                 Updates.set("email", user.getEmail()),

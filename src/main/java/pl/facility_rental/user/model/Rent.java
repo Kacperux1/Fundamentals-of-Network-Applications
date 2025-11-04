@@ -3,6 +3,7 @@ package pl.facility_rental.user.model;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
@@ -25,6 +26,7 @@ public class Rent {
     private SportsFacility sportsFacility;
     @BsonProperty("start_date")
     private LocalDateTime startDate;
+    @Setter
     @BsonProperty("end_date")
     private LocalDateTime endDate;
     @BsonProperty("total_price")
@@ -38,6 +40,11 @@ public class Rent {
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.totalPrice = sportsFacility.getPricePerHour().multiply(BigDecimal.valueOf(Duration.between(startDate, endDate).toHours()));
+        try {
+            this.totalPrice = sportsFacility.getPricePerHour().multiply(BigDecimal.valueOf(Duration.between(startDate, endDate).toHours()));
+        } catch (NullPointerException e) {
+            this.totalPrice = BigDecimal.ZERO;
+        }
     }
+
 }
