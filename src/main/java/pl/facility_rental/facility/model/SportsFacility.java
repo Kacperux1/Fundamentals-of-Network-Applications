@@ -1,4 +1,4 @@
-package pl.facility_rental.user.model;
+package pl.facility_rental.facility.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,6 @@ import java.util.UUID;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @BsonDiscriminator("facilities")
 public class SportsFacility  {
@@ -35,9 +34,19 @@ public class SportsFacility  {
     private BigDecimal basePrice;
 
     @BsonCreator
-    public SportsFacility(@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
+    public SportsFacility(@BsonProperty("_id") UUID id,@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
                           @BsonProperty("street") String street, @BsonProperty("city") String city,
                           @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
+        this.id = id;
+        this.name = name;
+        this.streetNumber = streetNumber;
+        this.street = street;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.basePrice = basePrice;
+    }
+
+    public SportsFacility(String name, String streetNumber, String street, String city, String postalCode, BigDecimal basePrice) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.streetNumber = streetNumber;

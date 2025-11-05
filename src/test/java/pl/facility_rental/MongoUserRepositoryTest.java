@@ -1,6 +1,7 @@
 package pl.facility_rental;
 
 
+import com.mongodb.MongoWriteException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,9 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
@@ -107,16 +106,16 @@ public class MongoUserRepositoryTest {
                 , "123456789");
         User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
-        userRepository.save(user);
-        userRepository.save(user1);
-        UUID id = userRepository.findAll().getFirst().getId();
+        //when
+        User saved = userRepository.save(user);
+        User saved1 = userRepository.save(user1);
+        UUID id = saved.getId();
 
-        Optional<User> foundList = userRepository.findById(id);
-        Assertions.assertFalse(foundList.isEmpty());
+        Optional<User> foundUser = userRepository.findById(id);
+        Assertions.assertFalse(foundUser.isEmpty());
 
-        User found = foundList.get();
-        assertEquals(id, found.getId());
-        assertEquals(user.getId(), found.getId());
+        User found = foundUser.get();
+        assertEquals(saved.getId(), found.getId());
     }
 
     @Test
@@ -147,5 +146,16 @@ public class MongoUserRepositoryTest {
 
         assertEquals(original.getEmail(), loaded.getEmail());
         assertEquals(original.getLogin(), loaded.getLogin());
+    }
+
+    @Test
+    public void shouldNotAdduserWhenLoginIsRepeated() {
+        User user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
+                , "987654321");
+        User user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+                , "123456789");
+
+        assertDoesNotThrow(() -> userRepository.save(user));
+        assertThrows(MongoWriteException.class, () -> {userRepository.save(user1);});
     }
 }

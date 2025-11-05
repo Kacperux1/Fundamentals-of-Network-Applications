@@ -2,14 +2,15 @@ package pl.facility_rental.user.data;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -17,8 +18,10 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.user.model.User;
 
 
@@ -48,7 +51,7 @@ class MongoUserRepository implements UserRepository {
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("pl.facility_rental.model")
+                        .register("facility_rental.user.model")
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());
@@ -67,6 +70,34 @@ class MongoUserRepository implements UserRepository {
                 )).build();
         mongoClient = MongoClients.create(settings);
         sportFacilityRentalDatabase = mongoClient.getDatabase("facility_rental");
+        try {
+            ValidationOptions validationOptions = new ValidationOptions().validator(
+                    Document.parse("""
+                            {
+                              $jsonSchema: {
+                                bsonType: "object",
+                                required: ["login", "email", "active"],
+                                properties: {
+                                  login: {
+                                    bsonType: "string"
+                                  },
+                                  active: {
+                                    bsonType: "bool"
+                                  }
+                                }
+                              }
+                            }
+                            """)
+            );
+            sportFacilityRentalDatabase.createCollection("users", new CreateCollectionOptions()
+                    .validationOptions(validationOptions));
+
+            sportFacilityRentalDatabase.getCollection("users").createIndex(new Document("login", 1),
+                    new IndexOptions().unique(true));
+        } catch (MongoCommandException e) {
+            LoggerFactory.getLogger(UserRepository.class).error(e.getMessage());
+        }
+
     }
 
     @Override

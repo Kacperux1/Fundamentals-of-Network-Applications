@@ -10,10 +10,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import pl.facility_rental.user.data.RentRepository;
+import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.user.model.Client;
-import pl.facility_rental.user.model.Rent;
-import pl.facility_rental.user.model.SportsFacility;
+import pl.facility_rental.rent.model.Rent;
+import pl.facility_rental.facility.model.SportsFacility;
 
 import java.io.IOException;
 import java.math.BigDecimal;

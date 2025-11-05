@@ -1,6 +1,6 @@
-package pl.facility_rental.user.data;
+package pl.facility_rental.rent.data;
 
-import pl.facility_rental.user.model.Rent;
+import pl.facility_rental.rent.model.Rent;
 
 import java.util.List;
 import java.util.Optional;
