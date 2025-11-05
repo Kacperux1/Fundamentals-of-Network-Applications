@@ -1,4 +1,4 @@
-package pl.facility_rental;
+package pl.facility_rental.data.mongo;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

@@ -51,7 +51,7 @@ class MongoUserRepository implements UserRepository {
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("facility_rental.user.model")
+                        .register("pl.facility_rental.user.model")
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());
@@ -91,12 +91,16 @@ class MongoUserRepository implements UserRepository {
             );
             sportFacilityRentalDatabase.createCollection("users", new CreateCollectionOptions()
                     .validationOptions(validationOptions));
-
-            sportFacilityRentalDatabase.getCollection("users").createIndex(new Document("login", 1),
-                    new IndexOptions().unique(true));
         } catch (MongoCommandException e) {
             LoggerFactory.getLogger(UserRepository.class).error(e.getMessage());
         }
+        try {
+            sportFacilityRentalDatabase.getCollection("users").createIndex(Indexes.ascending("login"),
+                    new IndexOptions().unique(true));
+        } catch (MongoCommandException e) {
+            LoggerFactory.getLogger(UserRepository.class).error("Error while creating indexes for login uniquity");
+        }
+
 
     }
 

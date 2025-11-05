@@ -4,6 +4,7 @@ package pl.facility_rental.user.model;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class Client extends User {
     private String phone;
 
     @BsonCreator
-    public Client(@BsonProperty("_id") UUID id, @BsonProperty("login") String login, @BsonProperty("email")String email,
+    public Client(@BsonId UUID id, @BsonProperty("login") String login, @BsonProperty("email")String email,
                   @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
                   @BsonProperty("last_name") String lastName, @BsonProperty("phone") String phone) {
         super(id, login, email, active);
@@ -28,7 +29,7 @@ public class Client extends User {
         this.phone = phone;
     }
 
-    public Client(String login, String email, boolean active,String phone, String lastName, String firstName) {
+    public Client(String login, String email, boolean active, String firstName, String lastName, String phone) {
         super(login, email, active);
         this.phone = phone;
         this.lastName = lastName;

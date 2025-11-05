@@ -34,7 +34,7 @@ public class SportsFacility  {
     private BigDecimal basePrice;
 
     @BsonCreator
-    public SportsFacility(@BsonProperty("_id") UUID id,@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
+    public SportsFacility(@BsonId UUID id,@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
                           @BsonProperty("street") String street, @BsonProperty("city") String city,
                           @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
         this.id = id;

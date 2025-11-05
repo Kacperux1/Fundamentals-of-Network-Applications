@@ -44,7 +44,7 @@ public class MongoFacilityRepository implements FacilityRepository {
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("pl.facility_rental.model")
+                        .register("pl.facility_rental.facility.model")
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());

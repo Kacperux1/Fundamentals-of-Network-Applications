@@ -34,10 +34,10 @@ public class Rent {
     private BigDecimal totalPrice;
 
     @BsonCreator
-    public Rent(@BsonProperty("_id") UUID id,@BsonProperty("client") Client client, @BsonProperty("facility") SportsFacility sportsFacility,
+    public Rent(@BsonId UUID id,@BsonProperty("client") Client client, @BsonProperty("facility") SportsFacility sportsFacility,
                 @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate,
                 @BsonProperty("total_price") BigDecimal totalPrice) {
-        this.id =  UUID.randomUUID();
+        this.id =  id;
         this.client = client;
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;

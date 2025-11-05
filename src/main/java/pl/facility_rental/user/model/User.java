@@ -30,7 +30,7 @@ public abstract class User {
     @BsonProperty("active")
     private boolean active;
     @BsonCreator
-    public User(@BsonProperty("_id") UUID id,@BsonProperty("login") String login,@BsonProperty("email") String email,
+    public User(@BsonId UUID id,@BsonProperty("login") String login,@BsonProperty("email") String email,
                 @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;

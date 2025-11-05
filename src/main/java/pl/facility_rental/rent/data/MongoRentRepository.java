@@ -45,7 +45,7 @@ public class MongoRentRepository implements RentRepository {
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("pl.facility_rental.model")
+                        .register("pl.facility_rental.rent.model")
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());
