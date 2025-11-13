@@ -1,4 +1,4 @@
-package pl.facility_rental;
+package pl.facility_rental.data.mongo;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -10,11 +10,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import pl.facility_rental.user.data.MongoFacilityRepository;
-import pl.facility_rental.user.data.UserRepository;
-import pl.facility_rental.user.model.Client;
-import pl.facility_rental.user.model.SportsFacility;
-import pl.facility_rental.user.model.User;
+import pl.facility_rental.facility.data.MongoFacilityRepository;
+import pl.facility_rental.facility.model.SportsFacility;
 
 import java.io.IOException;
 import java.math.BigDecimal;

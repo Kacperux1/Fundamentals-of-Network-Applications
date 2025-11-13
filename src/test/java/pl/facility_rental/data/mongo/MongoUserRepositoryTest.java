@@ -1,7 +1,8 @@
-package pl.facility_rental;
+package pl.facility_rental.data.mongo;
 
 
-import com.mongodb.client.MongoCollection;
+import com.mongodb.MongoException;
+import com.mongodb.MongoWriteException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.facility_rental.user.data.UserRepository;
@@ -18,15 +18,11 @@ import pl.facility_rental.user.model.Client;
 import pl.facility_rental.user.model.User;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
@@ -111,17 +107,16 @@ public class MongoUserRepositoryTest {
                 , "123456789");
         User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
-        userRepository.save(user);
-        userRepository.save(user1);
-        UUID id = userRepository.findAll().getFirst().getUuid();
+        //when
+        User saved = userRepository.save(user);
+        User saved1 = userRepository.save(user1);
+        UUID id = saved.getId();
 
-        Optional<User> foundList = userRepository.findById(id);
+        Optional<User> foundUser = userRepository.findById(id);
+        Assertions.assertFalse(foundUser.isEmpty());
 
-//        Assertions.assertFalse(foundList.isEmpty());
-//
-//        User found = foundList.get();
-//        assertEquals(id, found.getUuid());
-//        assertEquals(user.getUuid(), found.getUuid());
+        User found = foundUser.get();
+        assertEquals(saved.getId(), found.getId());
     }
 
     @Test
@@ -149,8 +144,21 @@ public class MongoUserRepositoryTest {
         userRepository.save(original);
 
         User loaded = userRepository.findAll().getFirst();
-
+        assertEquals(original.getId(), loaded.getId());
+        assertEquals(original.getLogin(), loaded.getLogin());
+        assertEquals(original.isActive(), loaded.isActive());
         assertEquals(original.getEmail(), loaded.getEmail());
         assertEquals(original.getLogin(), loaded.getLogin());
     }
+//
+//    @Test
+//    public void shouldNotAdduserWhenLoginIsRepeated() {
+//        User user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
+//                , "987654321");
+//        User user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+//                , "123456789");
+//
+//        assertDoesNotThrow(() -> userRepository.save(user));
+//        assertThrows(Exception.class, () -> userRepository.save(user1));
+//    }
 }

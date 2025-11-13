@@ -1,4 +1,4 @@
-package pl.facility_rental.user.data;
+package pl.facility_rental.facility.data;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -19,31 +19,32 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import pl.facility_rental.user.model.Rent;
+import pl.facility_rental.facility.model.SportsFacility;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component("mongo_rent_repo")
-public class MongoRentRepository implements RentRepository{
+@Component("mongo_facility_repo")
+public class MongoFacilityRepository implements FacilityRepository {
+
     private final ConnectionString connectionString;
     private final CodecRegistry pojoCodecRegistry;
     private final MongoCredential credential;
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
 
-    public MongoRentRepository(@Value("${mongo.uri}") String connectionPlainString,
-                                   //@Value("${mongo.database}") String databaseName,
-                                   @Value("${mongo.user}") String user,
-                                   @Value("${mongo.password}") String password) {
+    public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
+                                  //@Value("${mongo.database}") String databaseName,
+                                  @Value("${mongo.user}") String user,
+                                  @Value("${mongo.password}") String password) {
         this.connectionString = new ConnectionString(connectionPlainString);
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("pl.facility_rental.model")
+                        .register("pl.facility_rental.facility.model")
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());
@@ -65,41 +66,42 @@ public class MongoRentRepository implements RentRepository{
     }
 
     @Override
-    public Rent save(Rent rent) {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
-        rentCollection.insertOne(rent);
-        return rent;
+    public SportsFacility save(SportsFacility facility){
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
+        facilitiesColletcion.insertOne(facility);
+        return facility;
     }
 
     @Override
-    public Optional<Rent> findById(UUID id) {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
+    public Optional<SportsFacility> findById(UUID id) {
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
         Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(rentCollection.find(filter).first());
+        return Optional.ofNullable(facilitiesColletcion.find(filter).first());
     }
 
     @Override
-    public Rent update(Rent rent) {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
+    public SportsFacility update(SportsFacility facility) {
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
 
-        Bson filter = Filters.eq("_id", rent.getId());
+        Bson filter = Filters.eq("_id", facility.getId());
 
         Bson update = Updates.combine(
-                    Updates.set("client", rent.getClient()),
-                    Updates.set("facility", rent.getSportsFacility()),
-                    Updates.set("start_date", rent.getStartDate()),
-                    Updates.set("end_date", rent.getEndDate()),
-                    Updates.set("total_price", rent.getTotalPrice())
+                    Updates.set("name", facility.getName()),
+                    Updates.set("street", facility.getStreet()),
+                    Updates.set("street_number", facility.getStreetNumber()),
+                    Updates.set("city", facility.getCity()),
+                    Updates.set("postal_code", facility.getPostalCode()),
+                    Updates.set("base_price", facility.getBasePrice())
         );
 
-        rentCollection.updateOne(filter, update);
+        facilitiesColletcion.updateOne(filter, update);
 
-        return rentCollection.find(filter).first();
+        return facilitiesColletcion.find(filter).first();
     }
 
     @Override
-    public List<Rent> findAll() {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
-        return rentCollection.find().into(new ArrayList<>());
+    public List<SportsFacility> findAll() {
+        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
+        return facilitiesColletcion.find().into(new ArrayList<>());
     }
 }

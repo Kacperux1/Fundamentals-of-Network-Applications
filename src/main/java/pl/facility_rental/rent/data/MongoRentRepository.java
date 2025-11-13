@@ -1,15 +1,16 @@
-package pl.facility_rental.user.data;
+package pl.facility_rental.rent.data;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -17,34 +18,34 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import pl.facility_rental.user.model.SportsFacility;
+import pl.facility_rental.rent.model.Rent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component("mongo_facility_repo")
-public class MongoFacilityRepository implements FacilityRepository{
-
+@Component("mongo_rent_repo")
+public class MongoRentRepository implements RentRepository {
     private final ConnectionString connectionString;
     private final CodecRegistry pojoCodecRegistry;
     private final MongoCredential credential;
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
 
-    public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
-                                  //@Value("${mongo.database}") String databaseName,
-                                  @Value("${mongo.user}") String user,
-                                  @Value("${mongo.password}") String password) {
+    public MongoRentRepository(@Value("${mongo.uri}") String connectionPlainString,
+                                   //@Value("${mongo.database}") String databaseName,
+                                   @Value("${mongo.user}") String user,
+                                   @Value("${mongo.password}") String password) {
         this.connectionString = new ConnectionString(connectionPlainString);
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("pl.facility_rental.model")
+                        .register("pl.facility_rental.rent.model")
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());
@@ -66,42 +67,41 @@ public class MongoFacilityRepository implements FacilityRepository{
     }
 
     @Override
-    public SportsFacility save(SportsFacility facility){
-        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
-        facilitiesColletcion.insertOne(facility);
-        return facility;
+    public Rent save(Rent rent) {
+        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
+        rentCollection.insertOne(rent);
+        return rent;
     }
 
     @Override
-    public Optional<SportsFacility> findById(UUID id) {
-        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
+    public Optional<Rent> findById(UUID id) {
+        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
         Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(facilitiesColletcion.find(filter).first());
+        return Optional.ofNullable(rentCollection.find(filter).first());
     }
 
     @Override
-    public SportsFacility update(SportsFacility facility) {
-        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
+    public Rent update(Rent rent) {
+        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
 
-        Bson filter = Filters.eq("_id", facility.getId());
+        Bson filter = Filters.eq("_id", rent.getId());
 
         Bson update = Updates.combine(
-                    Updates.set("name", facility.getName()),
-                    Updates.set("street", facility.getStreet()),
-                    Updates.set("street_number", facility.getStreetNumber()),
-                    Updates.set("city", facility.getCity()),
-                    Updates.set("postal_code", facility.getPostalCode()),
-                    Updates.set("base_price", facility.getBasePrice())
+                    Updates.set("client", rent.getClient()),
+                    Updates.set("facility", rent.getSportsFacility()),
+                    Updates.set("start_date", rent.getStartDate()),
+                    Updates.set("end_date", rent.getEndDate()),
+                    Updates.set("total_price", rent.getTotalPrice())
         );
 
-        facilitiesColletcion.updateOne(filter, update);
+        rentCollection.updateOne(filter, update);
 
-        return facilitiesColletcion.find(filter).first();
+        return rentCollection.find(filter).first();
     }
 
     @Override
-    public List<SportsFacility> findAll() {
-        MongoCollection<SportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", SportsFacility.class);
-        return facilitiesColletcion.find().into(new ArrayList<>());
+    public List<Rent> findAll() {
+        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
+        return rentCollection.find().into(new ArrayList<>());
     }
 }

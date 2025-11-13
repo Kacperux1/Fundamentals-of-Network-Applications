@@ -1,6 +1,6 @@
-package pl.facility_rental.user.data;
+package pl.facility_rental.facility.data;
 
-import pl.facility_rental.user.model.SportsFacility;
+import pl.facility_rental.facility.model.SportsFacility;
 
 import java.util.List;
 import java.util.Optional;
