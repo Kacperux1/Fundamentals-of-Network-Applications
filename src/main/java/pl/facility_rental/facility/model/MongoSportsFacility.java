@@ -1,6 +1,5 @@
 package pl.facility_rental.facility.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @BsonDiscriminator("facilities")
-public class SportsFacility  {
+public class MongoSportsFacility {
     @BsonId
     @BsonProperty("_id")
     private UUID id;
@@ -34,9 +33,9 @@ public class SportsFacility  {
     private BigDecimal basePrice;
 
     @BsonCreator
-    public SportsFacility(@BsonId UUID id,@BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
-                          @BsonProperty("street") String street, @BsonProperty("city") String city,
-                          @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
+    public MongoSportsFacility(@BsonId UUID id, @BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
+                               @BsonProperty("street") String street, @BsonProperty("city") String city,
+                               @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
         this.id = id;
         this.name = name;
         this.streetNumber = streetNumber;
@@ -46,7 +45,7 @@ public class SportsFacility  {
         this.basePrice = basePrice;
     }
 
-    public SportsFacility(String name, String streetNumber, String street, String city, String postalCode, BigDecimal basePrice) {
+    public MongoSportsFacility(String name, String streetNumber, String street, String city, String postalCode, BigDecimal basePrice) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.streetNumber = streetNumber;

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.rent.data.RentRepository;
+import pl.facility_rental.user.model.Client;
 import pl.facility_rental.user.model.User;
 
 
@@ -140,6 +141,20 @@ class MongoUserRepository implements UserRepository {
     public List<User> findAll() {
         MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
         return userCollection.find().into(new ArrayList<>());
+    }
+
+    @Override
+    public List<Client> getAllClients() {
+        MongoCollection<Client> userCollection = sportFacilityRentalDatabase.getCollection("users", Client.class);
+        return userCollection.find().into(new ArrayList<>());
+
+    }
+
+    @Override
+    public Optional<Client> findClientById(UUID id) {
+        MongoCollection<Client> userCollection = sportFacilityRentalDatabase.getCollection("users", Client.class);
+        Bson filter = Filters.eq("_id", id);
+        return Optional.ofNullable(userCollection.find(filter).first());
     }
 
 }

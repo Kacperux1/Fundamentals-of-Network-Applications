@@ -1,6 +1,7 @@
 package pl.facility_rental.user.data;
 
 
+import pl.facility_rental.user.model.Client;
 import pl.facility_rental.user.model.User;
 
 import java.util.List;
@@ -13,5 +14,7 @@ public interface UserRepository {
     Optional<User> findById(UUID id);
     User update(User user);
     List<User> findAll();
+    List<Client> getAllClients();
+    Optional<Client> findClientById(UUID id);
 }
 

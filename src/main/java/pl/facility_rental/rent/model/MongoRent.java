@@ -8,7 +8,7 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import pl.facility_rental.user.model.Client;
-import pl.facility_rental.facility.model.SportsFacility;
+import pl.facility_rental.facility.model.MongoSportsFacility;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -18,13 +18,13 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @BsonDiscriminator("rents")
-public class Rent {
+public class MongoRent {
     @BsonId
     private UUID id;
     @BsonProperty("client")
     private Client client;
     @BsonProperty("facility")
-    private SportsFacility sportsFacility;
+    private MongoSportsFacility sportsFacility;
     @BsonProperty("start_date")
     private LocalDateTime startDate;
     @Setter
@@ -34,9 +34,9 @@ public class Rent {
     private BigDecimal totalPrice;
 
     @BsonCreator
-    public Rent(@BsonId UUID id,@BsonProperty("client") Client client, @BsonProperty("facility") SportsFacility sportsFacility,
-                @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate,
-                @BsonProperty("total_price") BigDecimal totalPrice) {
+    public MongoRent(@BsonId UUID id, @BsonProperty("client") Client client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
+                     @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate,
+                     @BsonProperty("total_price") BigDecimal totalPrice) {
         this.id =  id;
         this.client = client;
         this.sportsFacility = sportsFacility;
@@ -50,7 +50,7 @@ public class Rent {
         }
     }
 
-    public Rent(Client client, SportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
+    public MongoRent(Client client, MongoSportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
         this.id =  UUID.randomUUID();
         this.client = client;
         this.sportsFacility = sportsFacility;

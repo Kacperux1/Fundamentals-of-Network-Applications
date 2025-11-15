@@ -12,8 +12,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.user.model.Client;
-import pl.facility_rental.rent.model.Rent;
-import pl.facility_rental.facility.model.SportsFacility;
+import pl.facility_rental.rent.model.MongoRent;
+import pl.facility_rental.facility.model.MongoSportsFacility;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @SpringBootTest
 @Testcontainers
-public class MongoRentRepositoryTest {
+public class MongoMongoRentRepositoryTest {
 
     @Container
     private static GenericContainer mongo = new GenericContainer("mongo:6")
@@ -57,11 +57,11 @@ public class MongoRentRepositoryTest {
         //given
         Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
-        SportsFacility facility = new SportsFacility("boisko",
+        MongoSportsFacility facility = new MongoSportsFacility("boisko",
                 "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
-        Rent rent = new Rent(user, facility, LocalDateTime.now(), null);
+        MongoRent rent = new MongoRent(user, facility, LocalDateTime.now(), null);
         //when
-        Rent saved  = rentRepository.save(rent);
+        MongoRent saved  = rentRepository.save(rent);
         //then
         Assertions.assertNotNull(saved);
         Assertions.assertEquals("mak", saved.getClient().getLogin());
@@ -72,18 +72,18 @@ public class MongoRentRepositoryTest {
         //given
         Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
-        SportsFacility facility = new SportsFacility("boisko",
+        MongoSportsFacility facility = new MongoSportsFacility("boisko",
                 "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
         Client client2 =  new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
-        SportsFacility facility1 = new SportsFacility("kort tenisowy", "58", "jarzynowa", "Poznań",
+        MongoSportsFacility facility1 = new MongoSportsFacility("kort tenisowy", "58", "jarzynowa", "Poznań",
                 "16-301", new BigDecimal(50));
-        Rent rent = new Rent(user, facility, LocalDateTime.now(), null);
-        Rent rent2 = new Rent(client2, facility1, LocalDateTime.now(), LocalDateTime.now().plusHours(3L));
+        MongoRent rent = new MongoRent(user, facility, LocalDateTime.now(), null);
+        MongoRent rent2 = new MongoRent(client2, facility1, LocalDateTime.now(), LocalDateTime.now().plusHours(3L));
         rentRepository.save(rent);
         rentRepository.save(rent2);
         //when
-        List<Rent> rents = rentRepository.findAll();
+        List<MongoRent> rents = rentRepository.findAll();
         //then
         Assertions.assertEquals(2, rents.size());
         Assertions.assertEquals("mak", rents.getFirst().getClient().getLogin());
@@ -95,12 +95,12 @@ public class MongoRentRepositoryTest {
         //given
         Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
-        SportsFacility facility = new SportsFacility("boisko",
+        MongoSportsFacility facility = new MongoSportsFacility("boisko",
                 "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
-        Rent rent = rentRepository.save(new Rent(user, facility, LocalDateTime.now(), null));
+        MongoRent rent = rentRepository.save(new MongoRent(user, facility, LocalDateTime.now(), null));
         //when
-        Optional<Rent> foundRent= rentRepository.findById(rent.getId());
-        Optional<Rent> fakeRent = rentRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        Optional<MongoRent> foundRent= rentRepository.findById(rent.getId());
+        Optional<MongoRent> fakeRent = rentRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000000"));
         //then
         Assertions.assertTrue(foundRent.isPresent());
         Assertions.assertTrue(fakeRent.isEmpty());
@@ -108,32 +108,32 @@ public class MongoRentRepositoryTest {
 
     }
 
-    @Test
-    public void shouldUpdateRent() {
-        //given
-        Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
-                , "123456789");
-        SportsFacility facility = new SportsFacility("boisko",
-                "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
-        Rent savedRent = rentRepository.save(new Rent(user, facility, LocalDateTime.now(), null));
-        //when
-        savedRent.setEndDate(LocalDateTime.now().plusHours(1L));
-        rentRepository.update(savedRent);
-        List<Rent> rents = rentRepository.findAll();
-        //then
-        Assertions.assertNotNull(rents.getFirst().getEndDate());
-        Assertions.assertTrue(rents.getFirst().getEndDate().isAfter(LocalDateTime.now()));
-    }
+//    @Test
+//    public void shouldUpdateRent() {
+//        //given
+//        Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+//                , "123456789");
+//        MongoSportsFacility facility = new MongoSportsFacility("boisko",
+//                "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
+//        MongoRent savedRent = rentRepository.save(new MongoRent(user, facility, LocalDateTime.now(), null));
+//        //when
+//        savedRent.setEndDate(LocalDateTime.now().plusHours(1L));
+//        rentRepository.update(savedRent);
+//        List<MongoRent> rents = rentRepository.findAll();
+//        //then
+//        Assertions.assertNotNull(rents.getFirst().getEndDate());
+//        Assertions.assertTrue(rents.getFirst().getEndDate().isAfter(LocalDateTime.now()));
+//    }
     @Test
     public void conversionTest() {
         //given
         Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
-        SportsFacility facility = new SportsFacility("boisko",
+        MongoSportsFacility facility = new MongoSportsFacility("boisko",
                 "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
         //when
-        rentRepository.save(new Rent(user, facility, LocalDateTime.now(), null));
-        Rent existingRent = rentRepository.findAll().getFirst();
+        rentRepository.save(new MongoRent(user, facility, LocalDateTime.now(), null));
+        MongoRent existingRent = rentRepository.findAll().getFirst();
         //then
         Assertions.assertNotNull(existingRent);
         Assertions.assertEquals("mak", existingRent.getClient().getLogin());

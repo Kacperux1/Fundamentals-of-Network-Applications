@@ -4,9 +4,12 @@ package pl.facility_rental.user.business;
 
 import org.springframework.stereotype.Component;
 import pl.facility_rental.user.data.UserRepository;
+import pl.facility_rental.user.model.Client;
 import pl.facility_rental.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class UserService {
@@ -26,6 +29,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public Optional<Client> getCLientById(UUID id) {
+        return userRepository.findClientById(id);
     }
 
 

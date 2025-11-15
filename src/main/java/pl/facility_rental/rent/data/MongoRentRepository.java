@@ -2,7 +2,6 @@ package pl.facility_rental.rent.data;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -10,7 +9,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
-import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -18,10 +16,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import pl.facility_rental.rent.model.Rent;
+import pl.facility_rental.rent.business.Rent;
+import pl.facility_rental.rent.dto.DataRentMapper;
+import pl.facility_rental.rent.model.MongoRent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +34,14 @@ public class MongoRentRepository implements RentRepository {
     private final MongoCredential credential;
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
+    private final DataRentMapper dataRentMapper;
 
     public MongoRentRepository(@Value("${mongo.uri}") String connectionPlainString,
-                                   //@Value("${mongo.database}") String databaseName,
-                                   @Value("${mongo.user}") String user,
-                                   @Value("${mongo.password}") String password) {
+                               @Value("${mongo.database}") String databaseName,
+                               @Value("${mongo.user}") String user,
+                               @Value("${mongo.password}") String password, DataRentMapper dataRentMapper) {
         this.connectionString = new ConnectionString(connectionPlainString);
+        this.dataRentMapper = dataRentMapper;
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
@@ -68,40 +69,62 @@ public class MongoRentRepository implements RentRepository {
 
     @Override
     public Rent save(Rent rent) {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
-        rentCollection.insertOne(rent);
+        MongoRent mongoRent = dataRentMapper.mapToDataLayer(rent);
+        MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        rentCollection.insertOne(mongoRent);
         return rent;
     }
 
     @Override
     public Optional<Rent> findById(UUID id) {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
+        MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(rentCollection.find(filter).first());
+        return Optional.ofNullable(dataRentMapper.mapToBusinessLayer(rentCollection.find(filter).first()));
     }
 
     @Override
     public Rent update(Rent rent) {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
+        MongoRent mongoRent = dataRentMapper.mapToDataLayer(rent);
+        MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
 
-        Bson filter = Filters.eq("_id", rent.getId());
+        Bson filter = Filters.eq("_id", mongoRent.getId());
 
         Bson update = Updates.combine(
-                    Updates.set("client", rent.getClient()),
-                    Updates.set("facility", rent.getSportsFacility()),
-                    Updates.set("start_date", rent.getStartDate()),
-                    Updates.set("end_date", rent.getEndDate()),
-                    Updates.set("total_price", rent.getTotalPrice())
+                    Updates.set("client", mongoRent.getClient()),
+                    Updates.set("facility", mongoRent.getSportsFacility()),
+                    Updates.set("start_date", mongoRent.getStartDate()),
+                    Updates.set("end_date", mongoRent.getEndDate()),
+                    Updates.set("total_price", mongoRent.getTotalPrice())
         );
 
         rentCollection.updateOne(filter, update);
 
-        return rentCollection.find(filter).first();
+        return dataRentMapper.mapToBusinessLayer(rentCollection.find(filter).first());
     }
 
     @Override
     public List<Rent> findAll() {
-        MongoCollection<Rent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", Rent.class);
-        return rentCollection.find().into(new ArrayList<>());
+        MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        return rentCollection.find().into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer)
+                .toList();
     }
+
+    @Override
+    public Rent delete(UUID id) throws Exception {
+        MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        Bson filter = Filters.eq("_id", id);
+        MongoRent deleted = collection.find(filter).first();
+        if(deleted == null)
+           throw new Exception("ni ma renta!");
+        collection.deleteOne(filter);
+        return dataRentMapper.mapToBusinessLayer(deleted);
+    }
+
+    @Override
+    public List<Rent> findRentsForFacility(UUID facilityId) {
+        MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        Bson filter = Filters.eq("facility.id", facilityId);
+        return collection.find(filter).map(dataRentMapper::mapToBusinessLayer).into(new ArrayList<>());
+    }
+
 }

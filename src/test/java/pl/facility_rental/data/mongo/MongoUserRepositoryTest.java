@@ -150,15 +150,15 @@ public class MongoUserRepositoryTest {
         assertEquals(original.getEmail(), loaded.getEmail());
         assertEquals(original.getLogin(), loaded.getLogin());
     }
-//
-//    @Test
-//    public void shouldNotAdduserWhenLoginIsRepeated() {
-//        User user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
-//                , "987654321");
-//        User user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
-//                , "123456789");
-//
-//        assertDoesNotThrow(() -> userRepository.save(user));
-//        assertThrows(Exception.class, () -> userRepository.save(user1));
-//    }
+
+    @Test
+    public void shouldNotAdduserWhenLoginIsRepeated() {
+        User user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
+                , "987654321");
+        User user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+                , "123456789");
+
+        assertDoesNotThrow(() -> userRepository.save(user));
+        assertThrows(Exception.class, () -> userRepository.save(user1));
+    }
 }
