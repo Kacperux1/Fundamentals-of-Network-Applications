@@ -21,9 +21,12 @@ import org.bson.conversions.Bson;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import pl.facility_rental.rent.data.RentRepository;
-import pl.facility_rental.user.model.Client;
-import pl.facility_rental.user.model.User;
+import pl.facility_rental.user.business.model.Client;
+import pl.facility_rental.user.business.model.User;
+import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;
+import pl.facility_rental.user.model.MongoDbClient;
+import pl.facility_rental.user.model.MongoUser;
+
 
 
 import java.util.ArrayList;
@@ -43,11 +46,15 @@ class MongoUserRepository implements UserRepository {
     private MongoDatabase sportFacilityRentalDatabase;
     private final CodecRegistry pojoCodecRegistry;
 
+    private final ClientDataMapper  clientDataMapper;
+
+
     public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
                                //@Value("${mongo.database}") String databaseName,
                                @Value("${mongo.user}") String user,
-                               @Value("${mongo.password}") String password) {
+                               @Value("${mongo.password}") String password, ClientDataMapper clientDataMapper) {
         this.connectionString = new ConnectionString(connectionPlainString);
+        this.clientDataMapper = clientDataMapper;
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
@@ -107,22 +114,25 @@ class MongoUserRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users",  User.class);
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users",  MongoUser.class);
         userCollection.insertOne(user);
         return user;
     }
 
+
+
     @Override
     public Optional<User> findById(UUID id) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(userCollection.find(filter).first());
 
     }
 
+
     @Override
     public User update(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
 
         Bson filter = Filters.eq("_id", user.getId());
 
@@ -139,22 +149,26 @@ class MongoUserRepository implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
-        return userCollection.find().into(new ArrayList<>());
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        return userCollection.find().into(new ArrayList<>()).stream().map(user ->{
+                if(user instanceof MongoDbClient){return clientDataMapper.mapToBusinessLayer((MongoDbClient) user);
+                } return null;}).toList();
+            ;
     }
 
     @Override
     public List<Client> getAllClients() {
-        MongoCollection<Client> userCollection = sportFacilityRentalDatabase.getCollection("users", Client.class);
-        return userCollection.find().into(new ArrayList<>());
+        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
+        return userCollection.find().into(new ArrayList<>()).stream().map(clientDataMapper::mapToBusinessLayer)
+                .toList();
 
     }
 
     @Override
     public Optional<Client> findClientById(UUID id) {
-        MongoCollection<Client> userCollection = sportFacilityRentalDatabase.getCollection("users", Client.class);
+        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
         Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(userCollection.find(filter).first());
+        return Optional.ofNullable(clientDataMapper.mapToBusinessLayer(userCollection.find(filter).first()));
     }
 
 }

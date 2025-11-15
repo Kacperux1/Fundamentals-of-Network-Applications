@@ -1,8 +1,9 @@
 package pl.facility_rental.user.data;
 
 
-import pl.facility_rental.user.model.Client;
-import pl.facility_rental.user.model.User;
+import pl.facility_rental.user.business.model.User;
+import pl.facility_rental.user.business.model.Client;
+import pl.facility_rental.user.model.MongoUser;
 
 import java.util.List;
 import java.util.Optional;

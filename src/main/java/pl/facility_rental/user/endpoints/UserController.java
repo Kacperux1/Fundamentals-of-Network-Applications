@@ -3,12 +3,13 @@ package pl.facility_rental.user.endpoints;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.facility_rental.user.business.UserService;
-import pl.facility_rental.user.dto.ClientMapper;
-import pl.facility_rental.user.dto.CreateClientDto;
-import pl.facility_rental.user.dto.ReturnedClientDto;
-import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.dto.client.mappers.ClientMapper;
+import pl.facility_rental.user.dto.client.CreateClientDto;
+import pl.facility_rental.user.dto.client.ReturnedClientDto;
+import pl.facility_rental.user.business.model.Client;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -43,5 +44,10 @@ class UserController {
                 .map(u -> clientMapper.getClientDetails((Client) u))
                 .toList();
 
+    }
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ReturnedClientDto deleteClient(@RequestParam UUID id) {
+        return user
     }
 }

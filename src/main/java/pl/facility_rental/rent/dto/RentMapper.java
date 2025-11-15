@@ -22,7 +22,7 @@ public class RentMapper {
     }
 
     public Rent CreateRentRequest(CreateRentDto createRentDto) throws Exception {
-        Optional<Client> pickedClient = userService.getCLientById(createRentDto.clientId());
+        Optional<Client> pickedClient = userService.getClientById(createRentDto.clientId());
         Optional<SportsFacility> pickedFacility = facilityService.findById(createRentDto.facilityId());
         if(pickedClient.isEmpty() || pickedFacility.isEmpty()) {
             throw new Exception("Klienta albo obiektu ni ma!");

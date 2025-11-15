@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Getter
 @BsonDiscriminator( value = "Client")
-public class Client extends User {
+public class MongoDbClient extends MongoUser {
     @BsonProperty("first_name")
     private String firstName;
     @BsonProperty("last_name")
@@ -20,16 +20,16 @@ public class Client extends User {
     private String phone;
 
     @BsonCreator
-    public Client(@BsonId UUID id, @BsonProperty("login") String login, @BsonProperty("email")String email,
-                  @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
-                  @BsonProperty("last_name") String lastName, @BsonProperty("phone") String phone) {
+    public MongoDbClient(@BsonId UUID id, @BsonProperty("login") String login, @BsonProperty("email")String email,
+                         @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
+                         @BsonProperty("last_name") String lastName, @BsonProperty("phone") String phone) {
         super(id, login, email, active);
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
     }
 
-    public Client(String login, String email, boolean active, String firstName, String lastName, String phone) {
+    public MongoDbClient(String login, String email, boolean active, String firstName, String lastName, String phone) {
         super(login, email, active);
         this.phone = phone;
         this.lastName = lastName;

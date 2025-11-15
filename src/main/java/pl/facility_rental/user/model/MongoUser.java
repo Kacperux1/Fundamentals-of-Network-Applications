@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @BsonDiscriminator(value="user")
-public abstract class User {
+public abstract class MongoUser {
 
     @BsonId
     @BsonProperty("_id")
@@ -30,15 +30,15 @@ public abstract class User {
     @BsonProperty("active")
     private boolean active;
     @BsonCreator
-    public User(@BsonId UUID id,@BsonProperty("login") String login,@BsonProperty("email") String email,
-                @BsonProperty("active") boolean active) {
+    public MongoUser(@BsonId UUID id, @BsonProperty("login") String login, @BsonProperty("email") String email,
+                     @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;
         this.email = email;
         this.active = active;
     }
 
-    public User(String login, String email, boolean active) {
+    public MongoUser(String login, String email, boolean active) {
         this.id = UUID.randomUUID();
         this.login = login;
         this.email = email;

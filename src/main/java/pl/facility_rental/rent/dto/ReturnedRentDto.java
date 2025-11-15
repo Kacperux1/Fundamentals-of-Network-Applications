@@ -1,8 +1,5 @@
 package pl.facility_rental.rent.dto;
 
-import pl.facility_rental.facility.dto.ReturnedFacilityDto;
-import pl.facility_rental.user.dto.ReturnedClientDto;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
