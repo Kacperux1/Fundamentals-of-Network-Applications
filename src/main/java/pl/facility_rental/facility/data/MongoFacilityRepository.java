@@ -93,20 +93,21 @@ public class MongoFacilityRepository implements FacilityRepository {
 
     @Override
     public SportsFacility update(String id,  SportsFacility facility) throws Exception {
-        MongoSportsFacility mongoFacility = dataFacilityMapper.mapToDataLayer(facility);
+
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
 
         Bson filter = Filters.eq("_id", new ObjectId(id));
         if(facilitiesColletcion.find(filter).first() == null){
             throw new Exception("ni ma takiego obiektu!");
         }
+        List<Bson> pipeline = new ArrayList<>();
+        if(facility.getName() != null &&  !facility.getName().isEmpty()){
+            pipeline.add(Updates.set("name", facility.getName()));
+        } if(facility.getPricePerHour() != null) {
+            pipeline.add(Updates.set("pricePerHour", facility.getPricePerHour()));
+        }
         Bson update = Updates.combine(
-                    Updates.set("name", facility.getName()),
-                    Updates.set("street", facility.getStreet()),
-                    Updates.set("street_number", facility.getStreetNumber()),
-                    Updates.set("city", facility.getCity()),
-                    Updates.set("postal_code", facility.getPostalCode()),
-                    Updates.set("base_price", facility.getBasePrice())
+                   pipeline.toArray(new Bson[0])
         );
 
         facilitiesColletcion.updateOne(filter, update);
