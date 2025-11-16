@@ -2,6 +2,7 @@ package pl.facility_rental.facility.data;
 
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.model.MongoSportsFacility;
+import pl.facility_rental.rent.business.Rent;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,4 +14,5 @@ public interface FacilityRepository {
     SportsFacility update(SportsFacility facility) throws Exception;
     List<SportsFacility> findAll();
     SportsFacility delete(UUID id) throws Exception;
+
 }

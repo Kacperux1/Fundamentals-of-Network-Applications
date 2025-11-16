@@ -6,7 +6,7 @@ import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.user.business.UserService;
-import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.business.model.Client;
 
 import java.util.Optional;
 

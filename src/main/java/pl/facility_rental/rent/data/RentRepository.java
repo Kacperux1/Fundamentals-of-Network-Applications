@@ -14,4 +14,5 @@ public interface RentRepository {
     List<Rent> findAll();
     Rent delete(UUID id) throws Exception;
     List<Rent> findRentsForFacility(UUID facilityId);
+    List<Rent> getCurrentAndPastRentsForClient(UUID clientId);
 }

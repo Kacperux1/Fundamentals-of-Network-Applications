@@ -2,7 +2,7 @@ package pl.facility_rental.rent.business;
 
 import lombok.Getter;
 import pl.facility_rental.facility.business.SportsFacility;
-import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.business.model.Client;
 
 import java.math.BigDecimal;
 import java.time.Duration;

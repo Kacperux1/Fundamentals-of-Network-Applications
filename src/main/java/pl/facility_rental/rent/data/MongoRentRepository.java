@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -22,6 +23,7 @@ import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.dto.DataRentMapper;
 import pl.facility_rental.rent.model.MongoRent;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -120,11 +122,22 @@ public class MongoRentRepository implements RentRepository {
         return dataRentMapper.mapToBusinessLayer(deleted);
     }
 
+
     @Override
     public List<Rent> findRentsForFacility(UUID facilityId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("facility.id", facilityId);
-        return collection.find(filter).map(dataRentMapper::mapToBusinessLayer).into(new ArrayList<>());
+        return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
+    }
+
+    @Override
+    public List<Rent> getCurrentAndPastRentsForClient(UUID clientId) {
+        MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        Bson filter = Filters.and(Filters.eq("client.id", clientId),
+                Filters.lte("start_date", LocalDateTime.now()),
+                Filters.lte("end_date", LocalDateTime.now()));
+        return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
+
     }
 
 }

@@ -7,7 +7,8 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
-import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.business.model.Client;
+
 import pl.facility_rental.facility.model.MongoSportsFacility;
 
 import java.math.BigDecimal;
@@ -62,4 +63,5 @@ public class MongoRent {
             this.totalPrice = BigDecimal.valueOf(Duration.between(startDate, endDate).toHours()).multiply(sportsFacility.getPricePerHour());
         }
     }
+
 }

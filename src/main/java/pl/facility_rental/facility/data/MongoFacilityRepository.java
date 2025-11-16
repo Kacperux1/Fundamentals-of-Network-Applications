@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import jakarta.annotation.PostConstruct;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -17,11 +18,16 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.DataFacilityMapper;
 import pl.facility_rental.facility.model.MongoSportsFacility;
+import pl.facility_rental.rent.business.Rent;
+import pl.facility_rental.rent.dto.DataRentMapper;
+import pl.facility_rental.rent.model.MongoRent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,4 +130,5 @@ public class MongoFacilityRepository implements FacilityRepository {
         facilitiesColletcion.deleteOne(filter);
         return dataFacilityMapper.mapToBusinessLayer(deleted);
     }
+
 }
