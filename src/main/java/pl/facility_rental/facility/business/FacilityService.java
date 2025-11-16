@@ -27,7 +27,7 @@ public class FacilityService {
         return facilityRepository.findAll();
     }
 
-    public Optional<SportsFacility> findById(UUID id) {
+    public Optional<SportsFacility> findById(String id) {
         return facilityRepository.findById(id);
     }
 
@@ -42,7 +42,7 @@ public class FacilityService {
         return facilityRepository.update(facilityId, facility);
     }
 
-    public SportsFacility deleteById(UUID id) throws Exception {
+    public SportsFacility deleteById(String id) throws Exception {
         if(!rentService.findRentsForFacility(id).isEmpty()) {
             throw new Exception("There are still booked rents for this facility!");
         }

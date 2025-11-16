@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Component("mongo_user_repo")
 class MongoUserRepository implements UserRepository {
@@ -60,7 +59,7 @@ class MongoUserRepository implements UserRepository {
 
 
     public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
-                               @Value("${mongo.database}") String databaseName,
+                               //@Value("${mongo.database}") String databaseName,
                                @Value("${mongo.user}") String user,
                                @Value("${mongo.password}") String password, ClientDataMapper clientDataMapper, AdminDataMapper adminDataMapper, ManagerDataMapping managerDataMapping) {
         this.connectionString = new ConnectionString(connectionPlainString);
@@ -68,7 +67,7 @@ class MongoUserRepository implements UserRepository {
         this.adminDataMapper = adminDataMapper;
         this.managerDataMapping = managerDataMapping;
         credential = MongoCredential.createCredential(
-                user, databaseName, password.toCharArray());
+                user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
                         .register("pl.facility_rental.user.model")
@@ -96,7 +95,8 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public synchronized User save(User user) throws Exception {
+    public User save(User user) throws Exception {
+        initCollectionSchema();
         MongoUser mongoUser = mapSubtypeToUserDataModel(user);
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users",  MongoUser.class);
         userCollection.insertOne(mongoUser);
@@ -106,7 +106,7 @@ class MongoUserRepository implements UserRepository {
 
 
     @Override
-    public synchronized Optional<User> findById(UUID id) throws Exception {
+    public Optional<User> findById(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
@@ -114,25 +114,17 @@ class MongoUserRepository implements UserRepository {
     }
 
 
-
     @Override
-    public synchronized User update(UUID userId, User user) throws Exception {
+    public User update(User user) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
 
-        Bson filter = Filters.eq("_id", userId);
+        Bson filter = Filters.eq("_id", user.getId());
 
-        if(userCollection.find(filter).first() == null){
-            throw new Exception("User not found");
-        }
-        List<Bson> filters = new ArrayList<>();
-
-        if(user.getLogin() != null) {
-            filters.add(Updates.set("login", user.getLogin()));
-        } if (user.getEmail() != null) {
-            filters.add(Updates.set("email", user.getEmail()));
-        }
-        Bson update = Updates.combine(filters.toArray(new Bson[0]));
-
+        Bson update = Updates.combine(
+                Updates.set("email", user.getEmail()),
+                Updates.set("login", user.getLogin()),
+                Updates.set("active", user.isActive())
+                );
 
         userCollection.updateOne(filter, update);
 
@@ -141,7 +133,7 @@ class MongoUserRepository implements UserRepository {
 
     @SneakyThrows
     @Override
-    public synchronized List<User> findAll() {
+    public List<User> findAll() {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         return userCollection.find().into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
 
@@ -149,7 +141,7 @@ class MongoUserRepository implements UserRepository {
 
 
     @Override
-    public synchronized List<Client> getAllClients() {
+    public List<Client> getAllClients() {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_class", "client");
         return userCollection.find(filter).into(new ArrayList<>()).stream()
@@ -159,53 +151,21 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public synchronized Optional<Client> findClientById(UUID id) {
+    public Optional<Client> findClientById(String id) {
         MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(clientDataMapper.mapToBusinessLayer(userCollection.find(filter).first()));
     }
 
-//    @Override
-//    public User delete(UUID id) throws Exception {
-//        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-//        Bson filter = Filters.eq("_id", id);
-//        var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());
-//        if (maybeFound.isEmpty()) {
-//            throw new Exception("No client with id " + id + " was found");
-//        }
-//        return mapSubtypeToUserBusinessModel(userCollection.findOneAndDelete(filter));
-//    }
-
     @Override
-    public synchronized User changeUsersActiveStatus(UUID id, boolean activeStatus) throws Exception {
+    public User delete(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-
         Bson filter = Filters.eq("_id", id);
-
-        Bson update = Updates.combine(
-                Updates.set("active", activeStatus)
-        );
-
-        userCollection.updateOne(filter, update);
-
-        return mapSubtypeToUserBusinessModel(userCollection.find(filter).first());
-    }
-
-    @Override
-    public synchronized Optional<User> findByLoginStrict(String login) throws Exception {
-        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-        Bson filter = Filters.eq("login", login);
-        return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
-    }
-
-    @SneakyThrows
-    @Override
-    public synchronized List<User> findIfLoginContainsValue(String value) {
-        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-        Bson filter = Filters.regex("login", ".*" +value +".*");
-        return userCollection.find(filter).into(new ArrayList<>()).stream()
-                .map(this::mapSubtypeToUserBusinessModel).toList();
-
+        var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());
+        if (maybeFound.isEmpty()) {
+            throw new Exception("No client with id " + id + " was found");
+        }
+        return mapSubtypeToUserBusinessModel(userCollection.findOneAndDelete(filter));
     }
 
 
@@ -232,5 +192,43 @@ class MongoUserRepository implements UserRepository {
         }
         throw new Exception("there was an error retrieving the user type.");
     }
+
+
+    private void initCollectionSchema() {
+        if(sportFacilityRentalDatabase.listCollectionNames().into(new ArrayList<>()).contains("users")){
+            return;
+        }
+        try {
+            ValidationOptions validationOptions = new ValidationOptions().validator(
+                    Document.parse("""
+                            {
+                              $jsonSchema: {
+                                bsonType: "object",
+                                required: ["login", "email", "active"],
+                                properties: {
+                                  login: {
+                                    bsonType: "string"
+                                  },
+                                  active: {
+                                    bsonType: "bool"
+                                  }
+                                }
+                              }
+                            }
+                            """)
+            );
+            sportFacilityRentalDatabase.createCollection("users", new CreateCollectionOptions()
+                    .validationOptions(validationOptions));
+        } catch (MongoCommandException e) {
+            LoggerFactory.getLogger(UserRepository.class).error(e.getMessage());
+        }
+        try {
+            sportFacilityRentalDatabase.getCollection("users").createIndex(Indexes.ascending("login"),
+                    new IndexOptions().unique(true));
+        } catch (MongoCommandException e) {
+            LoggerFactory.getLogger(UserRepository.class).error("Error while creating indexes for login uniquity");
+        }
+    }
+
 
 }

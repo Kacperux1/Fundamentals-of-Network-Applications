@@ -18,7 +18,7 @@ import java.util.UUID;
 public class MongoSportsFacility {
     @BsonId
     @BsonProperty("_id")
-    private UUID id;
+    private String id;
     @BsonProperty("name")
     private String name;
     @BsonProperty("street_number")
@@ -33,7 +33,7 @@ public class MongoSportsFacility {
     private BigDecimal basePrice;
 
     @BsonCreator
-    public MongoSportsFacility(@BsonId UUID id, @BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
+    public MongoSportsFacility(@BsonId String id, @BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
                                @BsonProperty("street") String street, @BsonProperty("city") String city,
                                @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
         this.id = id;
@@ -46,7 +46,6 @@ public class MongoSportsFacility {
     }
 
     public MongoSportsFacility(String name, String streetNumber, String street, String city, String postalCode, BigDecimal basePrice) {
-        this.id = UUID.randomUUID();
         this.name = name;
         this.streetNumber = streetNumber;
         this.street = street;

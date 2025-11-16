@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record ReturnedFacilityDto(
-        UUID id,
+        String id,
         String name,
         String streetNumber,
         String street,

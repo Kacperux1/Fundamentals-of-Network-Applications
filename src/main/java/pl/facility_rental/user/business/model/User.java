@@ -13,12 +13,12 @@ import java.util.UUID;
 @Getter
 public abstract class User {
 
-    private UUID id;
+    private String id;
     @NotBlank
     private String login;
     private String email;
     private boolean active;
-    public User( UUID id,String login, String email,
+    public User( String id,String login, String email,
                  boolean active) {
         this.id = id;
         this.login = login;

@@ -9,14 +9,14 @@ import java.util.UUID;
 @Getter
 public class SportsFacility {
 
-    private  UUID id;
+    private final String id;
     private final String name;
     private final String streetNumber;
     private final String street;
     private final String city;
     private final String postalCode;
     private final BigDecimal basePrice;
-    public SportsFacility(UUID id,String name,String streetNumber,
+    public SportsFacility(String id,String name,String streetNumber,
                                String street,  String city,
                                 String postalCode, BigDecimal basePrice) {
         this.id = id;

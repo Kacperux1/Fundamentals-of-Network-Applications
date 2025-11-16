@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ReturnedRentDto(
-        UUID rentId,
+        String rentId,
         String firstName,
         String lastName,
         String email,

@@ -21,7 +21,7 @@ import java.util.UUID;
 @BsonDiscriminator("rents")
 public class MongoRent {
     @BsonId
-    private UUID id;
+    private String id;
     @BsonProperty("client")
     private Client client;
     @BsonProperty("facility")
@@ -35,7 +35,7 @@ public class MongoRent {
     private BigDecimal totalPrice;
 
     @BsonCreator
-    public MongoRent(@BsonId UUID id, @BsonProperty("client") Client client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
+    public MongoRent(@BsonId String id, @BsonProperty("client") Client client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
                      @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate,
                      @BsonProperty("total_price") BigDecimal totalPrice) {
         this.id =  id;
@@ -52,7 +52,6 @@ public class MongoRent {
     }
 
     public MongoRent(Client client, MongoSportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
-        this.id =  UUID.randomUUID();
         this.client = client;
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;

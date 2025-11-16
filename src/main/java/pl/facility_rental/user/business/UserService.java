@@ -30,55 +30,22 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<Client> getClientById(UUID id) {
+    public Optional<Client> getClientById(String id) {
         return userRepository.findClientById(id);
     }
 
-    public Optional<User> getUserById(UUID id) throws Exception {
+    public Optional<User> getUserById(String id) throws Exception {
         return userRepository.findById(id);
     }
 
-//    public User delete(UUID id) throws Exception {
-//        if(userRepository.findById(id).isEmpty()) {
-//            throw new Exception("Ni ma takiego usera!");
-//        }
-//        if(!userRepository.findById(id).get().isActive()) {
-//            throw new Exception("User is active; you need to deactivate him before deletion");
-//        }
-//        return userRepository.delete(id);
-//    }
-
-    public User deactivate(UUID id) throws Exception {
+    public User delete(String id) throws Exception {
         if(userRepository.findById(id).isEmpty()) {
             throw new Exception("Ni ma takiego usera!");
         }
-        return userRepository.changeUsersActiveStatus(id, false);
-    }
-
-    public User activate(UUID id) throws Exception {
-        if(userRepository.findById(id).isEmpty()) {
-            throw new Exception("Ni ma takiego usera!");
+        if(!userRepository.findById(id).get().isActive()) {
+            throw new Exception("User is active; you need to deactivate him before deletion");
         }
-        return userRepository.changeUsersActiveStatus(id, true);
-    }
-
-    public List<Client> getAllClients() {
-        return userRepository.getAllClients();
-    }
-
-    public Optional<User> findByLoginStrict(String login) throws Exception {
-        return  userRepository.findByLoginStrict(login);
-    }
-
-    public List<User> findIfLoginContainsValue(String value) throws Exception {
-        return  userRepository.findIfLoginContainsValue(value);
-    }
-
-    public User update(UUID userId, User user) throws Exception {
-        if(userRepository.findById(user.getId()).isEmpty()) {
-            throw new Exception("Ni ma takiego usera!");
-        }
-        return userRepository.update(userId, user);
+        return userRepository.delete(id);
     }
 
 

@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public interface RentRepository {
     Rent save(Rent rent);
-    Optional<Rent> findById(UUID id);
+    Optional<Rent> findById(String id);
     Rent update(Rent rent);
     List<Rent> findAll();
-    Rent delete(UUID id) throws Exception;
-    List<Rent> findRentsForFacility(UUID facilityId);
-    List<Rent> getCurrentAndPastRentsForClient(UUID clientId);
+    Rent delete(String id) throws Exception;
+    List<Rent> findRentsForFacility(String facilityId);
+    List<Rent> getCurrentAndPastRentsForClient(String clientId);
 }

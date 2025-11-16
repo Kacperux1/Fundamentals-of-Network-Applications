@@ -5,7 +5,7 @@ import java.util.UUID;
 public class ResourceMgr extends User{
 
 
-    public ResourceMgr(UUID id, String login, String email, boolean active) {
+    public ResourceMgr(String id, String login, String email, boolean active) {
         super(id, login, email, active);
     }
 

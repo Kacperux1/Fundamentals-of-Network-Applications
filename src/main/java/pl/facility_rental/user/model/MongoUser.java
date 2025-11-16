@@ -19,7 +19,7 @@ public abstract class MongoUser {
 
     @BsonId
     @BsonProperty("_id")
-    private UUID id;
+    private String id;
     @BsonProperty("login")
     @NotNull
     @NotBlank
@@ -30,7 +30,7 @@ public abstract class MongoUser {
     @BsonProperty("active")
     private boolean active;
     @BsonCreator
-    public MongoUser(@BsonId UUID id, @BsonProperty("login") String login, @BsonProperty("email") String email,
+    public MongoUser(@BsonId String id, @BsonProperty("login") String login, @BsonProperty("email") String email,
                      @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;
@@ -39,7 +39,6 @@ public abstract class MongoUser {
     }
 
     public MongoUser(String login, String email, boolean active) {
-        this.id = UUID.randomUUID();
         this.login = login;
         this.email = email;
         this.active = active;

@@ -26,7 +26,7 @@ public class MongoAdministrator extends MongoUser {
 //        this.lastName = lastName;
     }
 
-    public MongoAdministrator(UUID uuid, String login, String email, boolean status) {
+    public MongoAdministrator(String uuid, String login, String email, boolean status) {
         super(uuid, login, email, status);
     }
 

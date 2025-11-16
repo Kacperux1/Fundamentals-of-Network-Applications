@@ -11,8 +11,9 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.data.UserRepository;
-import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.model.MongoUser;
 
 import java.io.IOException;
@@ -66,12 +67,12 @@ public class MongoUserRepositoryTest {
     @Test
     public void shouldSaveUserToDatabase() {
         //given
-        MongoUser user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
         //when
         userRepository.save(user);
         //then
-        List<MongoUser> users = userRepository.findAll();
+        List<User> users = userRepository.findAll();
         assertEquals(1, users.size());
         assertEquals("mak", users.getFirst().getLogin());
     }
@@ -79,14 +80,14 @@ public class MongoUserRepositoryTest {
     @Test
     public void shouldFindAllUsers() {
         //given
-        MongoUser user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
-        MongoUser user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
         userRepository.save(user);
         userRepository.save(user1);
         //when
-        List<MongoUser> users = userRepository.findAll();
+        List<User> users = userRepository.findAll();
         //then
         assertEquals(2, users.size());
         assertInstanceOf(Client.class, users.getFirst());
@@ -101,29 +102,29 @@ public class MongoUserRepositoryTest {
     @Test
     public void shouldFindUserById() {
         //given
-        MongoUser user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
-        MongoUser user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
         //when
-        MongoUser saved = userRepository.save(user);
-        MongoUser saved1 = userRepository.save(user1);
-        UUID id = saved.getId();
+        User saved = userRepository.save(user);
+        User saved1 = userRepository.save(user1);
+        String id = saved.getId();
 
-        Optional<MongoUser> foundUser = userRepository.findById(id);
+        Optional<User> foundUser = userRepository.findById(id);
         Assertions.assertFalse(foundUser.isEmpty());
 
-        MongoUser found = foundUser.get();
+        User found = foundUser.get();
         assertEquals(saved.getId(), found.getId());
     }
 
     @Test
     public void updateTest() {
-        MongoUser user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
 
         userRepository.save(user);
-        List<MongoUser> users = userRepository.findAll();
+        List<User> users = userRepository.findAll();
         Assertions.assertFalse(users.isEmpty());
 
         user.setActive(false);

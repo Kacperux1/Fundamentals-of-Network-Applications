@@ -25,7 +25,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public abstract class ReturnedUserDto {
 
-    private UUID uuid ;
+    private String uuid ;
 
     private String login;
 
