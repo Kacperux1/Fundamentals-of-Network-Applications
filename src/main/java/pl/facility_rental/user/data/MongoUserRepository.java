@@ -115,15 +115,28 @@ class MongoUserRepository implements UserRepository {
 
 
     @Override
-    public User update(User user) throws Exception {
+    public User update(String userId, User user) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
 
-        Bson filter = Filters.eq("_id", user.getId());
+        Bson filter = Filters.eq("_id", userId);
+        List<Bson> pipeline = new ArrayList<>();
+        if(user.getLogin() !=null && !user.getLogin().isEmpty()) {
+            pipeline.add(Updates.set("login", user.getLogin()));
+        } if(user.getEmail() !=null && !user.getEmail().isEmpty()) {
+            pipeline.add(Updates.set("email", user.getEmail()));
+        } MongoUser mappedUser = mapSubtypeToUserDataModel(user);
+        if(mappedUser instanceof MongoDbClient) {
+            if(((MongoDbClient) mappedUser).getFirstName() != null && !((MongoDbClient) mappedUser).getFirstName().isBlank()){
+                pipeline.add(Updates.set("first_name", ((MongoDbClient) mappedUser).getFirstName()));
+            } if(((MongoDbClient) mappedUser).getLastName() != null && !((MongoDbClient) mappedUser).getLastName().isBlank()){
+                pipeline.add(Updates.set("last_name", ((MongoDbClient) mappedUser).getLastName()));
+            } if(((MongoDbClient) mappedUser).getPhone() != null && !((MongoDbClient) mappedUser).getPhone().isBlank()){
+                pipeline.add(Updates.set("phone", ((MongoDbClient) mappedUser).getPhone()));
+            }
+        }
 
         Bson update = Updates.combine(
-                Updates.set("email", user.getEmail()),
-                Updates.set("login", user.getLogin()),
-                Updates.set("active", user.isActive())
+               pipeline.toArray(new Bson[0])
                 );
 
         userCollection.updateOne(filter, update);
@@ -131,11 +144,11 @@ class MongoUserRepository implements UserRepository {
         return mapSubtypeToUserBusinessModel(userCollection.find(filter).first());
     }
 
-    @SneakyThrows
+
     @Override
     public List<User> findAll() {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-        return userCollection.find().into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
+            return userCollection.find().into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
 
     }
 
@@ -158,6 +171,15 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
+    public User setActiveStatus(String userId, boolean active) throws Exception {
+        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
+        Bson filter = Filters.eq("_id", userId);
+        Bson update = Updates.set("active", active);
+        userCollection.updateOne(filter, update);
+        return mapSubtypeToUserBusinessModel(userCollection.find(filter).first());
+    }
+
+    @Override
     public User delete(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", id);
@@ -169,7 +191,7 @@ class MongoUserRepository implements UserRepository {
     }
 
 
-    private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws Exception {
+    private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws RuntimeException {
         if(mongoUser instanceof MongoDbClient){
             return clientDataMapper.mapToBusinessLayer((MongoDbClient) mongoUser);
         }
@@ -179,7 +201,7 @@ class MongoUserRepository implements UserRepository {
         if(mongoUser instanceof MongoResourceMgr) {
             return managerDataMapping.mapToBusinessLayer((MongoResourceMgr) mongoUser);
         }
-        throw new Exception("there was an error retrieving the user type.");
+        throw new RuntimeException("there was an error retrieving the user type.");
     }
 
     private MongoUser mapSubtypeToUserDataModel(User user) throws Exception {

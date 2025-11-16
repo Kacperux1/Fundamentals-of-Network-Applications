@@ -38,6 +38,30 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public List<Client> getAllClients() {
+        return userRepository.getAllClients();
+    }
+
+    public User update(String id, User user) throws Exception {
+        if(userRepository.findById(id).isEmpty()) {
+            throw new Exception("Ni ma takiego usera!");
+        }
+        return userRepository.update(id, user);
+    }
+    public User activate(String userId) throws Exception {
+        if(userRepository.findById(userId).isEmpty()) {
+            throw new Exception("Ni ma takiego usera!");
+        }
+        return userRepository.setActiveStatus(userId, true);
+    }
+
+    public User deactivate(String userId) throws Exception {
+        if(userRepository.findById(userId).isEmpty()) {
+            throw new Exception("Ni ma takiego usera!");
+        }
+        return userRepository.setActiveStatus(userId, false);
+    }
+
     public User delete(String id) throws Exception {
         if(userRepository.findById(id).isEmpty()) {
             throw new Exception("Ni ma takiego usera!");

@@ -18,6 +18,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -91,11 +92,11 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public SportsFacility update(SportsFacility facility) throws Exception {
+    public SportsFacility update(String id,  SportsFacility facility) throws Exception {
         MongoSportsFacility mongoFacility = dataFacilityMapper.mapToDataLayer(facility);
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
 
-        Bson filter = Filters.eq("_id", mongoFacility.getId());
+        Bson filter = Filters.eq("_id", new ObjectId(id));
         if(facilitiesColletcion.find(filter).first() == null){
             throw new Exception("ni ma takiego obiektu!");
         }

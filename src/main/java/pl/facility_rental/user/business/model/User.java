@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Getter
 public abstract class User {
-
     private String id;
     @NotBlank
     private String login;

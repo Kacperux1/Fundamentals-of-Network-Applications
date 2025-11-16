@@ -44,4 +44,5 @@ public abstract class MongoUser {
         this.email = email;
         this.active = active;
     }
+
 }

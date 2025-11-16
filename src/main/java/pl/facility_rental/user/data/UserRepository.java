@@ -13,10 +13,11 @@ public interface UserRepository {
 
     User save(User user) throws Exception;
     Optional<User> findById(String id) throws Exception;
-    User update(User user) throws Exception;
     List<User> findAll();
     List<Client> getAllClients();
     Optional<Client> findClientById(String id);
+    User update(String id, User user) throws Exception;
+    User setActiveStatus(String userId, boolean active) throws Exception;
     User delete(String id) throws Exception;
 }
 

@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 public class SportsFacility {
 
-    private final String id;
+    private  String id;
     private final String name;
     private final String streetNumber;
     private final String street;

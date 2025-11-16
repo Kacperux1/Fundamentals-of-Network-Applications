@@ -23,9 +23,10 @@ import java.util.UUID;
 })
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public abstract class ReturnedUserDto {
 
-    private String uuid ;
+    private String uuid;
 
     private String login;
 

@@ -1,5 +1,9 @@
 db =  db.getSiblingDb("facility_rental")
 
+    db.users.drop();
+    db.facilities.drop();
+    db.rents.drop();
+
 db.createCollection("users", {
     validator: {
         $jsonSchema: {
