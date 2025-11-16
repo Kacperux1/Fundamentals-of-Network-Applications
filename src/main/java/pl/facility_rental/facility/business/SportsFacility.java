@@ -2,6 +2,7 @@ package pl.facility_rental.facility.business;
 
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -9,13 +10,15 @@ import java.util.UUID;
 @Getter
 public class SportsFacility {
 
-    private  String id;
-    private final String name;
-    private final String streetNumber;
-    private final String street;
-    private final String city;
-    private final String postalCode;
-    private final BigDecimal basePrice;
+    private String id;
+    private String name;
+    private String streetNumber;
+    @Setter
+    private String street;
+    private String city;
+    private String postalCode;
+    @Setter
+    private BigDecimal basePrice;
     public SportsFacility(String id,String name,String streetNumber,
                                String street,  String city,
                                 String postalCode, BigDecimal basePrice) {
