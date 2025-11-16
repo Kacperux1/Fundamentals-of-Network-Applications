@@ -70,7 +70,11 @@ public class MongoUserRepositoryTest {
         User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
         //when
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         //then
         List<User> users = userRepository.findAll();
         assertEquals(1, users.size());
@@ -84,8 +88,13 @@ public class MongoUserRepositoryTest {
                 , "123456789");
         User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
-        userRepository.save(user);
-        userRepository.save(user1);
+        try {
+            userRepository.save(user);
+            userRepository.save(user1);
+        }
+        catch (Exception e){
+            fail(e.getMessage());
+        }
         //when
         List<User> users = userRepository.findAll();
         //then
@@ -107,15 +116,20 @@ public class MongoUserRepositoryTest {
         User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
                 "987654321");
         //when
-        User saved = userRepository.save(user);
-        User saved1 = userRepository.save(user1);
-        String id = saved.getId();
+        try {
+            User saved = userRepository.save(user);
+            User saved1 = userRepository.save(user1);
+            String id = saved.getId();
 
-        Optional<User> foundUser = userRepository.findById(id);
-        Assertions.assertFalse(foundUser.isEmpty());
+            Optional<User> foundUser = userRepository.findById(id);
+            Assertions.assertFalse(foundUser.isEmpty());
 
-        User found = foundUser.get();
-        assertEquals(saved.getId(), found.getId());
+            User found = foundUser.get();
+            assertEquals(saved.getId(), found.getId());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
     }
 
     @Test
@@ -123,13 +137,20 @@ public class MongoUserRepositoryTest {
         User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         List<User> users = userRepository.findAll();
         Assertions.assertFalse(users.isEmpty());
 
         user.setActive(false);
-        userRepository.update(user);
-
+        try {
+            userRepository.update(user);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         users = userRepository.findAll();
         Assertions.assertFalse(users.isEmpty());
         Assertions.assertFalse(users.getFirst().isActive());
@@ -137,12 +158,16 @@ public class MongoUserRepositoryTest {
 
     @Test
     public void conversionTest() {
-        MongoUser original = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User original = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
 
-        userRepository.save(original);
+        try {
+            userRepository.save(original);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
 
-        MongoUser loaded = userRepository.findAll().getFirst();
+        User loaded = userRepository.findAll().getFirst();
         assertEquals(original.getId(), loaded.getId());
         assertEquals(original.getLogin(), loaded.getLogin());
         assertEquals(original.isActive(), loaded.isActive());
@@ -152,9 +177,9 @@ public class MongoUserRepositoryTest {
 
     @Test
     public void shouldNotAdduserWhenLoginIsRepeated() {
-        MongoUser user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
+        User user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
                 , "987654321");
-        MongoUser user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
                 , "123456789");
 
         assertDoesNotThrow(() -> userRepository.save(user));

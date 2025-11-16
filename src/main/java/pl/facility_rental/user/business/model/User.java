@@ -17,6 +17,7 @@ public abstract class User {
     @NotBlank
     private String login;
     private String email;
+    @Setter
     private boolean active;
     public User( String id,String login, String email,
                  boolean active) {

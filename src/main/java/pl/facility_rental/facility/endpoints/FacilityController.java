@@ -46,7 +46,7 @@ public class FacilityController {
     }
 
     @PutMapping
-    public ReturnedFacilityDto updateFacility(@RequestParam UUID facilityId,
+    public ReturnedFacilityDto updateFacility(@RequestParam String facilityId,
                                                   @RequestBody CreateFacilityDto createFacilityDto) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService
                 .update(facilityId,facilityMapper.CreateFacilityRequest(createFacilityDto)));
