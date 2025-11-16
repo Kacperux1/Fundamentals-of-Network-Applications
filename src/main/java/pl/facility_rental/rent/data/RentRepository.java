@@ -15,4 +15,5 @@ public interface RentRepository {
     Rent delete(String id) throws Exception;
     List<Rent> findRentsForFacility(String facilityId);
     List<Rent> getCurrentAndPastRentsForClient(String clientId);
+    Rent endRent(String RentId);
 }

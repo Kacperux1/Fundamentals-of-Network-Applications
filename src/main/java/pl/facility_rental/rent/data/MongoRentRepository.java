@@ -23,6 +23,7 @@ import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.dto.DataRentMapper;
 import pl.facility_rental.rent.model.MongoRent;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +139,19 @@ public class MongoRentRepository implements RentRepository {
                 Filters.lte("end_date", LocalDateTime.now()));
         return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
 
+    }
+
+    @Override
+    public Rent endRent(String rentId) {
+        MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        Bson filter = Filters.eq("facility.id",rentId);
+        MongoRent updated = collection.find(filter).first();
+        Bson update = Updates.combine(
+                Updates.set("end_date", LocalDateTime.now()),
+                Updates.set("total_price", updated.calculateTotalPriceIfEndedNow()));
+
+        collection.updateOne(filter, update);
+        return dataRentMapper.mapToBusinessLayer(collection.find(filter).first());
     }
 
 }

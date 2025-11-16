@@ -45,6 +45,12 @@ public class RentService {
     }
 
     public Rent delete(String id) throws Exception {
+        if(findById(id).isEmpty()) {
+            throw new Exception("Rent with given id was not found!");
+        }
+        if(findById(id).get().getEndDate() != null) {
+            throw new Exception("Rent has ended as therefore cannot be deleted!");
+        }
          return rentRepository.delete(id);
     }
 
@@ -54,6 +60,16 @@ public class RentService {
 
     public List<Rent> getCurrentAndPastClientsRents(String clientId) {
         return rentRepository.getCurrentAndPastRentsForClient(clientId);
+    }
+
+    public Rent endRent(String rentId) throws Exception {
+        if(findById(rentId).isEmpty()) {
+            throw new Exception("Rent with given id was not found!");
+        }
+        if(findById(rentId).get().getEndDate() != null) {
+            throw new Exception("Rent has been already closed!");
+        }
+        return rentRepository.endRent(rentId);
     }
 
 

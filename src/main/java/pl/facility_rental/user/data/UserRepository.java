@@ -18,6 +18,8 @@ public interface UserRepository {
     Optional<Client> findClientById(String id);
     User update(String id, User user) throws Exception;
     User setActiveStatus(String userId, boolean active) throws Exception;
+    Optional<User> findByStrictLogin(String login) throws Exception;
+    List<User> findUsersIfLoginMatchesValue(String value) throws Exception;
     User delete(String id) throws Exception;
 }
 

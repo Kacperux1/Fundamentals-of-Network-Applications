@@ -1,6 +1,8 @@
 package pl.facility_rental.rent.endpoints;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.rent.dto.CreateRentDto;
@@ -11,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/rents")
 public class RentController {
 
     private final RentService rentService;
@@ -23,23 +25,33 @@ public class RentController {
         this.rentMapper = rentMapper;
     }
 
-    @GetMapping("/rents")
+    @GetMapping
     public List<ReturnedRentDto> getAllRents(){
         return rentService.findAll().stream().map(rentMapper::getRentDetails).toList();
     }
 
-    @PostMapping("/rents")
+    @PostMapping
     public ReturnedRentDto createRent(@RequestBody CreateRentDto rentDto) throws Exception {
         return rentMapper.getRentDetails(rentService.save(rentMapper.CreateRentRequest(rentDto)));
     }
 
-    @GetMapping("/rents")
-    public ReturnedRentDto getRentById(@RequestParam String id) throws Exception {
-        return rentMapper.getRentDetails(rentService.findById(id).get());
+    @GetMapping("/{id}")
+    public ReturnedRentDto getRentById(@PathVariable String id) throws Exception {
+        return rentService.findById(id).map(rentMapper::getRentDetails)
+                .orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND, "Rent with given id was not found"));
+    }
+    @GetMapping("/{clientId}")
+    public List<ReturnedRentDto> getRentsByClientId(@PathVariable String clientId) throws Exception {
+        return rentService.getCurrentAndPastClientsRents(clientId).stream().map(rentMapper::getRentDetails).toList();
     }
 
-    @DeleteMapping("/rents")
-    public ReturnedRentDto deleteRent(@RequestParam String id) throws Exception {
+    @DeleteMapping("/{id}")
+    public ReturnedRentDto deleteRent(@PathVariable String id) throws Exception {
         return rentMapper.getRentDetails(rentService.delete(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ReturnedRentDto endRent(@PathVariable String id) throws Exception {
+        return rentMapper.getRentDetails(rentService.endRent(id));
     }
 }

@@ -64,4 +64,9 @@ public class MongoRent {
         }
     }
 
+    public BigDecimal calculateTotalPriceIfEndedNow() {
+        return BigDecimal.valueOf(
+                Math.ceil(Duration.between(startDate, LocalDateTime.now()).toMinutes())/60.0).multiply(sportsFacility.getPricePerHour());
+    }
+
 }

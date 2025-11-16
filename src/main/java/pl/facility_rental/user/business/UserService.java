@@ -3,6 +3,7 @@ package pl.facility_rental.user.business;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.data.UserRepository;
 import pl.facility_rental.user.business.model.Client;
@@ -60,6 +61,14 @@ public class UserService {
             throw new Exception("Ni ma takiego usera!");
         }
         return userRepository.setActiveStatus(userId, false);
+    }
+
+    public Optional<User> getUserByLoginStrict(String login) throws Exception {
+        return userRepository.findByStrictLogin(login);
+    }
+
+    public List<User> getUsersIfLoginMatchesValue(String value) throws Exception {
+        return userRepository.findUsersIfLoginMatchesValue(value);
     }
 
     public User delete(String id) throws Exception {

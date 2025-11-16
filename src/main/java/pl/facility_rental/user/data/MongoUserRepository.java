@@ -180,6 +180,20 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByStrictLogin(String login) throws Exception {
+        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
+        Bson filter = Filters.eq("login", login);
+        return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
+    }
+
+    @Override
+    public List<User> findUsersIfLoginMatchesValue(String value) throws Exception {
+        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
+        Bson filter = Filters.eq("login", "/.*"+value+"*/");
+        return userCollection.find(filter).into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
+    }
+
+    @Override
     public User delete(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", id);
