@@ -7,6 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class MongoSportsFacility {
     @BsonId
     @BsonProperty("_id")
-    private String id;
+    private ObjectId id;
     @BsonProperty("name")
     private String name;
     @BsonProperty("street_number")
@@ -33,7 +34,7 @@ public class MongoSportsFacility {
     private BigDecimal basePrice;
 
     @BsonCreator
-    public MongoSportsFacility(@BsonId String id, @BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
+    public MongoSportsFacility(@BsonId ObjectId id, @BsonProperty("name") String name, @BsonProperty("street_number") String streetNumber,
                                @BsonProperty("street") String street, @BsonProperty("city") String city,
                                @BsonProperty("postal_code") String postalCode, @BsonProperty("base_price") BigDecimal basePrice) {
         this.id = id;

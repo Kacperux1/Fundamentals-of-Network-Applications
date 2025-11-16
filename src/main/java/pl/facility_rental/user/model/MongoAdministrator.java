@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import java.util.UUID;
 
@@ -26,8 +27,8 @@ public class MongoAdministrator extends MongoUser {
 //        this.lastName = lastName;
     }
 
-    public MongoAdministrator(String uuid, String login, String email, boolean status) {
-        super(uuid, login, email, status);
+    public MongoAdministrator(ObjectId id, String login, String email, boolean status) {
+        super(id, login, email, status);
     }
 
 }

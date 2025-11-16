@@ -7,6 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import pl.facility_rental.user.business.model.Client;
 
 import pl.facility_rental.facility.model.MongoSportsFacility;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @BsonDiscriminator("rents")
 public class MongoRent {
     @BsonId
-    private String id;
+    private ObjectId id;
     @BsonProperty("client")
     private Client client;
     @BsonProperty("facility")
@@ -35,7 +36,7 @@ public class MongoRent {
     private BigDecimal totalPrice;
 
     @BsonCreator
-    public MongoRent(@BsonId String id, @BsonProperty("client") Client client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
+    public MongoRent(@BsonId ObjectId id, @BsonProperty("client") Client client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
                      @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate,
                      @BsonProperty("total_price") BigDecimal totalPrice) {
         this.id =  id;

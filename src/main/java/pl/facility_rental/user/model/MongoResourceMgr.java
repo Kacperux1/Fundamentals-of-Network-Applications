@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class MongoResourceMgr extends MongoUser {
 //        this.lastName = lastName;
     }
 
-    public MongoResourceMgr(String id, String login, String email, boolean active) {
+    public MongoResourceMgr(ObjectId id, String login, String email, boolean active) {
         super(id, login, email, active);
     }
 }

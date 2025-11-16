@@ -1,6 +1,7 @@
 package pl.facility_rental.rent.dto;
 
 
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.dto.DataFacilityMapper;
 import pl.facility_rental.rent.business.Rent;
@@ -20,12 +21,12 @@ public class DataRentMapper {
             return new MongoRent(rent.getClient(), dataFacilityMapper.mapToDataLayer(rent.getSportsFacility())
                     , rent.getStartDate(), rent.getEndDate());
         }
-        return new MongoRent(rent.getId(), rent.getClient(), dataFacilityMapper.mapToDataLayer(rent.getSportsFacility())
+        return new MongoRent((new ObjectId(rent.getId())), rent.getClient(), dataFacilityMapper.mapToDataLayer(rent.getSportsFacility())
                 , rent.getStartDate(), rent.getEndDate(), rent.getTotalPrice());
     }
 
     public Rent mapToBusinessLayer(MongoRent rent) {
-        return new Rent(rent.getId(), rent.getClient(), dataFacilityMapper.mapToBusinessLayer(rent.getSportsFacility())
+        return new Rent(rent.getId().toString(), rent.getClient(), dataFacilityMapper.mapToBusinessLayer(rent.getSportsFacility())
                 , rent.getStartDate(), rent.getEndDate(), rent.getTotalPrice());
     }
 }

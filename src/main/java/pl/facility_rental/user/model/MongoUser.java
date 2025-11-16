@@ -9,6 +9,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public abstract class MongoUser {
 
     @BsonId
     @BsonProperty("_id")
-    private String id;
+    private ObjectId id;
     @BsonProperty("login")
     @NotNull
     @NotBlank
@@ -30,7 +31,7 @@ public abstract class MongoUser {
     @BsonProperty("active")
     private boolean active;
     @BsonCreator
-    public MongoUser(@BsonId String id, @BsonProperty("login") String login, @BsonProperty("email") String email,
+    public MongoUser(@BsonId ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
                      @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;
