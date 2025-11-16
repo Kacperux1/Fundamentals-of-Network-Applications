@@ -13,10 +13,13 @@ public interface UserRepository {
 
     User save(User user) throws Exception;
     Optional<User> findById(UUID id) throws Exception;
-    User update(User user) throws Exception;
+    User update(UUID userId,User user) throws Exception;
     List<User> findAll();
     List<Client> getAllClients();
     Optional<Client> findClientById(UUID id);
-    User delete(UUID id) throws Exception;
+//    User delete(UUID id) throws Exception;
+    User changeUsersActiveStatus(UUID id, boolean activeStatus) throws Exception;
+    Optional<User> findByLoginStrict(String login ) throws Exception;
+    List<User> findIfLoginContainsValue(String value);
 }
 

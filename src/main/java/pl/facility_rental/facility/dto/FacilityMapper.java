@@ -7,7 +7,7 @@ import pl.facility_rental.facility.business.SportsFacility;
 @Component
 public class FacilityMapper {
 
-    public SportsFacility CreateClientRequest(CreateFacilityDto createFacilityDto) {
+    public SportsFacility CreateFacilityRequest(CreateFacilityDto createFacilityDto) {
         return new  SportsFacility(createFacilityDto.name(), createFacilityDto.streetNumber()
                 , createFacilityDto.street(), createFacilityDto.city(), createFacilityDto.postalCode(),
                 createFacilityDto.price());

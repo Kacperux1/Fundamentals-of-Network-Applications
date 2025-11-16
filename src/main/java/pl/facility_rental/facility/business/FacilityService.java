@@ -35,8 +35,11 @@ public class FacilityService {
         return facilityRepository.save(facility);
     }
 
-    public SportsFacility update(SportsFacility facility) throws Exception {
-        return facilityRepository.update(facility);
+    public SportsFacility update(UUID facilityId,SportsFacility facility) throws Exception {
+        if(findById(facilityId).isEmpty()) {
+            throw new  Exception("SportsFacility not found");
+        }
+        return facilityRepository.update(facilityId, facility);
     }
 
     public SportsFacility deleteById(UUID id) throws Exception {

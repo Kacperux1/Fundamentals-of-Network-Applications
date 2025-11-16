@@ -27,7 +27,6 @@ public abstract class User {
     }
 
     public User(String login, String email, boolean active) {
-        this.id = UUID.randomUUID();
         this.login = login;
         this.email = email;
         this.active = active;

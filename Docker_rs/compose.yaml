@@ -1,6 +1,6 @@
 services:
   mongo_1:
-    build: .
+    build: ../Docker
     container_name: mongodb1
     hostname: mongodb1
     networks:
@@ -22,7 +22,7 @@ services:
       retries: 5
 
   mongo_2:
-    build: .
+    build: ../Docker
     container_name: mongodb2
     hostname: mongodb2
     networks:
@@ -43,7 +43,7 @@ services:
       retries: 5
 
   mongo_3:
-    build: .
+    build: ../Docker
     container_name: mongodb3
     hostname: mongodb3
     networks:
@@ -64,7 +64,7 @@ services:
       retries: 5
 
   mongoinit:
-    build: .
+    build: ../Docker
     image: mongocustom:8.0.1
     hostname: mongodbinit
     container_name: mongodbinit

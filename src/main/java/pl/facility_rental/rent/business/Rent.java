@@ -36,7 +36,6 @@ public class Rent {
     }
 
     public Rent(Client client, SportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
-        this.id =  UUID.randomUUID();
         this.client = client;
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;

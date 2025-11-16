@@ -32,10 +32,10 @@ public class RentService {
     }
 
     public Rent save(Rent rent) throws Exception {
-        if(!rent.getClient().isActive()) {
+        if (!rent.getClient().isActive()) {
             throw new Exception("User is deactivated!!!");
         }
-        if(!findRentsForFacility(rent.getSportsFacility().getId()).stream()
+        if (!findRentsForFacility(rent.getSportsFacility().getId()).stream()
                 .filter(var -> var.getStartDate().isBefore(rent.getEndDate())
                         && var.getEndDate().isAfter(rent.getStartDate())
                 ).toList().isEmpty()) {
@@ -45,7 +45,7 @@ public class RentService {
     }
 
     public Rent delete(UUID id) throws Exception {
-         return rentRepository.delete(id);
+        return rentRepository.delete(id);
     }
 
     public List<Rent> findRentsForFacility(UUID facilityId) {
@@ -55,7 +55,6 @@ public class RentService {
     public List<Rent> getCurrentAndPastClientsRents(UUID clientId) {
         return rentRepository.getCurrentAndPastRentsForClient(clientId);
     }
-
 
 
 }

@@ -38,14 +38,47 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User delete(UUID id) throws Exception {
+//    public User delete(UUID id) throws Exception {
+//        if(userRepository.findById(id).isEmpty()) {
+//            throw new Exception("Ni ma takiego usera!");
+//        }
+//        if(!userRepository.findById(id).get().isActive()) {
+//            throw new Exception("User is active; you need to deactivate him before deletion");
+//        }
+//        return userRepository.delete(id);
+//    }
+
+    public User deactivate(UUID id) throws Exception {
         if(userRepository.findById(id).isEmpty()) {
             throw new Exception("Ni ma takiego usera!");
         }
-        if(!userRepository.findById(id).get().isActive()) {
-            throw new Exception("User is active; you need to deactivate him before deletion");
+        return userRepository.changeUsersActiveStatus(id, false);
+    }
+
+    public User activate(UUID id) throws Exception {
+        if(userRepository.findById(id).isEmpty()) {
+            throw new Exception("Ni ma takiego usera!");
         }
-        return userRepository.delete(id);
+        return userRepository.changeUsersActiveStatus(id, true);
+    }
+
+    public List<Client> getAllClients() {
+        return userRepository.getAllClients();
+    }
+
+    public Optional<User> findByLoginStrict(String login) throws Exception {
+        return  userRepository.findByLoginStrict(login);
+    }
+
+    public List<User> findIfLoginContainsValue(String value) throws Exception {
+        return  userRepository.findIfLoginContainsValue(value);
+    }
+
+    public User update(UUID userId, User user) throws Exception {
+        if(userRepository.findById(user.getId()).isEmpty()) {
+            throw new Exception("Ni ma takiego usera!");
+        }
+        return userRepository.update(userId, user);
     }
 
 

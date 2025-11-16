@@ -76,7 +76,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public SportsFacility save(SportsFacility facility){
+    public synchronized SportsFacility save(SportsFacility facility){
         MongoSportsFacility mongoFacility = dataFacilityMapper.mapToDataLayer(facility);
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         facilitiesColletcion.insertOne(mongoFacility);
@@ -84,28 +84,35 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public Optional<SportsFacility> findById(UUID id) {
+    public synchronized Optional<SportsFacility> findById(UUID id) {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(dataFacilityMapper.mapToBusinessLayer(facilitiesColletcion.find(filter).first()));
     }
 
     @Override
-    public SportsFacility update(SportsFacility facility) throws Exception {
+    public synchronized SportsFacility update(UUID facilityId, SportsFacility facility) throws Exception {
         MongoSportsFacility mongoFacility = dataFacilityMapper.mapToDataLayer(facility);
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
 
         Bson filter = Filters.eq("_id", mongoFacility.getId());
-        if(facilitiesColletcion.find(filter).first() == null){
-            throw new Exception("ni ma takiego obiektu!");
+        List<Bson> pipeline = new ArrayList<>();
+        if(facility.getName() != null) {
+            pipeline.add(Updates.set("name", facility.getName()));
+        } if(facility.getStreet() != null) {
+            pipeline.add(Updates.set("street", facility.getStreet()));
+        } if(facility.getCity() != null) {
+            pipeline.add(Updates.set("city", facility.getCity()));
+        } if(facility.getStreetNumber() != null) {
+            pipeline.add(Updates.set("street_number", facility.getStreetNumber()));
+        } if(facility.getPostalCode() != null) {
+            pipeline.add(Updates.set("postal_code", facility.getPostalCode()));
+        } if(facility.getBasePrice() != null) {
+            pipeline.add(Updates.set("base_price", facility.getBasePrice()));
         }
+
         Bson update = Updates.combine(
-                    Updates.set("name", facility.getName()),
-                    Updates.set("street", facility.getStreet()),
-                    Updates.set("street_number", facility.getStreetNumber()),
-                    Updates.set("city", facility.getCity()),
-                    Updates.set("postal_code", facility.getPostalCode()),
-                    Updates.set("base_price", facility.getBasePrice())
+                    pipeline.toArray(new Bson[0])
         );
 
         facilitiesColletcion.updateOne(filter, update);
@@ -113,14 +120,14 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public List<SportsFacility> findAll() {
+    public synchronized List<SportsFacility> findAll() {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         return facilitiesColletcion.find().into(new ArrayList<>()).stream().map(dataFacilityMapper::mapToBusinessLayer)
                 .toList();
     }
 
     @Override
-    public SportsFacility delete(UUID id) throws Exception {
+    public synchronized SportsFacility delete(UUID id) throws Exception {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter  = Filters.eq("_id", id);
         MongoSportsFacility deleted = facilitiesColletcion.find(filter).first();

@@ -7,11 +7,10 @@ import pl.facility_rental.facility.dto.FacilityMapper;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/facilities")
 public class FacilityController {
 
     private final FacilityService facilityService;
@@ -23,27 +22,34 @@ public class FacilityController {
     }
 
 
-    @GetMapping("/facilities")
+    @GetMapping
     public List<ReturnedFacilityDto> getAllFacilities() {
         return  facilityService.findAll().stream()
                 .map(facilityMapper::getFacilityDetails)
                 .toList();
     }
 
-    @GetMapping("/facilities")
+    @GetMapping
     public ReturnedFacilityDto getFacilityById(@PathVariable String id) {
         //pozniej dodac wyjatek
         return facilityMapper.getFacilityDetails(facilityService.findById(UUID.fromString(id)).get());
     }
 
-    @PostMapping("/facilities")
+    @PostMapping
     public ReturnedFacilityDto createFacility(@RequestBody CreateFacilityDto createFacilityDto) {
-        return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateClientRequest(createFacilityDto)));
+        return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
     }
 
-    @DeleteMapping("/facilities")
+    @DeleteMapping
     public ReturnedFacilityDto deleteFacility(@PathVariable String id) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService.deleteById(UUID.fromString(id)));
+    }
+
+    @PutMapping
+    public ReturnedFacilityDto updateFacility(@RequestParam UUID facilityId,
+                                                  @RequestBody CreateFacilityDto createFacilityDto) throws Exception {
+        return facilityMapper.getFacilityDetails(facilityService
+                .update(facilityId,facilityMapper.CreateFacilityRequest(createFacilityDto)));
     }
 
 }

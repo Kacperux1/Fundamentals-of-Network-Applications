@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 public class SportsFacility {
 
-    private final UUID id;
+    private  UUID id;
     private final String name;
     private final String streetNumber;
     private final String street;
@@ -29,7 +29,6 @@ public class SportsFacility {
     }
 
     public SportsFacility(String name, String streetNumber, String street, String city, String postalCode, BigDecimal basePrice) {
-        this.id = UUID.randomUUID();
         this.name = name;
         this.streetNumber = streetNumber;
         this.street = street;

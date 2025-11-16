@@ -1,0 +1,18 @@
+services:
+  mongo_1_single:
+    image: mongo:8.0
+    container_name: mongodb1_single
+    hostname: mongodb1_single
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-db-data-1:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpassword
+      - MONGO_INITDB_DATABASE=facility_rental
+
+volumes:
+  mongo-db-data-1:
+
