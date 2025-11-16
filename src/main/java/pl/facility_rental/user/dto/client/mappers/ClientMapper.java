@@ -1,8 +1,10 @@
-package pl.facility_rental.user.dto;
+package pl.facility_rental.user.dto.client.mappers;
 
 
 import org.springframework.stereotype.Component;
-import pl.facility_rental.user.model.Client;
+import pl.facility_rental.user.business.model.Client;
+import pl.facility_rental.user.dto.client.CreateClientDto;
+import pl.facility_rental.user.dto.client.ReturnedClientDto;
 
 @Component
 public class ClientMapper {

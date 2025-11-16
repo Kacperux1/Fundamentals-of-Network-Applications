@@ -1,14 +1,15 @@
-package pl.facility_rental.user.dto;
+package pl.facility_rental.user.dto.client;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import pl.facility_rental.user.dto.CreateUserDto;
 
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor
-public class CreateClientDto extends CreateUserDto{
+public class CreateClientDto extends CreateUserDto {
     private String firstName;
     private String lastName;
     private String phone;

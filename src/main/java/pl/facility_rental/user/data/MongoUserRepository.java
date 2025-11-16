@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
@@ -21,8 +22,18 @@ import org.bson.conversions.Bson;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import pl.facility_rental.rent.data.RentRepository;
-import pl.facility_rental.user.model.User;
+import pl.facility_rental.user.business.model.Administrator;
+import pl.facility_rental.user.business.model.Client;
+import pl.facility_rental.user.business.model.ResourceMgr;
+import pl.facility_rental.user.business.model.User;
+import pl.facility_rental.user.dto.admin.mappers.AdminDataMapper;
+import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;
+import pl.facility_rental.user.dto.manager.mappers.ManagerDataMapping;
+import pl.facility_rental.user.model.MongoAdministrator;
+import pl.facility_rental.user.model.MongoDbClient;
+import pl.facility_rental.user.model.MongoResourceMgr;
+import pl.facility_rental.user.model.MongoUser;
+
 
 
 import java.util.ArrayList;
@@ -42,11 +53,19 @@ class MongoUserRepository implements UserRepository {
     private MongoDatabase sportFacilityRentalDatabase;
     private final CodecRegistry pojoCodecRegistry;
 
+    private final ClientDataMapper  clientDataMapper;
+    private final AdminDataMapper adminDataMapper;
+    private final ManagerDataMapping  managerDataMapping;
+
+
     public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
                                //@Value("${mongo.database}") String databaseName,
                                @Value("${mongo.user}") String user,
-                               @Value("${mongo.password}") String password) {
+                               @Value("${mongo.password}") String password, ClientDataMapper clientDataMapper, AdminDataMapper adminDataMapper, ManagerDataMapping managerDataMapping) {
         this.connectionString = new ConnectionString(connectionPlainString);
+        this.clientDataMapper = clientDataMapper;
+        this.adminDataMapper = adminDataMapper;
+        this.managerDataMapping = managerDataMapping;
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
@@ -70,6 +89,115 @@ class MongoUserRepository implements UserRepository {
                 )).build();
         mongoClient = MongoClients.create(settings);
         sportFacilityRentalDatabase = mongoClient.getDatabase("facility_rental");
+
+
+
+    }
+
+    @Override
+    public User save(User user) throws Exception {
+        initCollectionSchema();
+        MongoUser mongoUser = mapSubtypeToUserDataModel(user);
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users",  MongoUser.class);
+        userCollection.insertOne(mongoUser);
+        return user;
+    }
+
+
+
+    @Override
+    public Optional<User> findById(UUID id) throws Exception {
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        Bson filter = Filters.eq("_id", id);
+        return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
+
+    }
+
+
+    @Override
+    public User update(User user) throws Exception {
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+
+        Bson filter = Filters.eq("_id", user.getId());
+
+        Bson update = Updates.combine(
+                Updates.set("email", user.getEmail()),
+                Updates.set("login", user.getLogin()),
+                Updates.set("active", user.isActive())
+                );
+
+        userCollection.updateOne(filter, update);
+
+        return mapSubtypeToUserBusinessModel(userCollection.find(filter).first());
+    }
+
+    @SneakyThrows
+    @Override
+    public List<User> findAll() {
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        return userCollection.find().into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
+
+    }
+
+
+    @Override
+    public List<Client> getAllClients() {
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        Bson filter = Filters.eq("_class", "client");
+        return userCollection.find(filter).into(new ArrayList<>()).stream()
+                .map(user -> clientDataMapper.mapToBusinessLayer((MongoDbClient) user))
+                .toList();
+
+    }
+
+    @Override
+    public Optional<Client> findClientById(UUID id) {
+        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
+        Bson filter = Filters.eq("_id", id);
+        return Optional.ofNullable(clientDataMapper.mapToBusinessLayer(userCollection.find(filter).first()));
+    }
+
+    @Override
+    public User delete(UUID id) throws Exception {
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        Bson filter = Filters.eq("_id", id);
+        var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());
+        if (maybeFound.isEmpty()) {
+            throw new Exception("No client with id " + id + " was found");
+        }
+        return mapSubtypeToUserBusinessModel(userCollection.findOneAndDelete(filter));
+    }
+
+
+    private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws Exception {
+        if(mongoUser instanceof MongoDbClient){
+            return clientDataMapper.mapToBusinessLayer((MongoDbClient) mongoUser);
+        }
+        if(mongoUser instanceof MongoAdministrator){
+            return adminDataMapper.mapToBusinessLayer((MongoAdministrator) mongoUser);
+        }
+        if(mongoUser instanceof MongoResourceMgr) {
+            return managerDataMapping.mapToBusinessLayer((MongoResourceMgr) mongoUser);
+        }
+        throw new Exception("there was an error retrieving the user type.");
+    }
+
+    private MongoUser mapSubtypeToUserDataModel(User user) throws Exception {
+        if(user instanceof Client) {
+            return clientDataMapper.mapToDataLayer((Client) user);
+        } if(user instanceof Administrator) {
+            return  adminDataMapper.mapToDataLayer((Administrator) user);
+        } if (user instanceof ResourceMgr) {
+            return managerDataMapping.mapToDataLayer((ResourceMgr) user);
+        }
+        throw new Exception("there was an error retrieving the user type.");
+    }
+
+
+    private void initCollectionSchema() {
+        if(sportFacilityRentalDatabase.listCollectionNames().into(new ArrayList<>()).contains("users")){
+            return;
+        }
         try {
             ValidationOptions validationOptions = new ValidationOptions().validator(
                     Document.parse("""
@@ -100,46 +228,7 @@ class MongoUserRepository implements UserRepository {
         } catch (MongoCommandException e) {
             LoggerFactory.getLogger(UserRepository.class).error("Error while creating indexes for login uniquity");
         }
-
-
     }
 
-    @Override
-    public User save(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users",  User.class);
-        userCollection.insertOne(user);
-        return user;
-    }
-
-    @Override
-    public Optional<User> findById(UUID id) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
-        Bson filter = Filters.eq("_id", id);
-        return Optional.ofNullable(userCollection.find(filter).first());
-
-    }
-
-    @Override
-    public User update(User user) {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
-
-        Bson filter = Filters.eq("_id", user.getId());
-
-        Bson update = Updates.combine(
-                Updates.set("email", user.getEmail()),
-                Updates.set("login", user.getLogin()),
-                Updates.set("active", user.isActive())
-                );
-
-        userCollection.updateOne(filter, update);
-
-        return userCollection.find(filter).first();
-    }
-
-    @Override
-    public List<User> findAll() {
-        MongoCollection<User> userCollection = sportFacilityRentalDatabase.getCollection("users", User.class);
-        return userCollection.find().into(new ArrayList<>());
-    }
 
 }
