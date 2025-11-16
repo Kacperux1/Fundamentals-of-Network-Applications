@@ -57,7 +57,7 @@ class UserController {
     }
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto deleteUser(@RequestParam UUID id) throws Exception {
+    public ReturnedUserDto deleteUser(@RequestParam String id) throws Exception {
         return mapSubtypes(userService.delete(id));
     }
 

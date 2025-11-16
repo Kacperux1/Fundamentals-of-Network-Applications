@@ -27,7 +27,7 @@ public class RentService {
         return rentRepository.findAll();
     }
 
-    public Optional<Rent> findById(UUID id) {
+    public Optional<Rent> findById(String id) {
         return rentRepository.findById(id);
     }
 
@@ -44,15 +44,15 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Rent delete(UUID id) throws Exception {
+    public Rent delete(String id) throws Exception {
          return rentRepository.delete(id);
     }
 
-    public List<Rent> findRentsForFacility(UUID facilityId) {
+    public List<Rent> findRentsForFacility(String facilityId) {
         return rentRepository.findRentsForFacility(facilityId);
     }
 
-    public List<Rent> getCurrentAndPastClientsRents(UUID clientId) {
+    public List<Rent> getCurrentAndPastClientsRents(String clientId) {
         return rentRepository.getCurrentAndPastRentsForClient(clientId);
     }
 

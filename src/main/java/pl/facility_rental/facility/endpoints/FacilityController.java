@@ -33,7 +33,7 @@ public class FacilityController {
     @GetMapping("/facilities")
     public ReturnedFacilityDto getFacilityById(@PathVariable String id) {
         //pozniej dodac wyjatek
-        return facilityMapper.getFacilityDetails(facilityService.findById(UUID.fromString(id)).get());
+        return facilityMapper.getFacilityDetails(facilityService.findById(id).get());
     }
 
     @PostMapping("/facilities")
@@ -43,7 +43,7 @@ public class FacilityController {
 
     @DeleteMapping("/facilities")
     public ReturnedFacilityDto deleteFacility(@PathVariable String id) throws Exception {
-        return facilityMapper.getFacilityDetails(facilityService.deleteById(UUID.fromString(id)));
+        return facilityMapper.getFacilityDetails(facilityService.deleteById(id));
     }
 
 }

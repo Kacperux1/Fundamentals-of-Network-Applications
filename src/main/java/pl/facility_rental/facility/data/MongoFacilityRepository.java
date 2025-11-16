@@ -84,7 +84,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public Optional<SportsFacility> findById(UUID id) {
+    public Optional<SportsFacility> findById(String id) {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(dataFacilityMapper.mapToBusinessLayer(facilitiesColletcion.find(filter).first()));
@@ -120,7 +120,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public SportsFacility delete(UUID id) throws Exception {
+    public SportsFacility delete(String id) throws Exception {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter  = Filters.eq("_id", id);
         MongoSportsFacility deleted = facilitiesColletcion.find(filter).first();

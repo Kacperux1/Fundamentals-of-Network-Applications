@@ -34,12 +34,12 @@ public class RentController {
     }
 
     @GetMapping("/rents")
-    public ReturnedRentDto getRentById(@RequestParam UUID id) throws Exception {
+    public ReturnedRentDto getRentById(@RequestParam String id) throws Exception {
         return rentMapper.getRentDetails(rentService.findById(id).get());
     }
 
     @DeleteMapping("/rents")
-    public ReturnedRentDto deleteRent(@RequestParam UUID id) throws Exception {
+    public ReturnedRentDto deleteRent(@RequestParam String id) throws Exception {
         return rentMapper.getRentDetails(rentService.delete(id));
     }
 }

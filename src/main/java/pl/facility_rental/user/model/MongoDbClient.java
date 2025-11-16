@@ -20,7 +20,7 @@ public class MongoDbClient extends MongoUser {
     private String phone;
 
     @BsonCreator
-    public MongoDbClient(@BsonId UUID id, @BsonProperty("login") String login, @BsonProperty("email")String email,
+    public MongoDbClient(@BsonId String id, @BsonProperty("login") String login, @BsonProperty("email")String email,
                          @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
                          @BsonProperty("last_name") String lastName, @BsonProperty("phone") String phone) {
         super(id, login, email, active);

@@ -78,7 +78,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public Optional<Rent> findById(UUID id) {
+    public Optional<Rent> findById(String id) {
         MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(dataRentMapper.mapToBusinessLayer(rentCollection.find(filter).first()));
@@ -112,7 +112,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public Rent delete(UUID id) throws Exception {
+    public Rent delete(String id) throws Exception {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("_id", id);
         MongoRent deleted = collection.find(filter).first();
@@ -124,14 +124,14 @@ public class MongoRentRepository implements RentRepository {
 
 
     @Override
-    public List<Rent> findRentsForFacility(UUID facilityId) {
+    public List<Rent> findRentsForFacility(String facilityId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("facility.id", facilityId);
         return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
     }
 
     @Override
-    public List<Rent> getCurrentAndPastRentsForClient(UUID clientId) {
+    public List<Rent> getCurrentAndPastRentsForClient(String clientId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.and(Filters.eq("client.id", clientId),
                 Filters.lte("start_date", LocalDateTime.now()),

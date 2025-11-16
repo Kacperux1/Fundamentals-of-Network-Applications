@@ -106,7 +106,7 @@ class MongoUserRepository implements UserRepository {
 
 
     @Override
-    public Optional<User> findById(UUID id) throws Exception {
+    public Optional<User> findById(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
@@ -151,14 +151,14 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<Client> findClientById(UUID id) {
+    public Optional<Client> findClientById(String id) {
         MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
         Bson filter = Filters.eq("_id", id);
         return Optional.ofNullable(clientDataMapper.mapToBusinessLayer(userCollection.find(filter).first()));
     }
 
     @Override
-    public User delete(UUID id) throws Exception {
+    public User delete(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", id);
         var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());

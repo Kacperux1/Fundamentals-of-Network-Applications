@@ -13,7 +13,7 @@ public class Client extends User {
 
     private final String phone;
 
-    public Client(UUID id, String login, String email, boolean active, String firstName, String lastName, String phone) {
+    public Client(String id, String login, String email, boolean active, String firstName, String lastName, String phone) {
         super(id, login, email, active);
         this.firstName = firstName;
         this.lastName = lastName;

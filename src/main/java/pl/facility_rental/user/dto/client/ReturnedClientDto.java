@@ -16,7 +16,7 @@ public class ReturnedClientDto extends ReturnedUserDto {
     private String lastName;
     private String phone;
 
-    public ReturnedClientDto(UUID uuid, String login, String email, boolean status, String firstName,
+    public ReturnedClientDto(String uuid, String login, String email, boolean status, String firstName,
                              String lastName,  String phone) {
         super(uuid, login, email, status);
         this.firstName = firstName;

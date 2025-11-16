@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ReturnedUserDto {
 
-    private UUID uuid ;
+    private String uuid ;
 
     private String login;
 

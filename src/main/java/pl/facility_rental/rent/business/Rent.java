@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Getter
 public class Rent {
-    private UUID id;
+    private String id;
     private Client client;
     private SportsFacility sportsFacility;
     private LocalDateTime startDate;
@@ -19,7 +19,7 @@ public class Rent {
     private BigDecimal totalPrice;
 
 
-    public Rent(UUID id, Client client,  SportsFacility sportsFacility,
+    public Rent(String id, Client client,  SportsFacility sportsFacility,
                       LocalDateTime startDate,  LocalDateTime endDate,
                       BigDecimal totalPrice) {
         this.id =  id;
@@ -36,7 +36,6 @@ public class Rent {
     }
 
     public Rent(Client client, SportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
-        this.id =  UUID.randomUUID();
         this.client = client;
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;

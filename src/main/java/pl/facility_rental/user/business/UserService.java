@@ -30,15 +30,15 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<Client> getClientById(UUID id) {
+    public Optional<Client> getClientById(String id) {
         return userRepository.findClientById(id);
     }
 
-    public Optional<User> getUserById(UUID id) throws Exception {
+    public Optional<User> getUserById(String id) throws Exception {
         return userRepository.findById(id);
     }
 
-    public User delete(UUID id) throws Exception {
+    public User delete(String id) throws Exception {
         if(userRepository.findById(id).isEmpty()) {
             throw new Exception("Ni ma takiego usera!");
         }

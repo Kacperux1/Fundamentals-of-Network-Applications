@@ -26,7 +26,7 @@ public class MongoResourceMgr extends MongoUser {
 //        this.lastName = lastName;
     }
 
-    public MongoResourceMgr(UUID id, String login, String email, boolean active) {
+    public MongoResourceMgr(String id, String login, String email, boolean active) {
         super(id, login, email, active);
     }
 }
