@@ -47,7 +47,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Standish");
-        body.put("phone", "5555555555");
+        body.put("phone", "555 555 555");
         given()
                 .header("Content-Type", "application/json")
                 .body(body)
@@ -62,7 +62,7 @@ public class UserCreateReadUpdateIntegrationTest {
                 .body("email", equalTo("example321@com.com"))
                 .body("first_name", equalTo("John"))
                 .body("last_name", equalTo("Standish"))
-                .body("phone", equalTo("5555555555"));
+                .body("phone", equalTo("555 555 555"));
 
     }
 
@@ -76,7 +76,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Standish");
-        body.put("phone", "5555555555");
+        body.put("phone", "555 555 555");
 
         Map<String, Object> body1 = new HashMap<>();
         body1.put("login", "superLogin1");
@@ -85,7 +85,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body1.put("type", "client");
         body1.put("first_name", "John");
         body1.put("last_name", "Standish");
-        body1.put("phone", "123456789");
+        body1.put("phone", "123 456 789");
         //w
         given()
                 .header("Content-Type", "application/json")
@@ -119,7 +119,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Doe");
-        body.put("phone", "987654321");
+        body.put("phone", "987 654 321");
         //w
         Response response = given()
                 .header("Content-Type", "application/json")
@@ -142,7 +142,7 @@ public class UserCreateReadUpdateIntegrationTest {
                 .body("type", equalTo("client"))
                 .body("first_name", equalTo("John"))
                 .body("last_name", equalTo("Doe"))
-                .body("phone", equalTo("987654321"));
+                .body("phone", equalTo("987 654 321"));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Doe");
-        body.put("phone", "987654321");
+        body.put("phone", "987 654 321");
 
         //w
         Response response = given()
@@ -179,7 +179,7 @@ public class UserCreateReadUpdateIntegrationTest {
                 .body("type", equalTo("client"))
                 .body("first_name", equalTo("John"))
                 .body("last_name", equalTo("Doe"))
-                .body("phone", equalTo("987654321"));
+                .body("phone", equalTo("987 654 321"));
     }
 
     @Test
@@ -191,7 +191,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Doe");
-        body.put("phone", "987654321");
+        body.put("phone", "987 654 321");
 
         //w
         Response response = given()
@@ -216,7 +216,7 @@ public class UserCreateReadUpdateIntegrationTest {
                 .body("[0].type", equalTo("client"))
                 .body("[0].first_name", equalTo("John"))
                 .body("[0].last_name", equalTo("Doe"))
-                .body("[0].phone", equalTo("987654321"));
+                .body("[0].phone", equalTo("987 654 321"));
     }
 
     @Test
@@ -293,6 +293,7 @@ public class UserCreateReadUpdateIntegrationTest {
         {
           "name": "",
           "email": "not-an-email"
+          "type": "client"
         }
     """;
 

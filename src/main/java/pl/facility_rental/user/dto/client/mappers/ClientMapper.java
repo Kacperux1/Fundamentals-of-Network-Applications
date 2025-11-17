@@ -3,8 +3,10 @@ package pl.facility_rental.user.dto.client.mappers;
 
 import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.Client;
+import pl.facility_rental.user.dto.UpdateUserDto;
 import pl.facility_rental.user.dto.client.CreateClientDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
+import pl.facility_rental.user.dto.client.UpdateClientDto;
 
 @Component
 public class ClientMapper {
@@ -13,7 +15,7 @@ public class ClientMapper {
 
         String login = createClientDto.getLogin();
         String email = createClientDto.getEmail();
-        boolean active = createClientDto.isActive();
+        Boolean active = createClientDto.isActive();
         String firstName = createClientDto.getFirstName();
         String lastName = createClientDto.getLastName();
         String phone = createClientDto.getPhone();
@@ -43,6 +45,7 @@ public class ClientMapper {
         }
 
 
+
         return new Client(createClientDto.getLogin(), createClientDto.getEmail(), createClientDto.isActive(),
                 createClientDto.getFirstName(), createClientDto.getLastName(), createClientDto.getPhone());
     }
@@ -50,6 +53,19 @@ public class ClientMapper {
     public ReturnedClientDto getClientDetails(Client client) {
         return new ReturnedClientDto(client.getId(), client.getLogin(), client.getEmail(),
                 client.isActive(), client.getFirstName(), client.getLastName(), client.getPhone());
+    }
+
+    public Client updateClient(UpdateClientDto updateClientDto) {
+
+        if(!updateClientDto.getEmail().isBlank() && !updateClientDto.getEmail()
+                .matches("^[\\w\\.]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$")){
+            throw new IllegalArgumentException("email dont fit in correct template");
+        }
+        if(!updateClientDto.getPhone().matches("\\d{3} \\d{3} \\d{3}")){
+            throw new IllegalArgumentException("numer telefonu musi być w formacie 000 000 000");
+        }
+        return new Client( updateClientDto.getLogin(), updateClientDto.getEmail(), false, updateClientDto.getFirstName(),
+                updateClientDto.getLastName(), updateClientDto.getPhone() );
     }
 
 

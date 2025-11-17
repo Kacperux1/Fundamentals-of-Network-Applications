@@ -138,10 +138,6 @@ public class FacilityIntegrationTest {
 
         Map<String, Object> update = new HashMap<>();
         update.put("name", "Hala Sportowa");
-        update.put("streetNumber", "7");
-        update.put("street", "Krótka");
-        update.put("city", "Gdańsk");
-        update.put("postalCode", "80-100");
         update.put("basePrice", 250);
 
         given()
@@ -153,10 +149,7 @@ public class FacilityIntegrationTest {
                 .log().all()
                 .statusCode(200)
                 .body("name", equalTo("Hala Sportowa"))
-                .body("city", equalTo("Gdańsk"))
-                .body("streetNumber", equalTo("7"))
-                .body("postalCode", equalTo("80-100"))
-                .body("price", equalTo(250));
+                .body("totalPrice", equalTo(250.0f));
     }
 
     @Test
@@ -241,12 +234,17 @@ public class FacilityIntegrationTest {
         client1.put("email", "alice@example.com");
         client1.put("active", true);
         client1.put("type", "client");
-
+        client1.put("first_name", "Alice");
+        client1.put("last_name", "Brian");
+        client1.put("phone", "420 213 769");
         Map<String, Object> client2 = new HashMap<>();
         client2.put("login", "bob123");
         client2.put("email", "bob@example.com");
         client2.put("active", true);
         client2.put("type", "client");
+        client2.put("first_name", "Bob");
+        client2.put("last_name", "Marlej");
+        client2.put("phone", "420 213 769");
 
         Response createdClient1 = given()
                 .header("Content-Type", "application/json")

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
+import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 
 import java.util.concurrent.ExecutionException;
 
@@ -29,6 +30,14 @@ public class ResourceMgrMapper {
     public ReturnedResourceMgrDto getManagerDetails(ResourceMgr resourceMgr) {
         return new ReturnedResourceMgrDto(resourceMgr.getId(), resourceMgr.getLogin(), resourceMgr.getEmail(),
                 resourceMgr.isActive());
+    }
+
+    public ResourceMgr updateManager(UpdateResourceMgrDto updateResourceMgrDto) {
+        if(!updateResourceMgrDto.getEmail().isBlank() && !updateResourceMgrDto.getEmail()
+                .matches("^[\\w\\.]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$")){
+            throw new IllegalArgumentException("email dont fit in correct template");
+        }
+        return new ResourceMgr(updateResourceMgrDto.getLogin(), updateResourceMgrDto.getEmail(), false);
     }
 
 }

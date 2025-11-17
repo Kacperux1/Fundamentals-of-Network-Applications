@@ -21,7 +21,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
-import pl.facility_rental.facility.dto.DataFacilityMapper;
+import pl.facility_rental.facility.dto.mappers.DataFacilityMapper;
 import pl.facility_rental.facility.model.MongoSportsFacility;
 
 import java.util.*;

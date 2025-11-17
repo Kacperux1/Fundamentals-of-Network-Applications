@@ -1,15 +1,18 @@
 package pl.facility_rental.facility.endpoints;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
-import pl.facility_rental.facility.dto.FacilityMapper;
+import pl.facility_rental.facility.dto.UpdateFacilityDto;
+import pl.facility_rental.facility.dto.mappers.FacilityMapper;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/facilities")
@@ -51,9 +54,22 @@ public class FacilityController {
 
     @PutMapping("/{facilityId}")
     public ReturnedFacilityDto updateFacility(@PathVariable String facilityId,
-                                                  @RequestBody CreateFacilityDto createFacilityDto) throws Exception {
+                                                  @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService
-                .update(facilityId,facilityMapper.CreateFacilityRequest(createFacilityDto)));
+                .update(facilityId,facilityMapper.updateFacilityRequest(updateFacilityDto)));
     }
+
+//skopiowany na szybko z interneta
+    @RestControllerAdvice
+    public static class GlobalExceptionHandler {
+
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("error", ex.getMessage());
+            return ResponseEntity.badRequest().body(body);
+        }
+    }
+
 
 }

@@ -46,7 +46,7 @@ public class RentIntegrationTest {
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Standish");
-        body.put("phone", "5555555555");
+        body.put("phone", "555 555 555");
 
         Response userResponse = given()
                 .header("Content-Type", "application/json")
@@ -96,8 +96,6 @@ public class RentIntegrationTest {
                 .statusCode(200)
                 .body("$", hasSize(1))
                 .body("[0].totalPrice", equalTo(200.0f));
-
-
     }
 
 }

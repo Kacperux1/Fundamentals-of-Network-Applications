@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+
 
 public record CreateRentDto(
         @NotBlank(message = "clientId nie może być puste")
@@ -16,6 +16,5 @@ public record CreateRentDto(
         @NotNull(message = "startDate nie może być null")
         LocalDateTime startDate,
 
-        @NotNull(message = "endDate nie może być null")
         LocalDateTime endDate)
 {}

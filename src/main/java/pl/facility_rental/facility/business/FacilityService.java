@@ -28,6 +28,9 @@ public class FacilityService {
     }
 
     public Optional<SportsFacility> findById(String id) {
+        if(id.isBlank()|| id.length() != 24){
+            throw new IllegalArgumentException("Wrong id format");
+        }
         return facilityRepository.findById(id);
     }
 

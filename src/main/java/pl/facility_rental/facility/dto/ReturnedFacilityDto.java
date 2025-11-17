@@ -1,7 +1,6 @@
 package pl.facility_rental.facility.dto;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public record ReturnedFacilityDto(
         String id,

@@ -3,7 +3,7 @@ package pl.facility_rental.rent.dto.mappers;
 
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
-import pl.facility_rental.facility.dto.DataFacilityMapper;
+import pl.facility_rental.facility.dto.mappers.DataFacilityMapper;
 import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.model.MongoRent;
 import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;

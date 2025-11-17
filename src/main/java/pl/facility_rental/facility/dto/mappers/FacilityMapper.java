@@ -1,7 +1,10 @@
-package pl.facility_rental.facility.dto;
+package pl.facility_rental.facility.dto.mappers;
 
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
+import pl.facility_rental.facility.dto.CreateFacilityDto;
+import pl.facility_rental.facility.dto.ReturnedFacilityDto;
+import pl.facility_rental.facility.dto.UpdateFacilityDto;
 
 import java.math.BigDecimal;
 
@@ -18,22 +21,22 @@ public class FacilityMapper {
         BigDecimal basePrice = createFacilityDto.basePrice();
 
         if (name == null || name.isBlank())
-            throw new IllegalArgumentException("Invalid name");
+            throw new IllegalArgumentException("validation constraint violated: Invalid name");
 
-        if (!streetNumber.matches("\\d+[A-Za-z]?"))
-            throw new IllegalArgumentException("Invalid street number");
+        if (!streetNumber.matches("\\d+[A-Za-z0-9]?"))
+            throw new IllegalArgumentException("validation constraint violated: Invalid street number");
 
         if (street == null || street.isBlank())
-            throw new IllegalArgumentException("Invalid street");
+            throw new IllegalArgumentException("validation constraint violated: Invalid street");
 
         if (city == null || city.isBlank())
-            throw new IllegalArgumentException("Invalid city");
+            throw new IllegalArgumentException("validation constraint violated: Invalid city");
 
         if (!postalCode.matches("\\d{2}-\\d{3}"))
-            throw new IllegalArgumentException("Invalid postal code");
+            throw new IllegalArgumentException("validation constraint violated: Invalid postal code");
 
         if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) <= 0)
-            throw new IllegalArgumentException("Invalid base price");
+            throw new IllegalArgumentException("validation constraint violated: Invalid base price");
 
 
         return new  SportsFacility(name, streetNumber, street, city, postalCode, basePrice);
@@ -43,5 +46,10 @@ public class FacilityMapper {
         return  new ReturnedFacilityDto(sportsFacility.getId(), sportsFacility.getName(),
                 sportsFacility.getStreetNumber(), sportsFacility.getStreet(), sportsFacility.getCity(),
                 sportsFacility.getPostalCode(), sportsFacility.getPricePerHour());
+    }
+
+    public SportsFacility updateFacilityRequest(UpdateFacilityDto updateFacilityDto) {
+        return new SportsFacility(updateFacilityDto.name(), null, null, null,
+                null, updateFacilityDto.basePrice());
     }
 }

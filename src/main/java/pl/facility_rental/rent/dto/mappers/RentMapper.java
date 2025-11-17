@@ -48,4 +48,5 @@ public class RentMapper {
                 rent.getSportsFacility().getCity(), rent.getStartDate(), rent.getEndDate(), rent.getTotalPrice());
     }
 
+
 }

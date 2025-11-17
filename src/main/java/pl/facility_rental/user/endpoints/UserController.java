@@ -9,14 +9,18 @@ import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.dto.CreateUserDto;
 import pl.facility_rental.user.dto.ReturnedUserDto;
+import pl.facility_rental.user.dto.UpdateUserDto;
 import pl.facility_rental.user.dto.admin.CreateAdminDto;
+import pl.facility_rental.user.dto.admin.UpdateAdminDto;
 import pl.facility_rental.user.dto.admin.mappers.AdminMapper;
+import pl.facility_rental.user.dto.client.UpdateClientDto;
 import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;
 import pl.facility_rental.user.dto.client.mappers.ClientMapper;
 import pl.facility_rental.user.dto.client.CreateClientDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
+import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.mappers.ResourceMgrMapper;
 import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
 
@@ -80,8 +84,8 @@ class UserController {
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto updateUser(@PathVariable String userId, @RequestBody CreateUserDto updatedUserDto) throws Exception {
-        return mapSubtypes(userService.update(userId, mapSubtypesToBusinessLayer(updatedUserDto)));
+    public ReturnedUserDto updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto) throws Exception {
+        return mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto)));
     }
 
     @PatchMapping("/activate/{userId}")
@@ -128,6 +132,19 @@ class UserController {
         }
         throw new RecognizingUserTypeException("Error retrieving the user's type.");
 
+    }
+
+    private User mapUpdatedSubtypes(UpdateUserDto updateUserDto) throws RecognizingUserTypeException {
+        if (updateUserDto instanceof UpdateClientDto) {
+            return clientMapper.updateClient((UpdateClientDto) updateUserDto);
+        }
+        if (updateUserDto instanceof UpdateAdminDto) {
+            return adminMapper.updateAdmin((UpdateAdminDto) updateUserDto);
+        }
+        if (updateUserDto instanceof UpdateResourceMgrDto) {
+            return resourceManagerMapper.updateManager((UpdateResourceMgrDto) updateUserDto);
+        }
+        throw new RecognizingUserTypeException("Error retrieving the user's type.");
     }
 
 

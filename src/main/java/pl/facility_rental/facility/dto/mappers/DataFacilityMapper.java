@@ -1,4 +1,4 @@
-package pl.facility_rental.facility.dto;
+package pl.facility_rental.facility.dto.mappers;
 
 
 import org.bson.types.ObjectId;
@@ -21,7 +21,7 @@ public class DataFacilityMapper {
     }
 
     public SportsFacility mapToBusinessLayer(MongoSportsFacility sportsFacility) {
-        return new SportsFacility(sportsFacility.getId().toString(),sportsFacility.getName(), sportsFacility.getStreetNumber(),
+        return new SportsFacility(sportsFacility.getId().toHexString(),sportsFacility.getName(), sportsFacility.getStreetNumber(),
                 sportsFacility.getStreet(), sportsFacility.getCity(), sportsFacility.getPostalCode(),
                 sportsFacility.getBasePrice());
     }
