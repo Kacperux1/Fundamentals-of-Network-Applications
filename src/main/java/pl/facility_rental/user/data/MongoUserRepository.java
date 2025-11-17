@@ -28,6 +28,8 @@ import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.dto.admin.mappers.AdminDataMapper;
 import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;
 import pl.facility_rental.user.dto.manager.mappers.ManagerDataMapping;
+import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
+import pl.facility_rental.user.exceptions.UserNotFoundException;
 import pl.facility_rental.user.model.MongoAdministrator;
 import pl.facility_rental.user.model.MongoDbClient;
 import pl.facility_rental.user.model.MongoResourceMgr;
@@ -90,7 +92,7 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User user) throws Exception {
+    public User save(User user) throws RecognizingUserTypeException {
         MongoUser mongoUser = mapSubtypeToUserDataModel(user);
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         InsertOneResult result = userCollection.insertOne(mongoUser);
@@ -101,7 +103,7 @@ class MongoUserRepository implements UserRepository {
 
 
     @Override
-    public Optional<User> findById(String id) throws Exception {
+    public Optional<User> findById(String id) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
@@ -110,7 +112,7 @@ class MongoUserRepository implements UserRepository {
 
 
     @Override
-    public User update(String userId, User user) throws Exception {
+    public User update(String userId, User user) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
 
         Bson filter = Filters.eq("_id", new ObjectId(userId));
@@ -166,7 +168,7 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public User setActiveStatus(String userId, boolean active) throws Exception {
+    public User setActiveStatus(String userId, boolean active) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", new ObjectId(userId));
         Bson update = Updates.set("active", active);
@@ -175,32 +177,32 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByStrictLogin(String login) throws Exception {
+    public Optional<User> findByStrictLogin(String login) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("login", login);
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
     }
 
     @Override
-    public List<User> findUsersIfLoginMatchesValue(String value) throws Exception {
+    public List<User> findUsersIfLoginMatchesValue(String value) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.regex("login", ".*" + value + ".*", "i");
         return userCollection.find(filter).into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
     }
 
     @Override
-    public User delete(String id) throws Exception {
+    public User delete(String id) throws RecognizingUserTypeException, UserNotFoundException  {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
         var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());
         if (maybeFound.isEmpty()) {
-            throw new Exception("No client with id " + id + " was found");
+            throw new UserNotFoundException("No client with id " + id + " was found");
         }
         return mapSubtypeToUserBusinessModel(userCollection.findOneAndDelete(filter));
     }
 
 
-    private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws RuntimeException {
+    private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws RecognizingUserTypeException {
         if(mongoUser instanceof MongoDbClient){
             return clientDataMapper.mapToBusinessLayer((MongoDbClient) mongoUser);
         }
@@ -210,10 +212,10 @@ class MongoUserRepository implements UserRepository {
         if(mongoUser instanceof MongoResourceMgr) {
             return managerDataMapping.mapToBusinessLayer((MongoResourceMgr) mongoUser);
         }
-        throw new RuntimeException("there was an error retrieving the user type.");
+        throw new RecognizingUserTypeException("there was an error retrieving the user type while reading from DB.");
     }
 
-    private MongoUser mapSubtypeToUserDataModel(User user) throws Exception {
+    private MongoUser mapSubtypeToUserDataModel(User user) throws RecognizingUserTypeException{
         if(user instanceof Client) {
             return clientDataMapper.mapToDataLayer((Client) user);
         } if(user instanceof Administrator) {
@@ -221,7 +223,7 @@ class MongoUserRepository implements UserRepository {
         } if (user instanceof ResourceMgr) {
             return managerDataMapping.mapToDataLayer((ResourceMgr) user);
         }
-        throw new Exception("there was an error retrieving the user type.");
+        throw new RecognizingUserTypeException("there was an error retrieving the user type while saving to DB.");
     }
 
 

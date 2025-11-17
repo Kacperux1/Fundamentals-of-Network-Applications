@@ -7,6 +7,8 @@ import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.data.UserRepository;
 import pl.facility_rental.user.business.model.Client;
+import pl.facility_rental.user.exceptions.DeletingActiveUserException;
+import pl.facility_rental.user.exceptions.UserNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,10 +75,10 @@ public class UserService {
 
     public User delete(String id) throws Exception {
         if(userRepository.findById(id).isEmpty()) {
-            throw new Exception("Ni ma takiego usera!");
+            throw new UserNotFoundException("Ni ma takiego usera!");
         }
         if(!userRepository.findById(id).get().isActive()) {
-            throw new Exception("User is active; you need to deactivate him before deletion");
+            throw new DeletingActiveUserException("User is active; you need to deactivate him before deletion");
         }
         return userRepository.delete(id);
     }
