@@ -18,6 +18,7 @@ import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.mappers.ResourceMgrMapper;
+import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +44,7 @@ class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
+    public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto)  {
         return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
     }
 
@@ -102,7 +103,7 @@ class UserController {
 //        return mapSubtypes(userService.delete(id));
 //    }
 
-    private ReturnedUserDto mapSubtypes(User user) throws RuntimeException {
+    private ReturnedUserDto mapSubtypes(User user) throws RecognizingUserTypeException {
         if (user instanceof Client) {
             return clientMapper.getClientDetails((Client) user);
         }
@@ -112,10 +113,10 @@ class UserController {
         if (user instanceof ResourceMgr) {
             return resourceManagerMapper.getManagerDetails((ResourceMgr) user);
         }
-        throw new RuntimeException("Error retrieving the user's type.");
+        throw new RecognizingUserTypeException("Error retrieving the user's type.");
     }
 
-    private User mapSubtypesToBusinessLayer(CreateUserDto createUserDto) throws RuntimeException {
+    private User mapSubtypesToBusinessLayer(CreateUserDto createUserDto) throws RecognizingUserTypeException {
         if (createUserDto instanceof CreateClientDto) {
             return clientMapper.createClientRequest((CreateClientDto) createUserDto);
         }
@@ -125,7 +126,7 @@ class UserController {
         if (createUserDto instanceof CreateAdminDto) {
             return adminMapper.createAdminRequest((CreateAdminDto) createUserDto);
         }
-        throw new RuntimeException("Error retrieving the user's type.");
+        throw new RecognizingUserTypeException("Error retrieving the user's type.");
 
     }
 
