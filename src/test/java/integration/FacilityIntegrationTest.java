@@ -2,6 +2,7 @@ package integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -193,6 +194,97 @@ public class FacilityIntegrationTest {
                 .then()
                 .log().all()
                 .statusCode(404);
+    }
+
+    @Test
+    void shouldRejectResourceWithInvalidSyntax() {
+        String invalidResourceJson = """
+        {
+          "name": "",
+          "capacity": -5
+        }
+    """;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(invalidResourceJson)
+                .when()
+                .post("/facilities")
+                .then()
+                .statusCode(400)
+                .body("error", containsString("validation"));
+    }
+
+    @Test
+    public void shouldNotAllocateFacilityAlreadyAllocated() {
+        Map<String, Object> facilityBody = new HashMap<>();
+        facilityBody.put("name", "Boisko Centralne");
+        facilityBody.put("streetNumber", "12A");
+        facilityBody.put("street", "Długa");
+        facilityBody.put("city", "Warszawa");
+        facilityBody.put("postalCode", "00-001");
+        facilityBody.put("basePrice", 100);
+
+        Response createdFacility = given()
+                .header("Content-Type", "application/json")
+                .body(facilityBody)
+                .when()
+                .post("/facilities")
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        String facilityId = createdFacility.jsonPath().getString("id");
+
+        Map<String, Object> client1 = new HashMap<>();
+        client1.put("login", "alice123");
+        client1.put("email", "alice@example.com");
+        client1.put("active", true);
+        client1.put("type", "client");
+
+        Map<String, Object> client2 = new HashMap<>();
+        client2.put("login", "bob123");
+        client2.put("email", "bob@example.com");
+        client2.put("active", true);
+        client2.put("type", "client");
+
+        Response createdClient1 = given()
+                .header("Content-Type", "application/json")
+                .body(client1)
+                .when()
+                .post("/users")
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        Response createdClient2 = given()
+                .header("Content-Type", "application/json")
+                .body(client2)
+                .when()
+                .post("/users")
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        String clientId1 = createdClient1.jsonPath().getString("id");
+        String clientId2 = createdClient2.jsonPath().getString("id");
+
+        // Próba alokacji 1 - powinna się udać
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .post("/facilities/" + facilityId + "/allocate/" + clientId1)
+                .then()
+                .statusCode(200);
+
+        // Próba alokacji 2 - powinna być porażka
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .post("/facilities/" + facilityId + "/allocate/" + clientId2)
+                .then()
+                .statusCode(409)
+                .body("error", containsString("already allocated"));
     }
 }
 

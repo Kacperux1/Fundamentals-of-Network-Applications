@@ -71,7 +71,4 @@ public class RentService {
         }
         return rentRepository.endRent(rentId);
     }
-
-
-
 }
