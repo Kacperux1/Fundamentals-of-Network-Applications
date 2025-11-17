@@ -1,14 +1,18 @@
 package pl.facility_rental.rent.endpoints;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.rent.dto.CreateRentDto;
 import pl.facility_rental.rent.dto.mappers.RentMapper;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
+import pl.facility_rental.rent.exceptions.AlreadyAllocatedException;
+import pl.facility_rental.rent.exceptions.UserIncativeException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rents")
@@ -58,4 +62,30 @@ public class RentController {
     public ReturnedRentDto endRent(@PathVariable String id) throws Exception {
         return rentMapper.getRentDetails(rentService.endRent(id));
     }
+
+    //na podstawie skopiowania z neta
+    @RestControllerAdvice
+    public static class RentExceptionHandler {
+
+        @ExceptionHandler(UserIncativeException.class)
+        public ResponseEntity<?> handleUserInactive(UserIncativeException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN) // 403
+                    .body(Map.of(
+                            "error", "UserInactive",
+                            "message", ex.getMessage()
+                    ));
+        }
+
+        @ExceptionHandler(AlreadyAllocatedException.class)
+        public ResponseEntity<?> handleAlreadyAllocated(AlreadyAllocatedException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT) // 409
+                    .body(Map.of(
+                            "error", "RentConflict",
+                            "message", ex.getMessage()
+                    ));
+        }
+    }
+
 }

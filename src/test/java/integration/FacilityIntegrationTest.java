@@ -12,6 +12,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import pl.facility_rental.FacilityRentalApplication;
 import io.restassured.response.Response;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -138,7 +140,7 @@ public class FacilityIntegrationTest {
 
         Map<String, Object> update = new HashMap<>();
         update.put("name", "Hala Sportowa");
-        update.put("basePrice", 250);
+        update.put("basePrice", 250.0);
 
         given()
                 .header("Content-Type", "application/json")
@@ -149,7 +151,7 @@ public class FacilityIntegrationTest {
                 .log().all()
                 .statusCode(200)
                 .body("name", equalTo("Hala Sportowa"))
-                .body("totalPrice", equalTo(250.0f));
+                .body("price", equalTo(250.0f));
     }
 
     @Test
@@ -183,7 +185,7 @@ public class FacilityIntegrationTest {
         given()
                 .header("Content-Type", "application/json")
                 .when()
-                .get("/facilities/9999")
+                .get("/facilities/123456789012345678901234")
                 .then()
                 .log().all()
                 .statusCode(404);
@@ -216,7 +218,7 @@ public class FacilityIntegrationTest {
         facilityBody.put("street", "Długa");
         facilityBody.put("city", "Warszawa");
         facilityBody.put("postalCode", "00-001");
-        facilityBody.put("basePrice", 100);
+        facilityBody.put("basePrice", BigDecimal.valueOf(250.0));
 
         Response createdFacility = given()
                 .header("Content-Type", "application/json")
@@ -267,22 +269,35 @@ public class FacilityIntegrationTest {
         String clientId1 = createdClient1.jsonPath().getString("id");
         String clientId2 = createdClient2.jsonPath().getString("id");
 
+
+        Map<String, Object> reqyestedRent =  new HashMap<>();
+        reqyestedRent.put("clientId", clientId1);
+        reqyestedRent.put("facilityId", facilityId);
+        reqyestedRent.put("startDate", LocalDateTime.now());
+        reqyestedRent.put("endDate", LocalDateTime.now().plusHours(3));
         // Próba alokacji 1 - powinna się udać
         given()
                 .header("Content-Type", "application/json")
+                .body(reqyestedRent)
                 .when()
-                .post("/facilities/" + facilityId + "/allocate/" + clientId1)
+                .post("/rents")
                 .then()
-                .statusCode(200);
+                .statusCode(201);
 
         // Próba alokacji 2 - powinna być porażka
+        Map<String, Object> reqyestedRent2 =  new HashMap<>();
+        reqyestedRent2.put("clientId", clientId1);
+        reqyestedRent2.put("facilityId", facilityId);
+        reqyestedRent2.put("startDate", LocalDateTime.now());
+        reqyestedRent2.put("endDate", LocalDateTime.now().plusHours(2));
         given()
                 .header("Content-Type", "application/json")
+                .body(reqyestedRent2)
                 .when()
-                .post("/facilities/" + facilityId + "/allocate/" + clientId2)
+                .post("/rents")
                 .then()
                 .statusCode(409)
-                .body("error", containsString("already allocated"));
+                .body("message", containsString("collides with another rent"));
     }
 }
 

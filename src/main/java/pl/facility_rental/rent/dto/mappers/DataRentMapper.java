@@ -8,6 +8,8 @@ import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.model.MongoRent;
 import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;
 
+import java.util.Optional;
+
 @Component
 public class DataRentMapper {
 

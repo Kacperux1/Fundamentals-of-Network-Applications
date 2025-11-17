@@ -69,7 +69,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public Rent save(Rent rent) {
+    public synchronized Rent save(Rent rent) {
         MongoRent mongoRent = dataRentMapper.mapToDataLayer(rent);
         MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         ObjectId id = rentCollection.insertOne(mongoRent).getInsertedId().asObjectId().getValue();
@@ -84,7 +84,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public Rent update(Rent rent) {
+    public synchronized Rent update(Rent rent) {
         MongoRent mongoRent = dataRentMapper.mapToDataLayer(rent);
         MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
 
@@ -111,7 +111,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public Rent delete(String id) throws Exception {
+    public synchronized Rent delete(String id) throws Exception {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("_id", id);
         MongoRent deleted = collection.find(filter).first();

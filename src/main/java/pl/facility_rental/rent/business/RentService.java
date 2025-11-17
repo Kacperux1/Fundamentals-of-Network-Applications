@@ -5,6 +5,8 @@ import org.springframework.web.context.annotation.RequestScope;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.rent.endpoints.RentController;
+import pl.facility_rental.rent.exceptions.AlreadyAllocatedException;
+import pl.facility_rental.rent.exceptions.UserIncativeException;
 import pl.facility_rental.rent.model.MongoRent;
 import pl.facility_rental.user.business.UserService;
 
@@ -31,15 +33,15 @@ public class RentService {
         return rentRepository.findById(id);
     }
 
-    public Rent save(Rent rent) throws Exception {
+    public Rent save(Rent rent) throws AlreadyAllocatedException, UserIncativeException {
         if(!rent.getClient().isActive()) {
-            throw new Exception("User is deactivated!!!");
+            throw new UserIncativeException("User is deactivated!!!");
         }
         if(!findRentsForFacility(rent.getSportsFacility().getId()).stream()
                 .filter(var -> var.getStartDate().isBefore(rent.getEndDate())
                         && var.getEndDate().isAfter(rent.getStartDate())
                 ).toList().isEmpty()) {
-            throw new Exception("Given time period collides with another rent!");
+            throw new AlreadyAllocatedException("Given time period collides with another rent!");
         }
         return rentRepository.save(rent);
     }

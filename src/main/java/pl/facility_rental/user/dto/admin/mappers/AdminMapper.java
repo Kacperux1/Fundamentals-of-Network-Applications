@@ -5,6 +5,7 @@ import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.dto.admin.CreateAdminDto;
 import pl.facility_rental.user.dto.admin.ReturnedAdminDto;
 import pl.facility_rental.user.dto.admin.UpdateAdminDto;
+import pl.facility_rental.user.exceptions.ValidationViolationUserException;
 
 @Component
 public class AdminMapper {
@@ -16,11 +17,11 @@ public class AdminMapper {
         boolean active = createAdminDto.isActive();
 
         if(login.isBlank()){
-            throw new IllegalArgumentException("login nie może być pusty");
+            throw new ValidationViolationUserException("validation failed: nie może być pusty");
         }
 
         if(email.isBlank()){
-            throw new IllegalArgumentException("emial nie może być pusty");
+            throw new ValidationViolationUserException("validation failed: nie może być pusty");
         }
 
         return new Administrator(createAdminDto.getLogin(), createAdminDto.getEmail(), createAdminDto.isActive());
@@ -35,7 +36,7 @@ public class AdminMapper {
     public Administrator updateAdmin(UpdateAdminDto updateAdminDto ) {
         if(!updateAdminDto.getEmail().isBlank() && !updateAdminDto.getEmail()
                 .matches("^[\\w\\.]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$")){
-            throw new IllegalArgumentException("email dont fit in correct template");
+            throw new ValidationViolationUserException("validation failed: email dont fit in correct template");
         }
         return new Administrator(updateAdminDto.getLogin(), updateAdminDto.getEmail(), false);
     }

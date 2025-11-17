@@ -7,6 +7,7 @@ import pl.facility_rental.user.dto.UpdateUserDto;
 import pl.facility_rental.user.dto.client.CreateClientDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.dto.client.UpdateClientDto;
+import pl.facility_rental.user.exceptions.ValidationViolationUserException;
 
 @Component
 public class ClientMapper {
@@ -21,27 +22,27 @@ public class ClientMapper {
         String phone = createClientDto.getPhone();
 
         if(login.isBlank()){
-            throw new IllegalArgumentException("login nie może być pusty");
+            throw new ValidationViolationUserException("validation failed: login nie może być pusty");
         }
 
         if(email.isBlank()){
-            throw new IllegalArgumentException("email nie może być pusty");
+            throw new ValidationViolationUserException("validation failed:email nie może być pusty");
         }
 
         if(firstName.isBlank()){
-            throw new IllegalArgumentException("Imię nie może być pusty");
+            throw new ValidationViolationUserException("validation failed:Imię nie może być pusty");
         }
 
         if(lastName.isBlank()){
-            throw new IllegalArgumentException("Nazwisko nie może być pusty");
+            throw new ValidationViolationUserException("validation failed:Nazwisko nie może być pusty");
         }
 
         if(phone.isBlank()){
-            throw new IllegalArgumentException("numer telefonu nie może być pusty");
+            throw new ValidationViolationUserException("validation failed:numer telefonu nie może być pusty");
         }
 
         if(!phone.matches("\\d{3} \\d{3} \\d{3}")){
-            throw new IllegalArgumentException("numer telefonu musi być w formacie 000 000 000");
+            throw new ValidationViolationUserException("validation failed:numer telefonu musi być w formacie 000 000 000");
         }
 
 
@@ -59,10 +60,10 @@ public class ClientMapper {
 
         if(!updateClientDto.getEmail().isBlank() && !updateClientDto.getEmail()
                 .matches("^[\\w\\.]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$")){
-            throw new IllegalArgumentException("email dont fit in correct template");
+            throw new ValidationViolationUserException("validation failed:email dont fit in correct template");
         }
         if(!updateClientDto.getPhone().matches("\\d{3} \\d{3} \\d{3}")){
-            throw new IllegalArgumentException("numer telefonu musi być w formacie 000 000 000");
+            throw new ValidationViolationUserException("validation failed:numer telefonu musi być w formacie 000 000 000");
         }
         return new Client( updateClientDto.getLogin(), updateClientDto.getEmail(), false, updateClientDto.getFirstName(),
                 updateClientDto.getLastName(), updateClientDto.getPhone() );

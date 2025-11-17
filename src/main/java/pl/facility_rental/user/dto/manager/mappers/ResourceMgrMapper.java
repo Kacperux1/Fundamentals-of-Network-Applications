@@ -6,6 +6,7 @@ import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
 import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
+import pl.facility_rental.user.exceptions.ValidationViolationUserException;
 
 import java.util.concurrent.ExecutionException;
 
@@ -17,11 +18,11 @@ public class ResourceMgrMapper {
         boolean active = createResourceMgrDto.isActive();
 
         if(login.isBlank()){
-            throw new IllegalArgumentException("login nie może być pusty");
+            throw new ValidationViolationUserException("validation failed:login nie może być pusty");
         }
 
         if(email.isBlank()){
-            throw new IllegalArgumentException("emial nie może być pusty");
+            throw new ValidationViolationUserException("validation failed:emial nie może być pusty");
         }
 
         return new ResourceMgr(createResourceMgrDto.getLogin(), createResourceMgrDto.getEmail(), createResourceMgrDto.isActive());
@@ -35,7 +36,7 @@ public class ResourceMgrMapper {
     public ResourceMgr updateManager(UpdateResourceMgrDto updateResourceMgrDto) {
         if(!updateResourceMgrDto.getEmail().isBlank() && !updateResourceMgrDto.getEmail()
                 .matches("^[\\w\\.]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$")){
-            throw new IllegalArgumentException("email dont fit in correct template");
+            throw new ValidationViolationUserException("validation failed:email dont fit in correct template");
         }
         return new ResourceMgr(updateResourceMgrDto.getLogin(), updateResourceMgrDto.getEmail(), false);
     }

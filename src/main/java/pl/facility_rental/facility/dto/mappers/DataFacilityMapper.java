@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.model.MongoSportsFacility;
 
+import java.util.Optional;
+
 @Component
 public class DataFacilityMapper {
 

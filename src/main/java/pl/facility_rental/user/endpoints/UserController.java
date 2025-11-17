@@ -1,6 +1,7 @@
 package pl.facility_rental.user.endpoints;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.user.business.UserService;
@@ -23,8 +24,11 @@ import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.mappers.ResourceMgrMapper;
 import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
+import pl.facility_rental.user.exceptions.ValidationViolationUserException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -147,5 +151,17 @@ class UserController {
         throw new RecognizingUserTypeException("Error retrieving the user's type.");
     }
 
+    @RestControllerAdvice
+    public static class GlobalExceptionHandler {
+
+        @ExceptionHandler(ValidationViolationUserException.class)
+        public ResponseEntity<Map<String, String>> handleValidationViolation(ValidationViolationUserException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("error", ex.getMessage());
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        }
+
+    }
 
 }

@@ -27,7 +27,7 @@ import pl.facility_rental.facility.model.MongoSportsFacility;
 import java.util.*;
 
 @Component("mongo_facility_repo")
-public class MongoFacilityRepository implements FacilityRepository {
+public  class MongoFacilityRepository implements FacilityRepository {
 
     private final ConnectionString connectionString;
     private final CodecRegistry pojoCodecRegistry;
@@ -68,7 +68,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public SportsFacility save(SportsFacility facility){
+    public synchronized SportsFacility save(SportsFacility facility){
         MongoSportsFacility mongoFacility = dataFacilityMapper.mapToDataLayer(facility);
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         ObjectId id = facilitiesColletcion.insertOne(mongoFacility).getInsertedId().asObjectId().getValue();
@@ -77,14 +77,20 @@ public class MongoFacilityRepository implements FacilityRepository {
 
 
     @Override
-    public Optional<SportsFacility> findById(String id) {
+    public synchronized Optional<SportsFacility> findById(String id) {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
-        return Optional.ofNullable(dataFacilityMapper.mapToBusinessLayer(facilitiesColletcion.find(filter).first()));
+        MongoSportsFacility mongoFacility = facilitiesColletcion.find(filter).first();
+
+        if (mongoFacility == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(dataFacilityMapper.mapToBusinessLayer(mongoFacility));
     }
 
     @Override
-    public SportsFacility update(String id,  SportsFacility facility) throws Exception {
+    public synchronized SportsFacility update(String id,  SportsFacility facility) throws Exception {
 
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
 
@@ -96,7 +102,7 @@ public class MongoFacilityRepository implements FacilityRepository {
         if(facility.getName() != null &&  !facility.getName().isEmpty()){
             pipeline.add(Updates.set("name", facility.getName()));
         } if(facility.getPricePerHour() != null) {
-            pipeline.add(Updates.set("pricePerHour", facility.getPricePerHour()));
+            pipeline.add(Updates.set("base_price", facility.getPricePerHour()));
         }
         Bson update = Updates.combine(
                    pipeline.toArray(new Bson[0])
@@ -114,7 +120,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public SportsFacility delete(String id) throws Exception {
+    public synchronized SportsFacility delete(String id) throws Exception {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter  = Filters.eq("_id", new ObjectId(id));
         MongoSportsFacility deleted = facilitiesColletcion.find(filter).first();
