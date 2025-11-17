@@ -5,27 +5,18 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import pl.facility_rental.FacilityRentalApplication;
-import pl.facility_rental.facility.business.FacilityService;
-import pl.facility_rental.facility.dto.CreateFacilityDto;
-import pl.facility_rental.facility.dto.FacilityMapper;
-import pl.facility_rental.facility.dto.ReturnedFacilityDto;
+import io.restassured.response.Response;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = FacilityRentalApplication.class)
 public class FacilityIntegrationTest {
@@ -46,118 +37,162 @@ public class FacilityIntegrationTest {
         RestAssured.port = port;
     }
 
-    private CreateFacilityDto sampleInput() {
-        return new CreateFacilityDto(
-                "Boisko",
-                "12A",
-                "Długa",
-                "Warszawa",
-                "00-001",
-                new BigDecimal("100")
-        );
-    }
-
-    private ReturnedFacilityDto sampleReturned() {
-        return new ReturnedFacilityDto(
-                "1",
-                "Boisko",
-                "12A",
-                "Długa",
-                "Warszawa",
-                "00-001",
-                new BigDecimal("100")
-        );
-    }
-
-    // -----------------------------------------------------
-    // GET /facilities
-    // -----------------------------------------------------
-    @Test
-    void shouldReturnAllFacilities() throws Exception {
-        ReturnedFacilityDto dto = sampleReturned();
-
-        Mockito.when(facilityService.findAll()).thenReturn(List.of(Mockito.mock(Object.class)));
-        Mockito.when(facilityMapper.getFacilityDetails(any())).thenReturn(dto);
-
-        mockMvc.perform(get("/facilities"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value("1"));
-    }
-
-    // -----------------------------------------------------
-    // GET /facilities/{id}
-    // -----------------------------------------------------
-    @Test
-    void shouldReturnFacilityById() throws Exception {
-        ReturnedFacilityDto dto = sampleReturned();
-
-        Mockito.when(facilityService.findById("1")).thenReturn(Optional.of(Mockito.mock(Object.class)));
-        Mockito.when(facilityMapper.getFacilityDetails(any())).thenReturn(dto);
-
-        mockMvc.perform(get("/facilities/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("1"));
+    private Map<String, Object> sampleBody() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "Boisko");
+        body.put("streetNumber", "12A");
+        body.put("street", "Długa");
+        body.put("city", "Warszawa");
+        body.put("postalCode", "00-001");
+        body.put("basePrice", 100);
+        return body;
     }
 
     @Test
-    void shouldReturn404WhenFacilityNotFound() throws Exception {
-        Mockito.when(facilityService.findById("999")).thenReturn(Optional.empty());
+    public void shouldSuccessfullyCreateFacility() {
 
-        mockMvc.perform(get("/facilities/999"))
-                .andExpect(status().isNotFound());
+        Map<String, Object> body = sampleBody();
+
+        given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/facilities")
+                .then()
+                .log().all()
+                .statusCode(201)
+                .body("id", notNullValue())
+                .body("name", equalTo("Boisko"))
+                .body("streetNumber", equalTo("12A"))
+                .body("street", equalTo("Długa"))
+                .body("city", equalTo("Warszawa"))
+                .body("postalCode", equalTo("00-001"))
+                .body("price", equalTo(100));
     }
 
-    // -----------------------------------------------------
-    // POST /facilities
-    // -----------------------------------------------------
     @Test
-    void shouldCreateFacility() throws Exception {
-        CreateFacilityDto input = sampleInput();
-        ReturnedFacilityDto output = sampleReturned();
+    public void shouldSuccessfullyGetFacilityById() {
 
-        Mockito.when(facilityMapper.CreateFacilityRequest(any())).thenReturn(Mockito.mock(Object.class));
-        Mockito.when(facilityService.save(any())).thenReturn(Mockito.mock(Object.class));
-        Mockito.when(facilityMapper.getFacilityDetails(any())).thenReturn(output);
+        Map<String, Object> body = sampleBody();
 
-        mockMvc.perform(post("/facilities")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value("1"));
+        Response created = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/facilities")
+                .then()
+                .extract().response();
+
+        String id = created.jsonPath().getString("id");
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get("/facilities/" + id)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", equalTo(id))
+                .body("name", equalTo("Boisko"))
+                .body("city", equalTo("Warszawa"));
     }
 
-    // -----------------------------------------------------
-    // DELETE /facilities/{id}
-    // -----------------------------------------------------
     @Test
-    void shouldDeleteFacility() throws Exception {
-        ReturnedFacilityDto output = sampleReturned();
+    public void shouldSuccessfullyGetAllFacilities() {
 
-        Mockito.when(facilityService.deleteById("1")).thenReturn(Mockito.mock(Object.class));
-        Mockito.when(facilityMapper.getFacilityDetails(any())).thenReturn(output);
+        Map<String, Object> body = sampleBody();
 
-        mockMvc.perform(delete("/facilities/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("1"));
+        given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/facilities")
+                .then()
+                .statusCode(201);
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get("/facilities")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("size()", greaterThan(0));
     }
 
-    // -----------------------------------------------------
-    // PUT /facilities/{id}
-    // -----------------------------------------------------
     @Test
-    void shouldUpdateFacility() throws Exception {
-        CreateFacilityDto input = sampleInput();
-        ReturnedFacilityDto output = sampleReturned();
+    public void shouldSuccessfullyUpdateFacility() {
 
-        Mockito.when(facilityMapper.CreateFacilityRequest(any())).thenReturn(Mockito.mock(Object.class));
-        Mockito.when(facilityService.update(any(), any())).thenReturn(Mockito.mock(Object.class));
-        Mockito.when(facilityMapper.getFacilityDetails(any())).thenReturn(output);
+        Map<String, Object> body = sampleBody();
 
-        mockMvc.perform(put("/facilities/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("1"));
+        Response created = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/facilities")
+                .then()
+                .extract().response();
+
+        String id = created.jsonPath().getString("id");
+
+        Map<String, Object> update = new HashMap<>();
+        update.put("name", "Hala Sportowa");
+        update.put("streetNumber", "7");
+        update.put("street", "Krótka");
+        update.put("city", "Gdańsk");
+        update.put("postalCode", "80-100");
+        update.put("basePrice", 250);
+
+        given()
+                .header("Content-Type", "application/json")
+                .body(update)
+                .when()
+                .put("/facilities/" + id)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("name", equalTo("Hala Sportowa"))
+                .body("city", equalTo("Gdańsk"))
+                .body("streetNumber", equalTo("7"))
+                .body("postalCode", equalTo("80-100"))
+                .body("price", equalTo(250));
+    }
+
+    @Test
+    public void shouldSuccessfullyDeleteFacility() {
+
+        Map<String, Object> body = sampleBody();
+
+        Response created = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/facilities")
+                .then()
+                .extract().response();
+
+        String id = created.jsonPath().getString("id");
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .delete("/facilities/" + id)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", equalTo(id));
+    }
+
+    @Test
+    public void shouldReturn404ForMissingFacility() {
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get("/facilities/9999")
+                .then()
+                .log().all()
+                .statusCode(404);
     }
 }
 
