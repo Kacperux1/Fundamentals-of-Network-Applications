@@ -10,7 +10,6 @@ import pl.facility_rental.user.dto.admin.ReturnedAdminDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
 
-import java.util.UUID;
 @JsonTypeInfo(
         use =  JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -19,19 +18,19 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ReturnedClientDto.class, name = "client"),
         @JsonSubTypes.Type(value = ReturnedAdminDto.class, name = "administrator"),
-        @JsonSubTypes.Type(value = ReturnedResourceMgrDto.class, name = "manager")
+        @JsonSubTypes.Type(value = ReturnedResourceMgrDto.class, name = "resourceMgr")
 })
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class ReturnedUserDto {
 
-    private String uuid;
+    private String id;
 
     private String login;
 
     private String email;
 
-    private boolean status;
+    private boolean active;
 
 }

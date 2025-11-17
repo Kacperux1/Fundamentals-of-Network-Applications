@@ -1,6 +1,6 @@
-db =  db.getSiblingDb("facility_rental")
 
-db.collection("users").insertMany([
+
+db.users.insertMany([
     {
         login: "admin",
         email: "admin@example.com",
@@ -34,7 +34,7 @@ db.collection("users").insertMany([
     ]
 );
 
-db.collection("facilities").insertMany([
+db.facilities.insertMany([
     {
         name: "hala w Zatoce Sportu",
         street_number: "10",
@@ -61,7 +61,7 @@ db.collection("facilities").insertMany([
     }
 ]);
 
-db.collection("rents").insertOne(
+db.rents.insertOne(
     {
         client: {
             login: "stachudzons",
@@ -82,6 +82,6 @@ db.collection("rents").insertOne(
         },
         start_date:ISODate("2025-11-16T15:30:00Z"),
         end_date:ISODate("2025-11-16T17:30:00Z"),
-        base_price: NumberDecimal("100.00")
+        total_price: NumberDecimal("100.00")
     }
 );

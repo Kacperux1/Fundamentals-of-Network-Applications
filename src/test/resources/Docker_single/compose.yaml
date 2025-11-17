@@ -1,7 +1,6 @@
 services:
   mongo_1_single:
     image: mongo:8.0
-    container_name: mongodb1_single
     hostname: mongodb1_single
     ports:
       - "27017:27017"

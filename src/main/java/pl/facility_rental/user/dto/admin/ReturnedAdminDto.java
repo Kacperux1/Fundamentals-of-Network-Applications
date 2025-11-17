@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class ReturnedAdminDto extends ReturnedUserDto {
 
-    public ReturnedAdminDto(String uuid, String login, String email, boolean status) {
-        super(uuid, login, email, status);
+    public ReturnedAdminDto(String id, String login, String email, boolean status) {
+        super(id, login, email, status);
     }
 
 }

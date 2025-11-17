@@ -65,13 +65,13 @@ class UserController {
                 "User with given id was not found"));
     }
 
-    @GetMapping("/{login}")
+    @GetMapping("/login/{login}")
     public ReturnedUserDto getUserByLoginStrict(@PathVariable("login") String login) throws Exception {
         return userService.getUserByLoginStrict(login).map(this::mapSubtypes).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with login " + login + " was not found"));
     }
 
-    @GetMapping("/{loginPart}")
+    @GetMapping("/login_matching/{loginPart}")
     public List<ReturnedUserDto> getUserByLoginPart(@PathVariable("loginPart") String loginPart) throws Exception {
         return userService.getUsersIfLoginMatchesValue(loginPart).stream().map(this::mapSubtypes).toList();
     }

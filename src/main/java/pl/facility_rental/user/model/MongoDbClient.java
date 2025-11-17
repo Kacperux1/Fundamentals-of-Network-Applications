@@ -2,6 +2,7 @@ package pl.facility_rental.user.model;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
@@ -11,7 +12,8 @@ import org.bson.types.ObjectId;
 import java.util.UUID;
 
 @Getter
-@BsonDiscriminator( value = "Client")
+@BsonDiscriminator( value = "client")
+@NoArgsConstructor
 public class MongoDbClient extends MongoUser {
     @BsonProperty("first_name")
     private String firstName;
@@ -20,7 +22,7 @@ public class MongoDbClient extends MongoUser {
     @BsonProperty("phone")
     private String phone;
 
-    @BsonCreator
+
     public MongoDbClient(@BsonId ObjectId id, @BsonProperty("login") String login, @BsonProperty("email")String email,
                          @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
                          @BsonProperty("last_name") String lastName, @BsonProperty("phone") String phone) {

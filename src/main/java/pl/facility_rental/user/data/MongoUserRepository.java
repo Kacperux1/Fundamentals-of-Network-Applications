@@ -2,7 +2,6 @@ package pl.facility_rental.user.data;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -10,8 +9,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
-import lombok.SneakyThrows;
-import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -19,7 +16,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.Administrator;
@@ -59,7 +56,7 @@ class MongoUserRepository implements UserRepository {
 
 
     public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
-                               //@Value("${mongo.database}") String databaseName,
+                               @Value("${mongo.database}") String databaseName,
                                @Value("${mongo.user}") String user,
                                @Value("${mongo.password}") String password, ClientDataMapper clientDataMapper, AdminDataMapper adminDataMapper, ManagerDataMapping managerDataMapping) {
         this.connectionString = new ConnectionString(connectionPlainString);
@@ -96,7 +93,6 @@ class MongoUserRepository implements UserRepository {
 
     @Override
     public User save(User user) throws Exception {
-        initCollectionSchema();
         MongoUser mongoUser = mapSubtypeToUserDataModel(user);
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users",  MongoUser.class);
         userCollection.insertOne(mongoUser);
@@ -229,42 +225,6 @@ class MongoUserRepository implements UserRepository {
         throw new Exception("there was an error retrieving the user type.");
     }
 
-
-    private void initCollectionSchema() {
-        if(sportFacilityRentalDatabase.listCollectionNames().into(new ArrayList<>()).contains("users")){
-            return;
-        }
-        try {
-            ValidationOptions validationOptions = new ValidationOptions().validator(
-                    Document.parse("""
-                            {
-                              $jsonSchema: {
-                                bsonType: "object",
-                                required: ["login", "email", "active"],
-                                properties: {
-                                  login: {
-                                    bsonType: "string"
-                                  },
-                                  active: {
-                                    bsonType: "bool"
-                                  }
-                                }
-                              }
-                            }
-                            """)
-            );
-            sportFacilityRentalDatabase.createCollection("users", new CreateCollectionOptions()
-                    .validationOptions(validationOptions));
-        } catch (MongoCommandException e) {
-            LoggerFactory.getLogger(UserRepository.class).error(e.getMessage());
-        }
-        try {
-            sportFacilityRentalDatabase.getCollection("users").createIndex(Indexes.ascending("login"),
-                    new IndexOptions().unique(true));
-        } catch (MongoCommandException e) {
-            LoggerFactory.getLogger(UserRepository.class).error("Error while creating indexes for login uniquity");
-        }
-    }
 
 
 }

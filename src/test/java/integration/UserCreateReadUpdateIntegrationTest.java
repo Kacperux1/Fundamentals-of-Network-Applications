@@ -1,14 +1,13 @@
 package integration;
 
-import com.mongodb.client.MongoClient;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+
 import pl.facility_rental.FacilityRentalApplication;
 
 import java.util.HashMap;
@@ -16,12 +15,15 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = FacilityRentalApplication.class)
 public class UserCreateReadUpdateIntegrationTest {
 
     @LocalServerPort
     int port;
+
 
 
     @BeforeAll
@@ -36,7 +38,7 @@ public class UserCreateReadUpdateIntegrationTest {
     }
 
     @Test
-    public void shouldSuccessfullyCreateUser() {
+    public void shouldSuccessfullyCreateUserAsClient() {
 
         Map<String, Object> body = new HashMap<>();
         body.put("login", "superLogin");
@@ -52,14 +54,240 @@ public class UserCreateReadUpdateIntegrationTest {
                 .when()
                 .post("/users")
                 .then()
-                .statusCode(200)
+                .log().all()
+                .statusCode(201)
+                .body("id", notNullValue())
                 .body("login", equalTo("superLogin"))
                 .body("active", equalTo(true))
+                .body("email", equalTo("example@com.com"))
                 .body("first_name", equalTo("John"))
                 .body("last_name", equalTo("Standish"))
                 .body("phone", equalTo("5555555555"));
 
     }
+
+    @Test
+    public void shouldNotCreateTwoUsersWithOneLogin() {
+        //given
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "superLogin");
+        body.put("email", "example@com.com");
+        body.put("active", true);
+        body.put("type", "client");
+        body.put("first_name", "John");
+        body.put("last_name", "Standish");
+        body.put("phone", "5555555555");
+
+        Map<String, Object> body1 = new HashMap<>();
+        body.put("login", "superLogin");
+        body.put("email", "example123@com.com");
+        body.put("active", false);
+        body.put("type", "client");
+        body.put("first_name", "John");
+        body.put("last_name", "Standish");
+        body.put("phone", "123456789");
+        //w
+        given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .log().all()
+                .statusCode(201);
+        //t
+        given()
+                .header("Content-Type", "application/json")
+                .body(body1)
+                .when()
+                .post("/users")
+                .then()
+                .log().all()
+                .statusCode(500); //bezwzglednie do zmiany!!!
+
+
+    }
+
+    @Test
+    public void shouldSuccessfullyGetUserById() {
+        //g
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "super");
+        body.put("email", "przyklad@com.com");
+        body.put("active", true);
+        body.put("type", "client");
+        body.put("first_name", "John");
+        body.put("last_name", "Doe");
+        body.put("phone", "987654321");
+        //w
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .extract().response();
+        //th
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get("/users/"+response.jsonPath().getString("id"))
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("login", equalTo("super"))
+                .body("active", equalTo(true))
+                .body("type", equalTo("client"))
+                .body("first_name", equalTo("John"))
+                .body("last_name", equalTo("Doe"))
+                .body("phone", equalTo("987654321"));
+    }
+
+    @Test
+    public void shouldSuccessfullyGetUserByLogin() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "wow");
+        body.put("email", "siemanko@com.com");
+        body.put("active", true);
+        body.put("type", "client");
+        body.put("first_name", "John");
+        body.put("last_name", "Doe");
+        body.put("phone", "987654321");
+
+        //w
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .extract().response();
+
+        //th
+        given()
+        .header("Content-Type", "application/json")
+                .when()
+                .get("/users/"+response.jsonPath().getString("login"))
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("active", equalTo(true))
+                .body("email", equalTo("siemanko@com.com"))
+                .body("type", equalTo("client"))
+                .body("first_name", equalTo("John"))
+                .body("last_name", equalTo("Doe"))
+                .body("phone", equalTo("987654321"));
+    }
+
+    @Test
+    public void shouldSuccessfullyGetUserByLoginPart() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "kacperux");
+        body.put("email", "kacper@com.com");
+        body.put("active", true);
+        body.put("type", "client");
+        body.put("first_name", "John");
+        body.put("last_name", "Doe");
+        body.put("phone", "987654321");
+
+        //w
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .extract().response();
+
+        //th
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get("/users/kacper")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("login", equalTo("kacperux"))
+                .body("active", equalTo(true))
+                .body("type", equalTo("client"))
+                .body("first_name", equalTo("John"))
+                .body("last_name", equalTo("Doe"))
+                .body("phone", equalTo("987654321"));
+    }
+
+    @Test
+    public void shouldSuccesfullyUpdateUser() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "King");
+        body.put("email", "kingdom@com.com");
+        body.put("active", true);
+        body.put("type", "administrator");
+
+        //w
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .extract().response();
+        Map<String, Object> bodyUpdate = new HashMap<>();
+        bodyUpdate.put("login", "Queen");
+        bodyUpdate.put("email", "duchy@com.com");
+        //th
+        given()
+        .header("Content-Type", "application/json")
+                .body(bodyUpdate)
+                .when()
+                .post("/users"+response.jsonPath().getString("id"))
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("login", equalTo("Queen"))
+                .body("email", equalTo("duchy@com.com"))
+                .body("active", equalTo(true))
+                .body("type", equalTo("administrator"));
+    }
+
+    @Test
+    public void shouldSuccesfullyDeactivateUser() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "Duke");
+        body.put("email", "forest@com.com");
+        body.put("active", true);
+        body.put("type", "resourceMgr");
+
+        //w
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .extract().response();
+        //th
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .patch("/users/deactivate"+response.jsonPath().getString("id"))
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("login", equalTo("Duke"))
+                .body("email", equalTo("forest@com.com"))
+                .body("active", equalTo(false))
+                .body("type", equalTo("resourceMgr"));
+    }
+
+
+
+
+
 
 
 }

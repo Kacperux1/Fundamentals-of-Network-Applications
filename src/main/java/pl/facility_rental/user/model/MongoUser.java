@@ -31,7 +31,7 @@ public abstract class MongoUser {
     @BsonProperty("active")
     private boolean active;
     @BsonCreator
-    public MongoUser(@BsonId ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
+    public MongoUser(@BsonProperty("_id") ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
                      @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;

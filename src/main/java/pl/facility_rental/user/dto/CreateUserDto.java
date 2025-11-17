@@ -17,7 +17,7 @@ import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CreateClientDto.class, name = "client"),
         @JsonSubTypes.Type(value = CreateAdminDto.class, name = "administrator"),
-        @JsonSubTypes.Type(value = CreateResourceMgrDto.class, name = "manager")
+        @JsonSubTypes.Type(value = CreateResourceMgrDto.class, name = "resourceMgr")
 })
 @AllArgsConstructor
 @Getter

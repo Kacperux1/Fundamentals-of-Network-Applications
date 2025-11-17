@@ -22,7 +22,7 @@ public class ClientDataMapper {
     }
 
     public Client mapToBusinessLayer(MongoDbClient client) {
-        return new Client(client.getId().toString(),client.getLogin(), client.getEmail(), client.isActive(),
+        return new Client(client.getId().toHexString(),client.getLogin(), client.getEmail(), client.isActive(),
                 client.getFirstName(), client.getLastName(), client.getPhone());
     }
 }

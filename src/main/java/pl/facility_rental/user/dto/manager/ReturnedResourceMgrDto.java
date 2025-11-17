@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class ReturnedResourceMgrDto extends ReturnedUserDto {
 
-    public ReturnedResourceMgrDto(String uuid, String login, String email, boolean status) {
-        super(uuid, login, email, status);
+    public ReturnedResourceMgrDto(String id, String login, String email, boolean status) {
+        super(id, login, email, status);
     }
 }
