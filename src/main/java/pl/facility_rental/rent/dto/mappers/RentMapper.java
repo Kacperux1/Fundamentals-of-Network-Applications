@@ -26,9 +26,18 @@ public class RentMapper {
     public Rent CreateRentRequest(CreateRentDto createRentDto) throws Exception {
         Optional<Client> pickedClient = userService.getClientById(createRentDto.clientId());
         Optional<SportsFacility> pickedFacility = facilityService.findById(createRentDto.facilityId());
-        if(pickedClient.isEmpty() || pickedFacility.isEmpty()) {
-            throw new Exception("Klienta albo obiektu ni ma!");
+        if(pickedClient.isEmpty()) {
+            throw new Exception("Klienta ni ma w bazie!");
         }
+        if(pickedFacility.isEmpty()) {
+            throw new Exception("Obiektu ni ma w bazie!");
+        }
+
+        if(!createRentDto.endDate().isAfter(createRentDto.startDate())){
+            throw new Exception("Data rozpoczęcia nie może być późniejsza niż data zakończenia!");
+        }
+
+
         return new Rent(pickedClient.get(), pickedFacility.get(), createRentDto.startDate(), createRentDto.endDate());
     }
 
