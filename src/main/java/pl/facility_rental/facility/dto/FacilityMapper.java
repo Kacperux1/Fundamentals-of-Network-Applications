@@ -10,7 +10,7 @@ public class FacilityMapper {
     public SportsFacility CreateFacilityRequest(CreateFacilityDto createFacilityDto) {
         return new  SportsFacility(createFacilityDto.name(), createFacilityDto.streetNumber()
                 , createFacilityDto.street(), createFacilityDto.city(), createFacilityDto.postalCode(),
-                createFacilityDto.price());
+                createFacilityDto.basePrice());
     }
 
     public ReturnedFacilityDto getFacilityDetails(SportsFacility sportsFacility) {

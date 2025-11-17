@@ -1,10 +1,12 @@
-package pl.facility_rental.rent.dto;
+package pl.facility_rental.rent.dto.mappers;
 
 
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.rent.business.Rent;
+import pl.facility_rental.rent.dto.CreateRentDto;
+import pl.facility_rental.rent.dto.ReturnedRentDto;
 import pl.facility_rental.user.business.UserService;
 import pl.facility_rental.user.business.model.Client;
 

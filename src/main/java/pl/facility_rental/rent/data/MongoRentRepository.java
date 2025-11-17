@@ -9,7 +9,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import jakarta.annotation.PostConstruct;
-import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -17,18 +16,17 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.rent.business.Rent;
-import pl.facility_rental.rent.dto.DataRentMapper;
+import pl.facility_rental.rent.dto.mappers.DataRentMapper;
 import pl.facility_rental.rent.model.MongoRent;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component("mongo_rent_repo")
 public class MongoRentRepository implements RentRepository {
@@ -74,8 +72,8 @@ public class MongoRentRepository implements RentRepository {
     public Rent save(Rent rent) {
         MongoRent mongoRent = dataRentMapper.mapToDataLayer(rent);
         MongoCollection<MongoRent> rentCollection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
-        rentCollection.insertOne(mongoRent);
-        return rent;
+        ObjectId id = rentCollection.insertOne(mongoRent).getInsertedId().asObjectId().getValue();
+        return dataRentMapper.mapToBusinessLayer(rentCollection.find(Filters.eq("_id", id)).first());
     }
 
     @Override
@@ -127,14 +125,14 @@ public class MongoRentRepository implements RentRepository {
     @Override
     public List<Rent> findRentsForFacility(String facilityId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
-        Bson filter = Filters.eq("facility.id", facilityId);
+        Bson filter = Filters.eq("facility._id", new ObjectId(facilityId));
         return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
     }
 
     @Override
     public List<Rent> getCurrentAndPastRentsForClient(String clientId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
-        Bson filter = Filters.and(Filters.eq("client.id", clientId),
+        Bson filter = Filters.and(Filters.eq("client._id", new ObjectId(clientId)),
                 Filters.lte("start_date", LocalDateTime.now()),
                 Filters.lte("end_date", LocalDateTime.now()));
         return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
@@ -144,7 +142,7 @@ public class MongoRentRepository implements RentRepository {
     @Override
     public Rent endRent(String rentId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
-        Bson filter = Filters.eq("facility.id",rentId);
+        Bson filter = Filters.eq("facility.id", new ObjectId(rentId));
         MongoRent updated = collection.find(filter).first();
         Bson update = Updates.combine(
                 Updates.set("end_date", LocalDateTime.now()),

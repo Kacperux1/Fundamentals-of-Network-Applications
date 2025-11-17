@@ -8,6 +8,6 @@ public record CreateFacilityDto(
         String street,
         String city,
         String postalCode,
-        BigDecimal price
+        BigDecimal basePrice
 ) {
 }

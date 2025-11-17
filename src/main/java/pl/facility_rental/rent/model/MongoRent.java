@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 import pl.facility_rental.user.business.model.Client;
 
 import pl.facility_rental.facility.model.MongoSportsFacility;
+import pl.facility_rental.user.model.MongoDbClient;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -24,7 +25,7 @@ public class MongoRent {
     @BsonId
     private ObjectId id;
     @BsonProperty("client")
-    private Client client;
+    private MongoDbClient client;
     @BsonProperty("facility")
     private MongoSportsFacility sportsFacility;
     @BsonProperty("start_date")
@@ -36,7 +37,7 @@ public class MongoRent {
     private BigDecimal totalPrice;
 
     @BsonCreator
-    public MongoRent(@BsonId ObjectId id, @BsonProperty("client") Client client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
+    public MongoRent(@BsonId ObjectId id, @BsonProperty("client") MongoDbClient client, @BsonProperty("facility") MongoSportsFacility sportsFacility,
                      @BsonProperty("start_date") LocalDateTime startDate, @BsonProperty("end_date") LocalDateTime endDate,
                      @BsonProperty("total_price") BigDecimal totalPrice) {
         this.id =  id;
@@ -52,7 +53,7 @@ public class MongoRent {
         }
     }
 
-    public MongoRent(Client client, MongoSportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
+    public MongoRent(MongoDbClient client, MongoSportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {
         this.client = client;
         this.sportsFacility = sportsFacility;
         this.startDate = startDate;

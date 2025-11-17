@@ -18,7 +18,6 @@ import java.util.UUID;
 @BsonDiscriminator("facilities")
 public class MongoSportsFacility {
     @BsonId
-    @BsonProperty("_id")
     private ObjectId id;
     @BsonProperty("name")
     private String name;

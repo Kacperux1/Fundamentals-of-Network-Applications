@@ -10,7 +10,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import jakarta.annotation.PostConstruct;
-import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -19,21 +18,13 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.DataFacilityMapper;
 import pl.facility_rental.facility.model.MongoSportsFacility;
-import pl.facility_rental.rent.business.Rent;
-import pl.facility_rental.rent.dto.DataRentMapper;
-import pl.facility_rental.rent.model.MongoRent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Component("mongo_facility_repo")
 public class MongoFacilityRepository implements FacilityRepository {
@@ -46,7 +37,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     private final DataFacilityMapper  dataFacilityMapper;
 
     public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
-                                   //@Value("${mongo.database}") String databaseName,
+                                   @Value("${mongo.database}") String databaseName,
                                    @Value("${mongo.user}") String user,
                                    @Value("${mongo.password}") String password, DataFacilityMapper dataFacilityMapper) {
         this.connectionString = new ConnectionString(connectionPlainString);
@@ -80,14 +71,15 @@ public class MongoFacilityRepository implements FacilityRepository {
     public SportsFacility save(SportsFacility facility){
         MongoSportsFacility mongoFacility = dataFacilityMapper.mapToDataLayer(facility);
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
-        facilitiesColletcion.insertOne(mongoFacility);
-        return dataFacilityMapper.mapToBusinessLayer(mongoFacility);
+        ObjectId id = facilitiesColletcion.insertOne(mongoFacility).getInsertedId().asObjectId().getValue();
+        return dataFacilityMapper.mapToBusinessLayer(facilitiesColletcion.find(Filters.eq("_id", id)).first());
     }
+
 
     @Override
     public Optional<SportsFacility> findById(String id) {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
-        Bson filter = Filters.eq("_id", id);
+        Bson filter = Filters.eq("_id", new ObjectId(id));
         return Optional.ofNullable(dataFacilityMapper.mapToBusinessLayer(facilitiesColletcion.find(filter).first()));
     }
 
@@ -124,7 +116,7 @@ public class MongoFacilityRepository implements FacilityRepository {
     @Override
     public SportsFacility delete(String id) throws Exception {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
-        Bson filter  = Filters.eq("_id", id);
+        Bson filter  = Filters.eq("_id", new ObjectId(id));
         MongoSportsFacility deleted = facilitiesColletcion.find(filter).first();
         if (deleted == null) {
             throw new Exception("Ni ma facility");
