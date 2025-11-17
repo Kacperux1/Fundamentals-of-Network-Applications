@@ -8,6 +8,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
+import com.mongodb.client.result.InsertOneResult;
 import jakarta.annotation.PostConstruct;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
@@ -17,6 +18,7 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.Administrator;
@@ -32,11 +34,7 @@ import pl.facility_rental.user.model.MongoResourceMgr;
 import pl.facility_rental.user.model.MongoUser;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Component("mongo_user_repo")
 class MongoUserRepository implements UserRepository {
@@ -94,17 +92,18 @@ class MongoUserRepository implements UserRepository {
     @Override
     public User save(User user) throws Exception {
         MongoUser mongoUser = mapSubtypeToUserDataModel(user);
-        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users",  MongoUser.class);
-        userCollection.insertOne(mongoUser);
-        return user;
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        InsertOneResult result = userCollection.insertOne(mongoUser);
+        ObjectId id = Objects.requireNonNull(result.getInsertedId()).asObjectId().getValue();
+        MongoUser foundUser = userCollection.find(Filters.eq("_id", id)).first();
+        return mapSubtypeToUserBusinessModel(foundUser);
     }
-
 
 
     @Override
     public Optional<User> findById(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-        Bson filter = Filters.eq("_id", id);
+        Bson filter = Filters.eq("_id", new ObjectId(id));
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
 
     }
@@ -114,7 +113,7 @@ class MongoUserRepository implements UserRepository {
     public User update(String userId, User user) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
 
-        Bson filter = Filters.eq("_id", userId);
+        Bson filter = Filters.eq("_id", new ObjectId(userId));
         List<Bson> pipeline = new ArrayList<>();
         if(user.getLogin() !=null && !user.getLogin().isEmpty()) {
             pipeline.add(Updates.set("login", user.getLogin()));
@@ -162,14 +161,14 @@ class MongoUserRepository implements UserRepository {
     @Override
     public Optional<Client> findClientById(String id) {
         MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
-        Bson filter = Filters.eq("_id", id);
+        Bson filter = Filters.eq("_id", new ObjectId(id));
         return Optional.ofNullable(clientDataMapper.mapToBusinessLayer(userCollection.find(filter).first()));
     }
 
     @Override
     public User setActiveStatus(String userId, boolean active) throws Exception {
-        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
-        Bson filter = Filters.eq("_id", userId);
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        Bson filter = Filters.eq("_id", new ObjectId(userId));
         Bson update = Updates.set("active", active);
         userCollection.updateOne(filter, update);
         return mapSubtypeToUserBusinessModel(userCollection.find(filter).first());
@@ -177,22 +176,22 @@ class MongoUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByStrictLogin(String login) throws Exception {
-        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("login", login);
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
     }
 
     @Override
     public List<User> findUsersIfLoginMatchesValue(String value) throws Exception {
-        MongoCollection<MongoDbClient> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoDbClient.class);
-        Bson filter = Filters.eq("login", "/.*"+value+"*/");
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        Bson filter = Filters.regex("login", ".*" + value + ".*", "i");
         return userCollection.find(filter).into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
     }
 
     @Override
     public User delete(String id) throws Exception {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-        Bson filter = Filters.eq("_id", id);
+        Bson filter = Filters.eq("_id", new ObjectId(id));
         var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());
         if (maybeFound.isEmpty()) {
             throw new Exception("No client with id " + id + " was found");

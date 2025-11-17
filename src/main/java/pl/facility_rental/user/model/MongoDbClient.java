@@ -12,7 +12,7 @@ import org.bson.types.ObjectId;
 import java.util.UUID;
 
 @Getter
-@BsonDiscriminator( value = "client")
+@BsonDiscriminator(value = "client")
 @NoArgsConstructor
 public class MongoDbClient extends MongoUser {
     @BsonProperty("first_name")
@@ -22,8 +22,8 @@ public class MongoDbClient extends MongoUser {
     @BsonProperty("phone")
     private String phone;
 
-
-    public MongoDbClient(@BsonId ObjectId id, @BsonProperty("login") String login, @BsonProperty("email")String email,
+    @BsonCreator
+    public MongoDbClient(@BsonProperty("_id") ObjectId id, @BsonProperty("login") String login, @BsonProperty("email")String email,
                          @BsonProperty("active") boolean active, @BsonProperty("first_name") String firstName,
                          @BsonProperty("last_name") String lastName, @BsonProperty("phone") String phone) {
         super(id, login, email, active);

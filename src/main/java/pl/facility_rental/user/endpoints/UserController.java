@@ -43,7 +43,7 @@ class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedUserDto createUser(@RequestBody CreateClientDto createUserDto) throws Exception {
+    public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
         return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
     }
 

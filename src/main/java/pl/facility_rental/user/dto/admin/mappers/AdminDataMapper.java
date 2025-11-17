@@ -17,7 +17,7 @@ public class AdminDataMapper {
     }
 
     public Administrator mapToBusinessLayer(MongoAdministrator administrator){
-        return new Administrator(administrator.getId().toString(),
+        return new Administrator(administrator.getId().toHexString(),
                 administrator.getLogin(), administrator.getEmail(), administrator.isActive());
     }
 }

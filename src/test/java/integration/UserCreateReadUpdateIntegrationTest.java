@@ -42,7 +42,7 @@ public class UserCreateReadUpdateIntegrationTest {
 
         Map<String, Object> body = new HashMap<>();
         body.put("login", "superLogin");
-        body.put("email", "example@com.com");
+        body.put("email", "example321@com.com");
         body.put("active", true);
         body.put("type", "client");
         body.put("first_name", "John");
@@ -59,7 +59,7 @@ public class UserCreateReadUpdateIntegrationTest {
                 .body("id", notNullValue())
                 .body("login", equalTo("superLogin"))
                 .body("active", equalTo(true))
-                .body("email", equalTo("example@com.com"))
+                .body("email", equalTo("example321@com.com"))
                 .body("first_name", equalTo("John"))
                 .body("last_name", equalTo("Standish"))
                 .body("phone", equalTo("5555555555"));
@@ -70,7 +70,7 @@ public class UserCreateReadUpdateIntegrationTest {
     public void shouldNotCreateTwoUsersWithOneLogin() {
         //given
         Map<String, Object> body = new HashMap<>();
-        body.put("login", "superLogin");
+        body.put("login", "superLogin1");
         body.put("email", "example@com.com");
         body.put("active", true);
         body.put("type", "client");
@@ -79,13 +79,13 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("phone", "5555555555");
 
         Map<String, Object> body1 = new HashMap<>();
-        body.put("login", "superLogin");
-        body.put("email", "example123@com.com");
-        body.put("active", false);
-        body.put("type", "client");
-        body.put("first_name", "John");
-        body.put("last_name", "Standish");
-        body.put("phone", "123456789");
+        body1.put("login", "superLogin1");
+        body1.put("email", "example123@com.com");
+        body1.put("active", false);
+        body1.put("type", "client");
+        body1.put("first_name", "John");
+        body1.put("last_name", "Standish");
+        body1.put("phone", "123456789");
         //w
         given()
                 .header("Content-Type", "application/json")
@@ -103,6 +103,7 @@ public class UserCreateReadUpdateIntegrationTest {
                 .post("/users")
                 .then()
                 .log().all()
+
                 .statusCode(500); //bezwzglednie do zmiany!!!
 
 
@@ -168,7 +169,7 @@ public class UserCreateReadUpdateIntegrationTest {
         given()
         .header("Content-Type", "application/json")
                 .when()
-                .get("/users/"+response.jsonPath().getString("login"))
+                .get("/users/login/"+response.jsonPath().getString("login"))
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -205,17 +206,17 @@ public class UserCreateReadUpdateIntegrationTest {
         given()
                 .header("Content-Type", "application/json")
                 .when()
-                .get("/users/kacper")
+                .get("/users/login_matching/kacper")
                 .then()
                 .log().all()
                 .statusCode(200)
                 .body("id", notNullValue())
-                .body("login", equalTo("kacperux"))
-                .body("active", equalTo(true))
-                .body("type", equalTo("client"))
-                .body("first_name", equalTo("John"))
-                .body("last_name", equalTo("Doe"))
-                .body("phone", equalTo("987654321"));
+                .body("[0].login", equalTo("kacperux"))
+                .body("[0].active", equalTo(true))
+                .body("[0].type", equalTo("client"))
+                .body("[0].first_name", equalTo("John"))
+                .body("[0].last_name", equalTo("Doe"))
+                .body("[0].phone", equalTo("987654321"));
     }
 
     @Test
@@ -237,15 +238,16 @@ public class UserCreateReadUpdateIntegrationTest {
         Map<String, Object> bodyUpdate = new HashMap<>();
         bodyUpdate.put("login", "Queen");
         bodyUpdate.put("email", "duchy@com.com");
+        bodyUpdate.put("type", "administrator");
         //th
         given()
         .header("Content-Type", "application/json")
                 .body(bodyUpdate)
                 .when()
-                .post("/users"+response.jsonPath().getString("id"))
+                .put("/users/"+response.jsonPath().getString("id"))
                 .then()
                 .log().all()
-                .statusCode(200)
+                    .statusCode(200)
                 .body("id", notNullValue())
                 .body("login", equalTo("Queen"))
                 .body("email", equalTo("duchy@com.com"))
@@ -273,7 +275,7 @@ public class UserCreateReadUpdateIntegrationTest {
         given()
                 .header("Content-Type", "application/json")
                 .when()
-                .patch("/users/deactivate"+response.jsonPath().getString("id"))
+                .patch("/users/deactivate/"+response.jsonPath().getString("id"))
                 .then()
                 .log().all()
                 .statusCode(200)

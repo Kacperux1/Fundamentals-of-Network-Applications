@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 import java.util.UUID;
 
 @Getter
-@BsonDiscriminator(key="_class", value="administrator")
+@BsonDiscriminator(value="administrator")
 public class MongoAdministrator extends MongoUser {
 //    @BsonProperty("first_name")
 //    private String firstName;
@@ -18,17 +18,17 @@ public class MongoAdministrator extends MongoUser {
 //    private String lastName;
 
     @BsonCreator
-    public MongoAdministrator(@BsonProperty("login") String login, @BsonProperty("email") String email,
-                              @BsonProperty("status") boolean status //@BsonProperty("first_name") String firstName,
+    public MongoAdministrator(@BsonProperty("id") ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
+                              @BsonProperty("active") boolean status //@BsonProperty("first_name") String firstName,
                               //@BsonProperty("last_name") String lastName//
                 ) {
-        super(login, email, status);
+        super(id, login, email, status);
 //        this.firstName = firstName;
 //        this.lastName = lastName;
     }
 
-    public MongoAdministrator(ObjectId id, String login, String email, boolean status) {
-        super(id, login, email, status);
+    public MongoAdministrator(String login, String email, boolean status) {
+        super(login, email, status);
     }
 
 }
