@@ -35,13 +35,17 @@ public  class MongoFacilityRepository implements FacilityRepository {
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
     private final DataFacilityMapper  dataFacilityMapper;
+    private final RedisFacilityRepository redisFacilityRepository;
 
     public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
                                    @Value("${mongo.database}") String databaseName,
                                    @Value("${mongo.user}") String user,
-                                   @Value("${mongo.password}") String password, DataFacilityMapper dataFacilityMapper) {
+                                   @Value("${mongo.password}") String password,
+                                   DataFacilityMapper dataFacilityMapper,
+                                   RedisFacilityRepository redisFacilityRepository) {
         this.connectionString = new ConnectionString(connectionPlainString);
         this.dataFacilityMapper = dataFacilityMapper;
+        this.redisFacilityRepository = redisFacilityRepository;
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
@@ -78,6 +82,11 @@ public  class MongoFacilityRepository implements FacilityRepository {
 
     @Override
     public synchronized Optional<SportsFacility> findById(String id) {
+        Optional<SportsFacility> cached = redisFacilityRepository.get(id);
+        if (cached.isPresent()) {
+            return cached;
+        }
+
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
         MongoSportsFacility mongoFacility = facilitiesColletcion.find(filter).first();
@@ -86,7 +95,10 @@ public  class MongoFacilityRepository implements FacilityRepository {
             return Optional.empty();
         }
 
-        return Optional.of(dataFacilityMapper.mapToBusinessLayer(mongoFacility));
+        SportsFacility found = dataFacilityMapper.mapToBusinessLayer(mongoFacility);
+
+        redisFacilityRepository.put(id, found);
+        return Optional.of(found);
     }
 
     @Override
