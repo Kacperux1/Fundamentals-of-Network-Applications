@@ -10,6 +10,9 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
+
+
 
 import java.util.UUID;
 
@@ -21,6 +24,7 @@ public abstract class MongoUser {
     @BsonId
     @BsonProperty("_id")
     private ObjectId id;
+    @Indexed(unique = true)
     @BsonProperty("login")
     @NotNull
     @NotBlank
@@ -30,7 +34,7 @@ public abstract class MongoUser {
     @Setter
     @BsonProperty("active")
     private boolean active;
-    //@BsonCreator
+    @BsonCreator
     public MongoUser(@BsonProperty("_id") ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
                      @BsonProperty("active") boolean active) {
         this.id = id;

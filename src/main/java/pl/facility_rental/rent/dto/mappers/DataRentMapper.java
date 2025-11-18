@@ -31,7 +31,7 @@ public class DataRentMapper {
     }
 
     public Rent mapToBusinessLayer(MongoRent rent) {
-        return new Rent(rent.getId().toHexString(), clientDataMapper.mapToBusinessLayer(rent.getClient()), dataFacilityMapper.mapToBusinessLayer(rent.getSportsFacility())
+        return new Rent(rent.getId().toString(), clientDataMapper.mapToBusinessLayer(rent.getClient()), dataFacilityMapper.mapToBusinessLayer(rent.getSportsFacility())
                 , rent.getStartDate(), rent.getEndDate(), rent.getTotalPrice());
     }
 }

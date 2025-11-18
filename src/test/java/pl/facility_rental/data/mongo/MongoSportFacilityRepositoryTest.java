@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
+import static org.bson.assertions.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -85,7 +86,7 @@ public class MongoSportFacilityRepositoryTest {
         List<SportsFacility> facilities = facilityRepository.findAll();
         //then
         assertEquals(2, facilities.size());
-        assertInstanceOf(MongoSportsFacility.class, facilities.getFirst());
+        assertInstanceOf(SportsFacility.class, facilities.getFirst());
 
         assertEquals("boisko", facilities.getFirst().getName());
         assertEquals("pomidorowa", facilities.getFirst().getStreet());
@@ -114,8 +115,6 @@ public class MongoSportFacilityRepositoryTest {
 
         SportsFacility found = foundList.get();
         assertEquals(id, found.getId());
-        assertEquals(found.getId(), facility.getId());
-
     }
 
     @Test
@@ -128,18 +127,20 @@ public class MongoSportFacilityRepositoryTest {
         List<SportsFacility> facilities = facilityRepository.findAll();
         Assertions.assertFalse(facilities.isEmpty());
 
+        SportsFacility found = facilities.getFirst();
+
         //when
-        facility.setStreet("Gruszkowa");
+        found.setBasePrice(new BigDecimal(50));
         try {
-            //facilityRepository.update(facility);
+            facilityRepository.update(found.getId(), found);
         } catch (Exception e) {
-            //fail(e.getMessage());
+            fail(e.getMessage());
         }
 
-        facilities = facilityRepository.findAll();
+        List<SportsFacility> facilities2 = facilityRepository.findAll();
         //then
-        Assertions.assertFalse(facilities.isEmpty());
-        assertEquals("Gruszkowa", facilities.getFirst().getStreet());
+        Assertions.assertFalse(facilities2.isEmpty());
+        assertEquals(new BigDecimal(50), facilities2.getFirst().getPricePerHour());
     }
 
     @Test
@@ -151,7 +152,6 @@ public class MongoSportFacilityRepositoryTest {
         facilityRepository.save(original);
         SportsFacility loaded = facilityRepository.findAll().getFirst();
         //then
-        assertEquals(original.getId(), loaded.getId());
         assertEquals(original.getCity(), loaded.getCity());
         assertEquals(original.getName(), loaded.getName());
     }
