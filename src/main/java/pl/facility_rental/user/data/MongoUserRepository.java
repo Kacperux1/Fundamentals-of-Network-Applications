@@ -20,7 +20,7 @@ import org.bson.conversions.Bson;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.business.model.ResourceMgr;
@@ -38,7 +38,7 @@ import pl.facility_rental.user.model.MongoUser;
 
 import java.util.*;
 
-@Component("mongo_user_repo")
+@Repository("mongo_user_repo")
 class MongoUserRepository implements UserRepository {
 
 
@@ -58,7 +58,10 @@ class MongoUserRepository implements UserRepository {
     public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
                                @Value("${mongo.database}") String databaseName,
                                @Value("${mongo.user}") String user,
-                               @Value("${mongo.password}") String password, ClientDataMapper clientDataMapper, AdminDataMapper adminDataMapper, ManagerDataMapping managerDataMapping) {
+                               @Value("${mongo.password}") String password,
+                               ClientDataMapper clientDataMapper,
+                               AdminDataMapper adminDataMapper,
+                               ManagerDataMapping managerDataMapping) {
         this.connectionString = new ConnectionString(connectionPlainString);
         this.clientDataMapper = clientDataMapper;
         this.adminDataMapper = adminDataMapper;

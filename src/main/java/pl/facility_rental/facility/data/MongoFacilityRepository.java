@@ -19,14 +19,14 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.mappers.DataFacilityMapper;
 import pl.facility_rental.facility.model.MongoSportsFacility;
 
 import java.util.*;
 
-@Component("mongo_facility_repo")
+@Repository("mongo_facility_repo")
 public  class MongoFacilityRepository implements FacilityRepository {
 
     private final ConnectionString connectionString;
@@ -35,17 +35,14 @@ public  class MongoFacilityRepository implements FacilityRepository {
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
     private final DataFacilityMapper  dataFacilityMapper;
-    private final RedisFacilityRepository redisFacilityRepository;
 
     public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
                                    @Value("${mongo.database}") String databaseName,
                                    @Value("${mongo.user}") String user,
                                    @Value("${mongo.password}") String password,
-                                   DataFacilityMapper dataFacilityMapper,
-                                   RedisFacilityRepository redisFacilityRepository) {
+                                   DataFacilityMapper dataFacilityMapper) {
         this.connectionString = new ConnectionString(connectionPlainString);
         this.dataFacilityMapper = dataFacilityMapper;
-        this.redisFacilityRepository = redisFacilityRepository;
         credential = MongoCredential.createCredential(
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
@@ -82,10 +79,7 @@ public  class MongoFacilityRepository implements FacilityRepository {
 
     @Override
     public synchronized Optional<SportsFacility> findById(String id) {
-        Optional<SportsFacility> cached = redisFacilityRepository.get(id);
-        if (cached.isPresent()) {
-            return cached;
-        }
+
 
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
@@ -95,10 +89,7 @@ public  class MongoFacilityRepository implements FacilityRepository {
             return Optional.empty();
         }
 
-        SportsFacility found = dataFacilityMapper.mapToBusinessLayer(mongoFacility);
-
-        redisFacilityRepository.put(id, found);
-        return Optional.of(found);
+        return Optional.of(dataFacilityMapper.mapToBusinessLayer(mongoFacility));
     }
 
     @Override
