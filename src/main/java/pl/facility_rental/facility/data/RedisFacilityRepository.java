@@ -1,12 +1,16 @@
 package pl.facility_rental.facility.data;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
+import pl.facility_rental.user.business.model.User;
 import redis.clients.jedis.Jedis;
 
 import java.util.Optional;
+import java.util.Set;
 
 
 @Component("redis_facility_repo")
@@ -21,28 +25,44 @@ public class RedisFacilityRepository {
     }
 
     public Optional<SportsFacility> get(String id) {
-        String json = jedis.get("facility:" + id);
-        if (json == null) return Optional.empty();
-
         try {
-            return Optional.of(mapper.readValue(json, SportsFacility.class));
+            String json = jedis.get("id:" + id);
+            if (json == null) return Optional.empty();
+
+            JsonNode root = mapper.readTree(json);
+            String className = root.path("_class").asText();
+            if (className == null || className.isEmpty()) return Optional.empty();
+
+            Class<?> clazz = Class.forName(className);
+            SportsFacility facility = (SportsFacility) mapper.treeToValue(root, SportsFacility.class);
+            return Optional.of(facility);
         } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
 
     public void put(String id, SportsFacility facility) {
         try {
-            jedis.setex("facility:" + id, 600, mapper.writeValueAsString(facility));
-        } catch (Exception ignore) {}
+            ObjectNode node = mapper.valueToTree(facility);
+            node.put("_class", facility.getClass().getName());
+            jedis.setex("id:" + id, 600, mapper.writeValueAsString(node));
+            System.out.println(mapper.writeValueAsString(node));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void evict(String id) {
         Optional<SportsFacility> found = get(id);
-        if(found.isPresent()) {jedis.del("facility:" + id);}
+        if(found.isPresent()) {jedis.del("id:" + id);}
     }
 
     public void evictAll() {
-        jedis.del("facilities:all");
+        //jedis.del("id:all");
+        Set<String> keys = jedis.keys("id:*"); // wszystkie klucze zaczynające się od "id:"
+        if (!keys.isEmpty()) {
+            jedis.del(keys.toArray(new String[0]));
+        }
     }
 }

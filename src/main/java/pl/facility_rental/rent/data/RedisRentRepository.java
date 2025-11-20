@@ -1,13 +1,18 @@
 package pl.facility_rental.rent.data;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.rent.business.Rent;
+import pl.facility_rental.user.business.model.User;
 import redis.clients.jedis.Jedis;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Component("redis_rent_repo")
 public class RedisRentRepository {
@@ -18,31 +23,47 @@ public class RedisRentRepository {
     public RedisRentRepository(@Value("${redis.host}") String host,
                                    @Value("${redis.port}") int port) {
         jedis = new Jedis(host, port);
+        mapper.registerModule(new JavaTimeModule());
     }
 
     public Optional<Rent> get(String id) {
-        String json = jedis.get("facility:" + id);
-        if (json == null) return Optional.empty();
-
         try {
-            return Optional.of(mapper.readValue(json, Rent.class));
+            String json = jedis.get("id:" + id);
+            if (json == null) return Optional.empty();
+
+            JsonNode root = mapper.readTree(json);
+            String className = root.path("_class").asText();
+            if (className == null || className.isEmpty()) return Optional.empty();
+
+            Class<?> clazz = Class.forName(className);
+            Rent rent = (Rent) mapper.treeToValue(root, clazz);
+            return Optional.of(rent);
         } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
 
     public void put(String id, Rent rent) {
         try {
-            jedis.setex("facility:" + id, 600, mapper.writeValueAsString(rent));
-        } catch (Exception ignore) {}
+            ObjectNode node = mapper.valueToTree(rent);
+            node.put("_class", rent.getClass().getName());
+            jedis.setex("id:" + id, 600, mapper.writeValueAsString(node));
+            System.out.println(mapper.writeValueAsString(node));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void evict(String id) {
         Optional<Rent> found = get(id);
-        if(found.isPresent()) {jedis.del("facility:" + id);}
+        if(found.isPresent()) {jedis.del("id:" + id);}
     }
 
     public void evictAll() {
-        jedis.del("facilities:all");
+        Set<String> keys = jedis.keys("id:*"); // wszystkie klucze zaczynające się od "id:"
+        if (!keys.isEmpty()) {
+            jedis.del(keys.toArray(new String[0]));
+        }
     }
 }

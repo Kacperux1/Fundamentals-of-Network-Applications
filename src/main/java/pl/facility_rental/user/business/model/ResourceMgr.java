@@ -1,7 +1,12 @@
 package pl.facility_rental.user.business.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 public class ResourceMgr extends User{
 
 

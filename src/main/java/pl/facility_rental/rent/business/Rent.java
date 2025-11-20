@@ -1,6 +1,11 @@
 package pl.facility_rental.rent.business;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.user.business.model.Client;
 
@@ -10,6 +15,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Rent {
     private String id;
     private Client client;
@@ -18,10 +26,13 @@ public class Rent {
     private LocalDateTime endDate;
     private BigDecimal totalPrice;
 
-
-    public Rent(String id, Client client,  SportsFacility sportsFacility,
-                      LocalDateTime startDate,  LocalDateTime endDate,
-                      BigDecimal totalPrice) {
+    @JsonCreator
+    public Rent(@JsonProperty("id") String id,
+                @JsonProperty("client") Client client,
+                @JsonProperty("sportsFacility") SportsFacility sportsFacility,
+                @JsonProperty("startDate") LocalDateTime startDate,
+                @JsonProperty("endDate") LocalDateTime endDate,
+                @JsonProperty("totalPrice") BigDecimal totalPrice) {
         this.id =  id;
         this.client = client;
         this.sportsFacility = sportsFacility;

@@ -1,19 +1,34 @@
 package pl.facility_rental.user.business.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 import java.util.UUID;
 @Getter
+@Setter
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Client extends User {
 
-    private final String firstName;
+    private String firstName;
 
-    private final String lastName;
+    private String lastName;
 
-    private final String phone;
+    private String phone;
 
-    public Client(String id, String login, String email, boolean active, String firstName, String lastName, String phone) {
+    @JsonCreator
+    public Client(@JsonProperty("id") String id,
+                  @JsonProperty("login") String login,
+                  @JsonProperty("email") String email,
+                  @JsonProperty("active") boolean active,
+                  @JsonProperty("firstName") String firstName,
+                  @JsonProperty("lastName") String lastName,
+                  @JsonProperty("phone") String phone) {
         super(id, login, email, active);
         this.firstName = firstName;
         this.lastName = lastName;
