@@ -111,12 +111,10 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public synchronized Rent delete(String id) throws Exception {
+    public synchronized Rent delete(String id) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
         Bson filter = Filters.eq("_id", id);
         MongoRent deleted = collection.find(filter).first();
-        if(deleted == null)
-           throw new Exception("ni ma renta!");
         collection.deleteOne(filter);
         return dataRentMapper.mapToBusinessLayer(deleted);
     }

@@ -93,14 +93,10 @@ public  class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public synchronized SportsFacility update(String id,  SportsFacility facility) throws Exception {
+    public synchronized SportsFacility update(String id,  SportsFacility facility) {
 
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
-
         Bson filter = Filters.eq("_id", new ObjectId(id));
-        if(facilitiesColletcion.find(filter).first() == null){
-            throw new Exception("ni ma takiego obiektu!");
-        }
         List<Bson> pipeline = new ArrayList<>();
         if(facility.getName() != null &&  !facility.getName().isEmpty()){
             pipeline.add(Updates.set("name", facility.getName()));
@@ -123,13 +119,10 @@ public  class MongoFacilityRepository implements FacilityRepository {
     }
 
     @Override
-    public synchronized SportsFacility delete(String id) throws Exception {
+    public synchronized SportsFacility delete(String id) {
         MongoCollection<MongoSportsFacility> facilitiesColletcion = sportFacilityRentalDatabase.getCollection("facilities", MongoSportsFacility.class);
         Bson filter  = Filters.eq("_id", new ObjectId(id));
         MongoSportsFacility deleted = facilitiesColletcion.find(filter).first();
-        if (deleted == null) {
-            throw new Exception("Ni ma facility");
-        }
         facilitiesColletcion.deleteOne(filter);
         return dataFacilityMapper.mapToBusinessLayer(deleted);
     }

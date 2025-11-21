@@ -10,7 +10,7 @@ public interface RentRepository {
     Optional<Rent> findById(String id);
     Rent update(Rent rent);
     List<Rent> findAll();
-    Rent delete(String id) throws Exception;
+    Rent delete(String id);
     List<Rent> findRentsForFacility(String facilityId);
     List<Rent> getCurrentAndPastRentsForClient(String clientId);
     Rent endRent(String RentId);

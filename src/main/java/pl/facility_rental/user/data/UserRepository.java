@@ -11,15 +11,24 @@ import java.util.UUID;
 
 public interface UserRepository {
 
-    User save(User user) throws Exception;
-    Optional<User> findById(String id) throws Exception;
+    User save(User user);
+
+    Optional<User> findById(String id);
+
     List<User> findAll();
+
     List<Client> getAllClients();
+
     Optional<Client> findClientById(String id);
-    User update(String id, User user) throws Exception;
-    User setActiveStatus(String userId, boolean active) throws Exception;
-    Optional<User> findByStrictLogin(String login) throws Exception;
-    List<User> findUsersIfLoginMatchesValue(String value) throws Exception;
-    User delete(String id) throws Exception;
+
+    User update(String id, User user);
+
+    User setActiveStatus(String userId, boolean active);
+
+    Optional<User> findByStrictLogin(String login);
+
+    List<User> findUsersIfLoginMatchesValue(String value);
+
+    User delete(String id);
 }
 

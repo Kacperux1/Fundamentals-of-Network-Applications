@@ -45,37 +45,37 @@ public class UserService {
         return userRepository.getAllClients();
     }
 
-    public User update(String id, User user) throws Exception {
+    public User update(String id, User user) {
         if(userRepository.findById(id).isEmpty()) {
-            throw new Exception("Ni ma takiego usera!");
+            throw new UserNotFoundException("There is no such user!");
         }
         return userRepository.update(id, user);
     }
-    public User activate(String userId) throws Exception {
+    public User activate(String userId)  {
         if(userRepository.findById(userId).isEmpty()) {
-            throw new Exception("Ni ma takiego usera!");
+            throw new UserNotFoundException("There is no such user!");
         }
         return userRepository.setActiveStatus(userId, true);
     }
 
-    public User deactivate(String userId) throws Exception {
+    public User deactivate(String userId) {
         if(userRepository.findById(userId).isEmpty()) {
-            throw new Exception("Ni ma takiego usera!");
+            throw new UserNotFoundException("There is no such user!");
         }
         return userRepository.setActiveStatus(userId, false);
     }
 
-    public Optional<User> getUserByLoginStrict(String login) throws Exception {
+    public Optional<User> getUserByLoginStrict(String login)  {
         return userRepository.findByStrictLogin(login);
     }
 
-    public List<User> getUsersIfLoginMatchesValue(String value) throws Exception {
+    public List<User> getUsersIfLoginMatchesValue(String value)  {
         return userRepository.findUsersIfLoginMatchesValue(value);
     }
 
-    public User delete(String id) throws Exception {
+    public User delete(String id) {
         if(userRepository.findById(id).isEmpty()) {
-            throw new UserNotFoundException("Ni ma takiego usera!");
+            throw new UserNotFoundException("There is no such user!");
         }
         if(!userRepository.findById(id).get().isActive()) {
             throw new DeletingActiveUserException("User is active; you need to deactivate him before deletion");

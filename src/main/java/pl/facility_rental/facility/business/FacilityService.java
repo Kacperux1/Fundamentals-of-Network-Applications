@@ -3,6 +3,8 @@ package pl.facility_rental.facility.business;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 import pl.facility_rental.facility.data.FacilityRepository;
+import pl.facility_rental.facility.exceptions.FacilityNotFoundException;
+import pl.facility_rental.facility.exceptions.RentsForFacilityExistsException;
 import pl.facility_rental.facility.model.MongoSportsFacility;
 import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.rent.data.RentRepository;
@@ -38,16 +40,20 @@ public class FacilityService {
         return facilityRepository.save(facility);
     }
 
-    public SportsFacility update(String facilityId, SportsFacility facility) throws Exception {
+    public SportsFacility update(String facilityId, SportsFacility facility){
         if(findById(facilityId).isEmpty()) {
-            throw new  Exception("SportsFacility not found");
+            throw new  FacilityNotFoundException("SportsFacility not found");
         }
         return facilityRepository.update(facilityId, facility);
     }
 
-    public SportsFacility deleteById(String id) throws Exception {
+    //toDo: czy warunek biznesowy dotyczy tylko alokacji niezakończonych czy wszystkich???
+    public SportsFacility deleteById(String id)  {
+        if(findById(id).isEmpty()) {
+            throw new FacilityNotFoundException("Facility with given id not found.");
+        }
         if(!rentService.findRentsForFacility(id).isEmpty()) {
-            throw new Exception("There are still booked rents for this facility!");
+            throw new RentsForFacilityExistsException("There are still booked rents for this facility!");
         }
         return facilityRepository.delete(id);
     }

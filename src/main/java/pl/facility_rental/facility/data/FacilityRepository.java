@@ -11,8 +11,8 @@ import java.util.UUID;
 public interface FacilityRepository {
     SportsFacility save(SportsFacility facility);
     Optional<SportsFacility> findById(String id);
-    SportsFacility update(String id, SportsFacility facility) throws Exception;
+    SportsFacility update(String id, SportsFacility facility);
     List<SportsFacility> findAll();
-    SportsFacility delete(String id) throws Exception;
+    SportsFacility delete(String id);
 
 }

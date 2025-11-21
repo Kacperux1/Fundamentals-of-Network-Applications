@@ -5,8 +5,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.rent.endpoints.RentController;
-import pl.facility_rental.rent.exceptions.AlreadyAllocatedException;
-import pl.facility_rental.rent.exceptions.UserIncativeException;
+import pl.facility_rental.rent.exceptions.*;
 import pl.facility_rental.rent.model.MongoRent;
 import pl.facility_rental.user.business.UserService;
 
@@ -20,7 +19,7 @@ public class RentService {
 
     private final RentRepository rentRepository;
 
-    public RentService(RentRepository rentRepository, UserService userService, FacilityService facilityService) {
+    public RentService(RentRepository rentRepository) {
         this.rentRepository = rentRepository;
     }
 
@@ -33,7 +32,7 @@ public class RentService {
         return rentRepository.findById(id);
     }
 
-    public Rent save(Rent rent) throws AlreadyAllocatedException, UserIncativeException {
+    public Rent save(Rent rent) {
         if(!rent.getClient().isActive()) {
             throw new UserIncativeException("User is deactivated!!!");
         }
@@ -46,12 +45,12 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Rent delete(String id) throws Exception {
+    public Rent delete(String id) {
         if(findById(id).isEmpty()) {
-            throw new Exception("Rent with given id was not found!");
+            throw new RentNotFoundException("Rent with given id was not found!");
         }
         if(findById(id).get().getEndDate() != null) {
-            throw new Exception("Rent has ended as therefore cannot be deleted!");
+            throw new CompletedRentDeletionException("Rent has ended as therefore cannot be deleted!");
         }
          return rentRepository.delete(id);
     }
@@ -64,12 +63,12 @@ public class RentService {
         return rentRepository.getCurrentAndPastRentsForClient(clientId);
     }
 
-    public Rent endRent(String rentId) throws Exception {
+    public Rent endRent(String rentId) {
         if(findById(rentId).isEmpty()) {
-            throw new Exception("Rent with given id was not found!");
+            throw new RentNotFoundException("Rent with given id was not found!");
         }
         if(findById(rentId).get().getEndDate() != null) {
-            throw new Exception("Rent has been already closed!");
+            throw new AlreadyEndedRentException("Rent has been already closed!");
         }
         return rentRepository.endRent(rentId);
     }
