@@ -23,8 +23,7 @@ import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.mappers.ResourceMgrMapper;
-import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
-import pl.facility_rental.user.exceptions.ValidationViolationUserException;
+import pl.facility_rental.user.exceptions.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -157,7 +156,41 @@ class UserController {
         @ExceptionHandler(ValidationViolationUserException.class)
         public ResponseEntity<Map<String, String>> handleValidationViolation(ValidationViolationUserException ex) {
             Map<String, String> body = new HashMap<>();
-            body.put("error", ex.getMessage());
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        }
+
+
+        @ExceptionHandler(DeletingActiveUserException.class)
+        public ResponseEntity<Map<String, String>> handleDeletingActiveUser(DeletingActiveUserException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        }
+
+        @ExceptionHandler(RecognizingUserTypeException.class)
+        public ResponseEntity<Map<String, String>> handleRecognizingUserType(RecognizingUserTypeException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        }
+
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        }
+
+        @ExceptionHandler(UserDBException.class)
+        public ResponseEntity<Map<String, String>> handleUserDB(UserDBException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        }
+        @ExceptionHandler(BadIdFormatException.class)
+        public ResponseEntity<Map<String, String>> handleBadIdFormatException(BadIdFormatException ex) {
+            Map<String, String> body = new HashMap<>();
             body.put("message", ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
         }

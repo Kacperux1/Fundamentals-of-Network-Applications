@@ -9,6 +9,10 @@ import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.UpdateFacilityDto;
 import pl.facility_rental.facility.dto.mappers.FacilityMapper;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
+import pl.facility_rental.facility.exceptions.BadIdFormatException;
+import pl.facility_rental.facility.exceptions.FacilityNotFoundException;
+import pl.facility_rental.facility.exceptions.RentsForFacilityExistsException;
+import pl.facility_rental.facility.exceptions.ValidationViolationFacilityException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +25,7 @@ public class FacilityController {
     private final FacilityService facilityService;
 
     private final FacilityMapper facilityMapper;
+
     public FacilityController(FacilityService facilityService, FacilityMapper facilityMapper) {
         this.facilityService = facilityService;
         this.facilityMapper = facilityMapper;
@@ -29,7 +34,7 @@ public class FacilityController {
 
     @GetMapping
     public List<ReturnedFacilityDto> getAllFacilities() {
-        return  facilityService.findAll().stream()
+        return facilityService.findAll().stream()
                 .map(facilityMapper::getFacilityDetails)
                 .toList();
     }
@@ -54,21 +59,45 @@ public class FacilityController {
 
     @PutMapping("/{facilityId}")
     public ReturnedFacilityDto updateFacility(@PathVariable String facilityId,
-                                                  @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
+                                              @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService
-                .update(facilityId,facilityMapper.updateFacilityRequest(updateFacilityDto)));
+                .update(facilityId, facilityMapper.updateFacilityRequest(updateFacilityDto)));
     }
 
-//skopiowany na szybko z interneta
     @RestControllerAdvice
     public static class GlobalExceptionHandler {
 
-        @ExceptionHandler(IllegalArgumentException.class)
-        public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        @ExceptionHandler(BadIdFormatException.class)
+        public ResponseEntity<Map<String, String>> handleBadIdFormat(BadIdFormatException ex) {
             Map<String, String> body = new HashMap<>();
-            body.put("error", ex.getMessage());
+            body.put("message", ex.getMessage());
             return ResponseEntity.badRequest().body(body);
         }
+
+        @ExceptionHandler(FacilityNotFoundException.class)
+        public ResponseEntity<Map<String, String>> handleFacilityNotFound(FacilityNotFoundException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(body);
+        }
+
+        @ExceptionHandler(RentsForFacilityExistsException.class)
+        public ResponseEntity<Map<String, String>> handleFacilityNotFound(RentsForFacilityExistsException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        }
+
+        @ExceptionHandler(ValidationViolationFacilityException.class)
+        public ResponseEntity<Map<String, String>> handleValidationViolationFacility(ValidationViolationFacilityException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.badRequest().body(body);
+        }
+
+
     }
 
 

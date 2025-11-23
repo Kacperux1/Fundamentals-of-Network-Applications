@@ -3,6 +3,7 @@ package pl.facility_rental.rent.business;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 import pl.facility_rental.facility.business.FacilityService;
+import pl.facility_rental.facility.exceptions.BadIdFormatException;
 import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.rent.endpoints.RentController;
 import pl.facility_rental.rent.exceptions.*;
@@ -29,6 +30,9 @@ public class RentService {
     }
 
     public Optional<Rent> findById(String id) {
+        if(id.isBlank()|| id.length() != 24){
+            throw new BadIdFormatException("Wrong id format");
+        }
         return rentRepository.findById(id);
     }
 

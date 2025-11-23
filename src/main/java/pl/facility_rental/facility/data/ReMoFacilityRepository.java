@@ -38,7 +38,7 @@ public class ReMoFacilityRepository implements FacilityRepository{
     }
 
     @Override
-    public SportsFacility update(String id, SportsFacility facility) throws Exception {
+    public SportsFacility update(String id, SportsFacility facility)  {
         SportsFacility found = mongo.update(id, facility);
         redis.evict(id);
         return found;
@@ -50,7 +50,7 @@ public class ReMoFacilityRepository implements FacilityRepository{
     }
 
     @Override
-    public SportsFacility delete(String id) throws Exception{
+    public SportsFacility delete(String id) {
         SportsFacility facility = mongo.delete(id);
         redis.evict(id);
         return facility;

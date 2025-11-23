@@ -3,6 +3,7 @@ package pl.facility_rental.facility.business;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 import pl.facility_rental.facility.data.FacilityRepository;
+import pl.facility_rental.facility.exceptions.BadIdFormatException;
 import pl.facility_rental.facility.exceptions.FacilityNotFoundException;
 import pl.facility_rental.facility.exceptions.RentsForFacilityExistsException;
 import pl.facility_rental.facility.model.MongoSportsFacility;
@@ -31,7 +32,7 @@ public class FacilityService {
 
     public Optional<SportsFacility> findById(String id) {
         if(id.isBlank()|| id.length() != 24){
-            throw new IllegalArgumentException("Wrong id format");
+            throw new BadIdFormatException("Wrong id format");
         }
         return facilityRepository.findById(id);
     }

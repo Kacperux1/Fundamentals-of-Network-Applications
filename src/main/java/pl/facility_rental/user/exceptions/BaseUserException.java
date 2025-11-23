@@ -1,6 +1,6 @@
 package pl.facility_rental.user.exceptions;
 
-public class BaseUserException extends RuntimeException {
+public abstract class BaseUserException extends RuntimeException {
     public BaseUserException(String message) {
         super(message);
     }

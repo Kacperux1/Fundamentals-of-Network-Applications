@@ -50,7 +50,7 @@ public class ReMoRentRepository implements RentRepository{
     }
 
     @Override
-    public Rent delete(String id) throws Exception {
+    public Rent delete(String id)  {
         Rent rent = mongo.delete(id);
         redis.evict(id);
         return rent;

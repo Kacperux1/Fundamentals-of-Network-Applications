@@ -5,6 +5,7 @@ import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 import pl.facility_rental.facility.dto.UpdateFacilityDto;
+import pl.facility_rental.facility.exceptions.ValidationViolationFacilityException;
 
 import java.math.BigDecimal;
 
@@ -21,22 +22,22 @@ public class FacilityMapper {
         BigDecimal basePrice = createFacilityDto.basePrice();
 
         if (name == null || name.isBlank())
-            throw new IllegalArgumentException("validation constraint violated: Invalid name");
+            throw new ValidationViolationFacilityException("validation constraint violated: Invalid name");
 
         if (!streetNumber.matches("\\d+[A-Za-z0-9]?"))
-            throw new IllegalArgumentException("validation constraint violated: Invalid street number");
+            throw new ValidationViolationFacilityException("validation constraint violated: Invalid street number");
 
         if (street == null || street.isBlank())
-            throw new IllegalArgumentException("validation constraint violated: Invalid street");
+            throw new ValidationViolationFacilityException("validation constraint violated: Invalid street");
 
         if (city == null || city.isBlank())
-            throw new IllegalArgumentException("validation constraint violated: Invalid city");
+            throw new ValidationViolationFacilityException("validation constraint violated: Invalid city");
 
         if (!postalCode.matches("\\d{2}-\\d{3}"))
-            throw new IllegalArgumentException("validation constraint violated: Invalid postal code");
+            throw new ValidationViolationFacilityException("validation constraint violated: Invalid postal code");
 
         if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) <= 0)
-            throw new IllegalArgumentException("validation constraint violated: Invalid base price");
+            throw new ValidationViolationFacilityException("validation constraint violated: Invalid base price");
 
 
         return new  SportsFacility(name, streetNumber, street, city, postalCode, basePrice);

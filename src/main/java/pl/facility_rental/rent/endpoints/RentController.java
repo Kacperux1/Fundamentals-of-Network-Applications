@@ -8,9 +8,9 @@ import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.rent.dto.CreateRentDto;
 import pl.facility_rental.rent.dto.mappers.RentMapper;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
-import pl.facility_rental.rent.exceptions.AlreadyAllocatedException;
-import pl.facility_rental.rent.exceptions.UserIncativeException;
+import pl.facility_rental.rent.exceptions.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,29 +63,74 @@ public class RentController {
         return rentMapper.getRentDetails(rentService.endRent(id));
     }
 
-    //na podstawie skopiowania z neta
     @RestControllerAdvice
     public static class RentExceptionHandler {
 
         @ExceptionHandler(UserIncativeException.class)
         public ResponseEntity<?> handleUserInactive(UserIncativeException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
             return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN) // 403
-                    .body(Map.of(
-                            "error", "UserInactive",
-                            "message", ex.getMessage()
-                    ));
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(body);
+
         }
 
         @ExceptionHandler(AlreadyAllocatedException.class)
         public ResponseEntity<?> handleAlreadyAllocated(AlreadyAllocatedException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
             return ResponseEntity
-                    .status(HttpStatus.CONFLICT) // 409
-                    .body(Map.of(
-                            "error", "RentConflict",
-                            "message", ex.getMessage()
-                    ));
+                    .status(HttpStatus.CONFLICT)
+                    .body(body);
         }
+
+        @ExceptionHandler(AlreadyEndedRentException.class)
+        public ResponseEntity<?> handleAlreadyEndedRent(AlreadyEndedRentException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(body);
+        }
+
+        @ExceptionHandler(BadIdFormatException.class)
+        public ResponseEntity<?> handleBadIdFormat(BadIdFormatException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(body);
+        }
+
+        @ExceptionHandler(CompletedRentDeletionException.class)
+        public ResponseEntity<?> handleCompletedRentDeletion(CompletedRentDeletionException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(body);
+        }
+
+        @ExceptionHandler(RentNotFoundException.class)
+        public ResponseEntity<?> handleRentNotFound(RentNotFoundException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(body);
+        }
+
+        @ExceptionHandler(ValidationViolationRentException.class)
+        public ResponseEntity<?> handleValidationViolationRent(ValidationViolationRentException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(body);
+        }
+
+
     }
 
 }

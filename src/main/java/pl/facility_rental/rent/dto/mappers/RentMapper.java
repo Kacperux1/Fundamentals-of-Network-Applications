@@ -7,6 +7,7 @@ import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.dto.CreateRentDto;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
+import pl.facility_rental.rent.exceptions.ValidationViolationRentException;
 import pl.facility_rental.user.business.UserService;
 import pl.facility_rental.user.business.model.Client;
 
@@ -23,18 +24,18 @@ public class RentMapper {
         this.userService = userService;
     }
 
-    public Rent CreateRentRequest(CreateRentDto createRentDto) throws Exception {
+    public Rent CreateRentRequest(CreateRentDto createRentDto) {
         Optional<Client> pickedClient = userService.getClientById(createRentDto.clientId());
         Optional<SportsFacility> pickedFacility = facilityService.findById(createRentDto.facilityId());
         if(pickedClient.isEmpty()) {
-            throw new Exception("Klienta ni ma w bazie!");
+            throw new ValidationViolationRentException("validation failed: Klienta ni ma w bazie!");
         }
         if(pickedFacility.isEmpty()) {
-            throw new Exception("Obiektu ni ma w bazie!");
+            throw new ValidationViolationRentException("validation failed: Obiektu ni ma w bazie!");
         }
 
         if(!createRentDto.endDate().isAfter(createRentDto.startDate())){
-            throw new Exception("Data rozpoczęcia nie może być późniejsza niż data zakończenia!");
+            throw new ValidationViolationRentException("validation failed: rozpoczęcia nie może być późniejsza niż data zakończenia!");
         }
 
 
