@@ -47,7 +47,6 @@ public class RedisUserRepository {
             ObjectNode node = mapper.valueToTree(user);
             node.put("_class", user.getClass().getName());
             jedis.setex("id:" + id, 600, mapper.writeValueAsString(node));
-            System.out.println(mapper.writeValueAsString(node));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,7 +58,6 @@ public class RedisUserRepository {
     }
 
     public void evictAll() {
-        //jedis.del("id:all");
         Set<String> keys = jedis.keys("id:*"); // wszystkie klucze zaczynające się od "id:"
         if (!keys.isEmpty()) {
             jedis.del(keys.toArray(new String[0]));

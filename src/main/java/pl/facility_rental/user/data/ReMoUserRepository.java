@@ -94,4 +94,8 @@ public class ReMoUserRepository implements UserRepository {
         redis.evict(id);
         return user;
     }
+
+    public void clearCache() {
+        redis.evictAll();
+    }
 }

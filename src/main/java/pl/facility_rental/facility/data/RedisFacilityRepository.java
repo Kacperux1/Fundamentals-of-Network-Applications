@@ -47,7 +47,6 @@ public class RedisFacilityRepository {
             ObjectNode node = mapper.valueToTree(facility);
             node.put("_class", facility.getClass().getName());
             jedis.setex("id:" + id, 600, mapper.writeValueAsString(node));
-            System.out.println(mapper.writeValueAsString(node));
         } catch (Exception e) {
             e.printStackTrace();
         }

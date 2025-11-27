@@ -79,6 +79,7 @@ public class MongoUserRepositoryTest {
         List<User> users = userRepository.findAll();
         assertEquals(1, users.size());
         assertEquals("mak", users.getFirst().getLogin());
+        assertTrue(users.getFirst().isActive());
     }
 
     @Test
