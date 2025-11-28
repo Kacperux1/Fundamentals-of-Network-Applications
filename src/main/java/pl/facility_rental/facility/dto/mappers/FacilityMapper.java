@@ -14,33 +14,9 @@ import java.math.BigDecimal;
 public class FacilityMapper {
 
     public SportsFacility CreateFacilityRequest(CreateFacilityDto createFacilityDto) {
-        String name = createFacilityDto.name();
-        String streetNumber = createFacilityDto.streetNumber();
-        String street = createFacilityDto.street();
-        String city = createFacilityDto.city();
-        String postalCode = createFacilityDto.postalCode();
-        BigDecimal basePrice = createFacilityDto.basePrice();
-
-        if (name == null || name.isBlank())
-            throw new ValidationViolationFacilityException("validation constraint violated: Invalid name");
-
-        if (!streetNumber.matches("\\d+[A-Za-z0-9]?"))
-            throw new ValidationViolationFacilityException("validation constraint violated: Invalid street number");
-
-        if (street == null || street.isBlank())
-            throw new ValidationViolationFacilityException("validation constraint violated: Invalid street");
-
-        if (city == null || city.isBlank())
-            throw new ValidationViolationFacilityException("validation constraint violated: Invalid city");
-
-        if (!postalCode.matches("\\d{2}-\\d{3}"))
-            throw new ValidationViolationFacilityException("validation constraint violated: Invalid postal code");
-
-        if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) <= 0)
-            throw new ValidationViolationFacilityException("validation constraint violated: Invalid base price");
-
-
-        return new  SportsFacility(name, streetNumber, street, city, postalCode, basePrice);
+        return new  SportsFacility(createFacilityDto.name(), createFacilityDto.streetNumber(),
+                createFacilityDto.street(), createFacilityDto.city(),
+                createFacilityDto.postalCode(), createFacilityDto.basePrice());
     }
 
     public ReturnedFacilityDto getFacilityDetails(SportsFacility sportsFacility) {

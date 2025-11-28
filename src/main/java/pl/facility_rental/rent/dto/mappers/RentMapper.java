@@ -27,18 +27,6 @@ public class RentMapper {
     public Rent CreateRentRequest(CreateRentDto createRentDto) {
         Optional<Client> pickedClient = userService.getClientById(createRentDto.clientId());
         Optional<SportsFacility> pickedFacility = facilityService.findById(createRentDto.facilityId());
-        if(pickedClient.isEmpty()) {
-            throw new ValidationViolationRentException("validation failed: Klienta ni ma w bazie!");
-        }
-        if(pickedFacility.isEmpty()) {
-            throw new ValidationViolationRentException("validation failed: Obiektu ni ma w bazie!");
-        }
-
-        if(!createRentDto.endDate().isAfter(createRentDto.startDate())){
-            throw new ValidationViolationRentException("validation failed: rozpoczęcia nie może być późniejsza niż data zakończenia!");
-        }
-
-
         return new Rent(pickedClient.get(), pickedFacility.get(), createRentDto.startDate(), createRentDto.endDate());
     }
 

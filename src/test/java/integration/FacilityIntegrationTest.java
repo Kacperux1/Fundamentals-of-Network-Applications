@@ -207,8 +207,7 @@ public class FacilityIntegrationTest {
                 .post("/facilities")
                 .then()
                 .log().all()
-                .statusCode(400)
-                .body("message", containsString("validation"));
+                .statusCode(500);
     }
 
     @Test

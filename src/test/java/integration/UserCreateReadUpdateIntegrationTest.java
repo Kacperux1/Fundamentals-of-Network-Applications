@@ -306,4 +306,9 @@ public class UserCreateReadUpdateIntegrationTest {
                 .statusCode(400);
                 //.body("message", containsString("validation"));
     }
+
+    @Test
+    public void view(){
+
+    }
 }

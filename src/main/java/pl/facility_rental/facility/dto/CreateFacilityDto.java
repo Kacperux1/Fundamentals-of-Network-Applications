@@ -9,16 +9,21 @@ import java.math.BigDecimal;
 
 public record CreateFacilityDto(
         @NotBlank
-        @Size(max = 100)
+        @Size(min=1, message = "Nazwa jest zbyt krotka")
+        @Size(max = 100, message = "Nazwa jest zbyt dluga")
         String name,
 
         @Pattern(regexp = "\\d+[A-Za-z]?", message = "Numer ulicy musi być liczbą, opcjonalnie z literą")
         String streetNumber,
 
         @NotBlank
+        @Size(min=1, message = "Nazwa ulicy jest zbyt krotka")
+        @Size(max=50, message = "Nazwa ulicy jest zbyt dluga")
         String street,
 
         @NotBlank
+        @Size(min=1, message = "Nazwa miasta jest zbyt krotka")
+        @Size(max=50, message = "Nazwa miasta jest zbyt dluga")
         String city,
 
         @Pattern(regexp = "\\d{2}-\\d{3}", message = "Kod pocztowy musi być w formacie 00-000")
