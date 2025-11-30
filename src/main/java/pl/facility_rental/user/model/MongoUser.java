@@ -18,25 +18,19 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-@BsonDiscriminator(value="user")
+@BsonDiscriminator(key = "_class", value = "user")
 public abstract class MongoUser {
 
-    @BsonId
-    @BsonProperty("_id")
+
     private ObjectId id;
-    @Indexed(unique = true)
-    @BsonProperty("login")
     @NotNull
     @NotBlank
     private String login;
-    @BsonProperty("email")
     private String email;
     @Setter
-    @BsonProperty("active")
     private boolean active;
-    @BsonCreator
-    public MongoUser(@BsonProperty("_id") ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
-                     @BsonProperty("active") boolean active) {
+    protected MongoUser(ObjectId id, String login,String email,
+                     boolean active) {
         this.id = id;
         this.login = login;
         this.email = email;
