@@ -42,7 +42,7 @@ public class UserViewController {
 
         model.addAttribute("users", users);
 
-        return "users/list";
+        return "userList";
     }
 
 

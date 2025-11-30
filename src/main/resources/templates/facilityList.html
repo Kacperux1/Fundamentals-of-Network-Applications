@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Facility</title>
+</head>
+<body>
+
+<h1>Lista obietkow sportowych</h1>
+
+<table border="1">
+    <tr>
+        <th>Id</th>
+        <th>Nazwa</th>
+        <th>Adres</th>
+        <th>Miasto</th>
+        <th>Cena za godzinę</th>
+    </tr>
+
+    <tr th:each="u : ${facilities}">
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.name}"></td>
+        <td th:text="${u.street}"></td>
+        <td th:text="${u.city}"></td>
+        <td th:text="${u.price}"></td>
+        <td>
+            <form th:action="@{|/view/facilities/delete/${u.id}|}" method="post">
+                <button type="submit">Usuń</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
