@@ -20,7 +20,6 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-@BsonDiscriminator("rents")
 public class MongoRent {
     @BsonId
     private ObjectId id;
@@ -46,11 +45,6 @@ public class MongoRent {
         this.startDate = startDate;
         this.endDate = endDate;
         this.totalPrice = totalPrice;
-        try {
-            this.totalPrice = sportsFacility.getPricePerHour().multiply(BigDecimal.valueOf(Duration.between(startDate, endDate).toHours()));
-        } catch (NullPointerException e) {
-            this.totalPrice = BigDecimal.ZERO;
-        }
     }
 
     public MongoRent(MongoDbClient client, MongoSportsFacility sportsFacility, LocalDateTime startDate, LocalDateTime endDate) {

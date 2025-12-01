@@ -1,5 +1,15 @@
 package pl.facility_rental.data.mongo;
 
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.ClassModel;
+import org.bson.codecs.pojo.Conventions;
+import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.codecs.pojo.PropertyModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -68,6 +78,8 @@ public class MongoMongoRentRepositoryTest {
                 "adminpassword", "--eval", "db.getSiblingDB('facility_rental').dropDatabase()");
     }
 
+
+
     @Test
     public void shouldSaveRentTest() {
         //given
@@ -89,14 +101,13 @@ public class MongoMongoRentRepositoryTest {
             fail(e.getMessage());
         }
 
-        List<User> users = userRepository.findAll();
-        User foundUser = users.getFirst();
-        Client client = (Client) foundUser;
+        List<Client> users = userRepository.getAllClients();
+        Client foundUser = users.getFirst();
 
         List<SportsFacility> facilities = facilityRepository.findAll();
         SportsFacility facility1 = facilities.getFirst();
 
-        Rent rent = new Rent(client, facility1, LocalDateTime.now(), null);
+        Rent rent = new Rent( foundUser, facility1, LocalDateTime.now(), null);
         //when
         Rent saved  = rentRepository.save(rent);
         //then

@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.InsertOneResult;
 import jakarta.annotation.PostConstruct;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -70,7 +71,7 @@ class MongoUserRepository implements UserRepository {
                 user, "admin", password.toCharArray());
         pojoCodecRegistry = CodecRegistries.fromProviders(
                 PojoCodecProvider.builder()
-                        .register("pl.facility_rental.user.model")
+                        .register(MongoAdministrator.class, MongoDbClient.class, MongoResourceMgr.class)
                         .automatic(true)
                         .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
                         .build());
@@ -149,9 +150,75 @@ class MongoUserRepository implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-            return userCollection.find().into(new ArrayList<>()).stream().map(this::mapSubtypeToUserBusinessModel).toList();
+        System.out.println("=== ENHANCED DIAGNOSTICS START ===");
 
+        try {
+            // 1. Sprawdź połączenie z bazą
+            System.out.println("Database name: " + sportFacilityRentalDatabase.getName());
+
+            // 2. Sprawdź kolekcje
+            System.out.println("Available collections:");
+            for (String collectionName : sportFacilityRentalDatabase.listCollectionNames()) {
+                System.out.println("  - " + collectionName);
+            }
+
+            // 3. Sprawdź surowe dokumenty ZANIM spróbujemy POJO mapping
+            MongoCollection<Document> rawCollection = sportFacilityRentalDatabase.getCollection("users");
+            List<Document> rawDocs = rawCollection.find().into(new ArrayList<>());
+
+            System.out.println("RAW DOCUMENTS COUNT: " + rawDocs.size());
+            for (int i = 0; i < rawDocs.size(); i++) {
+                Document doc = rawDocs.get(i);
+                System.out.println("DOCUMENT " + i + ":");
+                System.out.println("  _id: " + doc.getObjectId("_id"));
+                System.out.println("  _class: " + doc.getString("_class"));
+                System.out.println("  active: " + doc.get("active"));
+                System.out.println("  active type: " + (doc.get("active") != null ? doc.get("active").getClass() : "NULL"));
+                System.out.println("  login: " + doc.getString("login"));
+                System.out.println("  email: " + doc.getString("email"));
+
+                // Sprawdź wszystkie dostępne pola
+                System.out.println("  ALL FIELDS:");
+                for (String key : doc.keySet()) {
+                    Object value = doc.get(key);
+                    System.out.println("    " + key + ": " + value + " (type: " + (value != null ? value.getClass().getSimpleName() : "NULL") + ")");
+                }
+            }
+
+            // 4. Spróbuj POJO mapping z każdym dokumentem osobno
+            System.out.println("ATTEMPTING INDIVIDUAL POJO MAPPING...");
+            MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+
+            List<MongoUser> mongoUsers = new ArrayList<>();
+            for (Document doc : rawDocs) {
+                try {
+                    ObjectId docId = doc.getObjectId("_id");
+                    System.out.println("Trying to map document with _id: " + docId);
+
+                    MongoUser user = userCollection.find(Filters.eq("_id", docId)).first();
+                    if (user != null) {
+                        mongoUsers.add(user);
+                        System.out.println("SUCCESS: Mapped document " + docId);
+                        System.out.println("  Mapped to class: " + user.getClass().getSimpleName());
+                    } else {
+                        System.out.println("FAILED: Could not map document " + docId);
+                    }
+                } catch (Exception e) {
+                    System.err.println("ERROR mapping document " + doc.getObjectId("_id") + ": " + e.getMessage());
+                    System.err.println("Error type: " + e.getClass().getName());
+                    // Nie rzucaj dalej, tylko kontynuuj z następnymi dokumentami
+                }
+            }
+
+            System.out.println("POJO MAPPING RESULT: " + mongoUsers.size() + "/" + rawDocs.size() + " documents mapped");
+
+            return mongoUsers.stream().map(this::mapSubtypeToUserBusinessModel).toList();
+
+        } catch (Exception e) {
+            System.err.println("FATAL ERROR in findAll: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
 

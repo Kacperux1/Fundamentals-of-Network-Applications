@@ -2,6 +2,7 @@ package pl.facility_rental.user.model;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -10,7 +11,8 @@ import org.bson.types.ObjectId;
 import java.util.UUID;
 
 @Getter
-@BsonDiscriminator(value="resourceMgr")
+@NoArgsConstructor
+@BsonDiscriminator(key = "_class", value="resourceMgr")
 public class MongoResourceMgr extends MongoUser {
 //    @BsonProperty
 //    private String firstName;

@@ -12,7 +12,7 @@ import org.bson.types.ObjectId;
 import java.util.UUID;
 
 @Getter
-@BsonDiscriminator(value = "client")
+@BsonDiscriminator(key = "_class", value = "client")
 @NoArgsConstructor
 public class MongoDbClient extends MongoUser {
     @BsonProperty("first_name")
