@@ -15,7 +15,6 @@ import java.util.UUID;
 @Setter
 @Getter
 @NoArgsConstructor
-@BsonDiscriminator("facilities")
 public class MongoSportsFacility {
     @BsonId
     private ObjectId id;

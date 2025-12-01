@@ -21,16 +21,26 @@ import java.util.UUID;
 @BsonDiscriminator(key = "_class", value = "user")
 public abstract class MongoUser {
 
-
+    @BsonProperty("_id")
     private ObjectId id;
+
     @NotNull
     @NotBlank
+    @BsonProperty("login")
     private String login;
+
+    @BsonProperty("email")
     private String email;
+
     @Setter
+    @BsonProperty("active")
     private boolean active;
-    protected MongoUser(ObjectId id, String login,String email,
-                     boolean active) {
+
+    @BsonCreator
+    public MongoUser(@BsonProperty("_id") ObjectId id,
+                     @BsonProperty("login") String login,
+                     @BsonProperty("email") String email,
+                     @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;
         this.email = email;
@@ -42,5 +52,4 @@ public abstract class MongoUser {
         this.email = email;
         this.active = active;
     }
-
 }
