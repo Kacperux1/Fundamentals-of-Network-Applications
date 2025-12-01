@@ -1,34 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Facility</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
 
-<h1>Lista obietkow sportowych</h1>
+<div layout:fragment="content">
+    <script th:if="${Message}" th:inline="javascript">
+        /*<![CDATA[*/ alert([[${Message}]]); /*]]>*/
+    </script>
 
-<table border="1">
-    <tr>
-        <th>Id</th>
-        <th>Nazwa</th>
-        <th>Adres</th>
-        <th>Miasto</th>
-        <th>Cena za godzinę</th>
-    </tr>
+    <h1>Lista obiektów sportowych</h1>
 
-    <tr th:each="u : ${facilities}">
-        <td th:text="${u.id}"></td>
-        <td th:text="${u.name}"></td>
-        <td th:text="${u.street}"></td>
-        <td th:text="${u.city}"></td>
-        <td th:text="${u.price}"></td>
-        <td>
-            <form th:action="@{|/view/facilities/delete/${u.id}|}" method="post">
-                <button type="submit">Usuń</button>
-            </form>
-        </td>
-    </tr>
-</table>
+    <table border="1">
+        <tr>
+            <th>Id</th>
+            <th>Nazwa</th>
+            <th>Adres</th>
+            <th>Miasto</th>
+            <th>Cena za godzinę</th>
+        </tr>
+        <tr th:each="u : ${facilities}">
+            <td th:text="${u.id}"></td>
+            <td th:text="${u.name}"></td>
+            <td th:text="${u.street}"></td>
+            <td th:text="${u.city}"></td>
+            <td th:text="${u.price}"></td>
+            <td>
+                <form th:action="@{|/view/facilities/delete/${u.id}|}" method="post"
+                      class="btn btn-danger btn-sm" onsubmit="return confirm('Czy na pewno usunąć ten obiekt?');">
+                    <button type="submit" >Usuń</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
 
-</body>
 </html>
