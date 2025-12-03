@@ -3,22 +3,23 @@ package pl.facility_rental.user.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import pl.facility_rental.user.business.model.User;
 import redis.clients.jedis.Jedis;
 
 import java.util.Optional;
 import java.util.Set;
 
-@Component("redis_user_repository")
+@ApplicationScoped
 public class RedisUserRepository {
 
     private final Jedis jedis;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public RedisUserRepository(@Value("${redis.host}") String host,
-                                   @Value("${redis.port}") int port) {
+    public RedisUserRepository(@ConfigProperty(name = "redis.host") String host,
+                                   @ConfigProperty(name  = "redis.port") int port) {
         jedis = new Jedis(host, port);
     }
 

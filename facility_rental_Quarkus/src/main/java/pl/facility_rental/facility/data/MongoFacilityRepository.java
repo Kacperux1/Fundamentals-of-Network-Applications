@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -18,8 +19,7 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.mappers.DataFacilityMapper;
 import pl.facility_rental.facility.model.MongoSportsFacility;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("mongo_facility_repo")
+@ApplicationScoped
 public  class MongoFacilityRepository implements FacilityRepository {
 
     private final ConnectionString connectionString;
@@ -38,10 +38,10 @@ public  class MongoFacilityRepository implements FacilityRepository {
     private MongoDatabase sportFacilityRentalDatabase;
     private final DataFacilityMapper  dataFacilityMapper;
 
-    public MongoFacilityRepository(@Value("${mongo.uri}") String connectionPlainString,
-                                   @Value("${mongo.database}") String databaseName,
-                                   @Value("${mongo.user}") String user,
-                                   @Value("${mongo.password}") String password,
+    public MongoFacilityRepository(@ConfigProperty(name = "mongo.uri") String connectionPlainString,
+                                   @ConfigProperty(name = "mongo.database") String databaseName,
+                                   @ConfigProperty(name = "mongo.user") String user,
+                                   @ConfigProperty(name = "mongo.password") String password,
                                    DataFacilityMapper dataFacilityMapper) {
         this.connectionString = new ConnectionString(connectionPlainString);
         this.dataFacilityMapper = dataFacilityMapper;

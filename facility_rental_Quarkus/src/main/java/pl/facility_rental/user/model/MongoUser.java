@@ -1,7 +1,6 @@
 package pl.facility_rental.user.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,16 +9,17 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
+
 @Getter
 @NoArgsConstructor
 @BsonDiscriminator(key = "_class", value = "user")
+
 public abstract class MongoUser {
 
     @BsonProperty("_id")
     private ObjectId id;
 
-    @NotNull
-    @NotBlank
+
     @BsonProperty("login")
     private String login;
 

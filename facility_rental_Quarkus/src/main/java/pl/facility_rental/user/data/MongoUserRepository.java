@@ -11,6 +11,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
@@ -20,8 +21,7 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.business.model.ResourceMgr;
@@ -38,7 +38,7 @@ import pl.facility_rental.user.model.MongoUser;
 
 import java.util.*;
 
-@Repository("mongo_user_repo")
+@ApplicationScoped
 class MongoUserRepository implements UserRepository {
 
 
@@ -50,15 +50,15 @@ class MongoUserRepository implements UserRepository {
     private MongoDatabase sportFacilityRentalDatabase;
     private final CodecRegistry pojoCodecRegistry;
 
-    private final ClientDataMapper  clientDataMapper;
+    private final ClientDataMapper clientDataMapper;
     private final AdminDataMapper adminDataMapper;
-    private final ManagerDataMapping  managerDataMapping;
+    private final ManagerDataMapping managerDataMapping;
 
 
-    public MongoUserRepository(@Value("${mongo.uri}") String connectionPlainString,
-                               @Value("${mongo.database}") String databaseName,
-                               @Value("${mongo.user}") String user,
-                               @Value("${mongo.password}") String password,
+    public MongoUserRepository(@ConfigProperty(name = "mongo.uri") String connectionPlainString,
+                               @ConfigProperty(name = "mongo.database") String databaseName,
+                               @ConfigProperty(name = "mongo.user") String user,
+                               @ConfigProperty(name = "mongo.password") String password,
                                ClientDataMapper clientDataMapper,
                                AdminDataMapper adminDataMapper,
                                ManagerDataMapping managerDataMapping) {
@@ -91,7 +91,6 @@ class MongoUserRepository implements UserRepository {
         sportFacilityRentalDatabase = mongoClient.getDatabase("facility_rental");
 
 
-
     }
 
     @Override
@@ -120,17 +119,21 @@ class MongoUserRepository implements UserRepository {
 
         Bson filter = Filters.eq("_id", new ObjectId(userId));
         List<Bson> pipeline = new ArrayList<>();
-        if(user.getLogin() !=null && !user.getLogin().isEmpty()) {
+        if (user.getLogin() != null && !user.getLogin().isEmpty()) {
             pipeline.add(Updates.set("login", user.getLogin()));
-        } if(user.getEmail() !=null && !user.getEmail().isEmpty()) {
+        }
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             pipeline.add(Updates.set("email", user.getEmail()));
-        } MongoUser mappedUser = mapSubtypeToUserDataModel(user);
-        if(mappedUser instanceof MongoDbClient) {
-            if(((MongoDbClient) mappedUser).getFirstName() != null && !((MongoDbClient) mappedUser).getFirstName().isBlank()){
+        }
+        MongoUser mappedUser = mapSubtypeToUserDataModel(user);
+        if (mappedUser instanceof MongoDbClient) {
+            if (((MongoDbClient) mappedUser).getFirstName() != null && !((MongoDbClient) mappedUser).getFirstName().isBlank()) {
                 pipeline.add(Updates.set("first_name", ((MongoDbClient) mappedUser).getFirstName()));
-            } if(((MongoDbClient) mappedUser).getLastName() != null && !((MongoDbClient) mappedUser).getLastName().isBlank()){
+            }
+            if (((MongoDbClient) mappedUser).getLastName() != null && !((MongoDbClient) mappedUser).getLastName().isBlank()) {
                 pipeline.add(Updates.set("last_name", ((MongoDbClient) mappedUser).getLastName()));
-            } if(((MongoDbClient) mappedUser).getPhone() != null && !((MongoDbClient) mappedUser).getPhone().isBlank()){
+            }
+            if (((MongoDbClient) mappedUser).getPhone() != null && !((MongoDbClient) mappedUser).getPhone().isBlank()) {
                 pipeline.add(Updates.set("phone", ((MongoDbClient) mappedUser).getPhone()));
             }
             pipeline.add(Updates.set("active", ((MongoDbClient) mappedUser).isActive()));
@@ -138,8 +141,8 @@ class MongoUserRepository implements UserRepository {
         }
 
         Bson update = Updates.combine(
-               pipeline.toArray(new Bson[0])
-                );
+                pipeline.toArray(new Bson[0])
+        );
 
         userCollection.updateOne(filter, update);
 
@@ -262,10 +265,10 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public User delete(String id) throws RecognizingUserTypeException, UserNotFoundException  {
+    public User delete(String id) throws RecognizingUserTypeException, UserNotFoundException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
-        var maybeFound =  Optional.ofNullable(userCollection.find(filter).first());
+        var maybeFound = Optional.ofNullable(userCollection.find(filter).first());
         if (maybeFound.isEmpty()) {
             throw new UserNotFoundException("No client with id " + id + " was found");
         }
@@ -274,29 +277,30 @@ class MongoUserRepository implements UserRepository {
 
 
     private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws RecognizingUserTypeException {
-        if(mongoUser instanceof MongoDbClient){
+        if (mongoUser instanceof MongoDbClient) {
             return clientDataMapper.mapToBusinessLayer((MongoDbClient) mongoUser);
         }
-        if(mongoUser instanceof MongoAdministrator){
+        if (mongoUser instanceof MongoAdministrator) {
             return adminDataMapper.mapToBusinessLayer((MongoAdministrator) mongoUser);
         }
-        if(mongoUser instanceof MongoResourceMgr) {
+        if (mongoUser instanceof MongoResourceMgr) {
             return managerDataMapping.mapToBusinessLayer((MongoResourceMgr) mongoUser);
         }
         throw new RecognizingUserTypeException("there was an error retrieving the user type while reading from DB.");
     }
 
-    private MongoUser mapSubtypeToUserDataModel(User user) throws RecognizingUserTypeException{
-        if(user instanceof Client) {
+    private MongoUser mapSubtypeToUserDataModel(User user) throws RecognizingUserTypeException {
+        if (user instanceof Client) {
             return clientDataMapper.mapToDataLayer((Client) user);
-        } if(user instanceof Administrator) {
-            return  adminDataMapper.mapToDataLayer((Administrator) user);
-        } if (user instanceof ResourceMgr) {
+        }
+        if (user instanceof Administrator) {
+            return adminDataMapper.mapToDataLayer((Administrator) user);
+        }
+        if (user instanceof ResourceMgr) {
             return managerDataMapping.mapToDataLayer((ResourceMgr) user);
         }
         throw new RecognizingUserTypeException("there was an error retrieving the user type while saving to DB.");
     }
-
 
 
 }

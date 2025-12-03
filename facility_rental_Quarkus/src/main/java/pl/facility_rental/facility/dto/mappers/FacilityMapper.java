@@ -1,13 +1,13 @@
 package pl.facility_rental.facility.dto.mappers;
 
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 import pl.facility_rental.facility.dto.UpdateFacilityDto;
 
 
-@Component
+@ApplicationScoped
 public class FacilityMapper {
 
     public SportsFacility CreateFacilityRequest(CreateFacilityDto createFacilityDto) {

@@ -2,12 +2,12 @@ package pl.facility_rental.user.dto.client.mappers;
 
 
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
-import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.model.MongoDbClient;
 
-@Component
+@ApplicationScoped
 public class ClientDataMapper {
 
 

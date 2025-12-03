@@ -1,12 +1,13 @@
 package pl.facility_rental.user.dto.admin.mappers;
 
-import org.springframework.stereotype.Component;
+
+import jakarta.enterprise.context.ApplicationScoped;
 import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.dto.admin.CreateAdminDto;
 import pl.facility_rental.user.dto.admin.ReturnedAdminDto;
 import pl.facility_rental.user.dto.admin.UpdateAdminDto;
 
-@Component
+@ApplicationScoped
 public class AdminMapper {
 
     public Administrator createAdminRequest(CreateAdminDto createAdminDto) {

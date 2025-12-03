@@ -1,14 +1,16 @@
 package pl.facility_rental.facility.data;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
+import io.quarkus.arc.DefaultBean;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
 import pl.facility_rental.facility.business.SportsFacility;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository("remo_facility_repo")
-@Primary
+
+@ApplicationScoped
+@DefaultBean
 public class ReMoFacilityRepository implements FacilityRepository{
 
     private final MongoFacilityRepository mongo;

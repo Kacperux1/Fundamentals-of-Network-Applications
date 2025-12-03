@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.BigDecimalCodec;
 import org.bson.codecs.UuidCodecProvider;
@@ -20,8 +21,7 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import pl.facility_rental.facility.model.MongoSportsFacility;
 import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.dto.mappers.DataRentMapper;
@@ -35,19 +35,18 @@ import java.util.Optional;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromCodecs;
 
-@Repository("mongo_rent_repo")
+@ApplicationScoped
 public class MongoRentRepository implements RentRepository {
     private final ConnectionString connectionString;
-    private  CodecRegistry pojoCodecRegistry;
     private final MongoCredential credential;
     private MongoClient mongoClient;
     private MongoDatabase sportFacilityRentalDatabase;
     private final DataRentMapper dataRentMapper;
 
-    public MongoRentRepository(@Value("${mongo.uri}") String connectionPlainString,
-                               @Value("${mongo.database}") String databaseName,
-                               @Value("${mongo.user}") String user,
-                               @Value("${mongo.password}") String password, DataRentMapper dataRentMapper) {
+    public MongoRentRepository(@ConfigProperty(name = "mongo.uri") String connectionPlainString,
+                               @ConfigProperty(name = "mongo.database") String databaseName,
+                               @ConfigProperty(name = "mongo.user") String user,
+                               @ConfigProperty(name = "mongo.password") String password, DataRentMapper dataRentMapper) {
         this.connectionString = new ConnectionString(connectionPlainString);
         this.dataRentMapper = dataRentMapper;
         credential = MongoCredential.createCredential(
@@ -89,7 +88,6 @@ public class MongoRentRepository implements RentRepository {
     }
 
 
-
     @Override
     public synchronized Rent save(Rent rent) {
         MongoRent mongoRent = dataRentMapper.mapToDataLayer(rent);
@@ -114,11 +112,11 @@ public class MongoRentRepository implements RentRepository {
         Bson filter = Filters.eq("_id", mongoRent.getId());
 
         Bson update = Updates.combine(
-                    Updates.set("client", mongoRent.getClient()),
-                    Updates.set("facility", mongoRent.getSportsFacility()),
-                    Updates.set("start_date", mongoRent.getStartDate()),
-                    Updates.set("end_date", mongoRent.getEndDate()),
-                    Updates.set("total_price", mongoRent.getTotalPrice())
+                Updates.set("client", mongoRent.getClient()),
+                Updates.set("facility", mongoRent.getSportsFacility()),
+                Updates.set("start_date", mongoRent.getStartDate()),
+                Updates.set("end_date", mongoRent.getEndDate()),
+                Updates.set("total_price", mongoRent.getTotalPrice())
         );
 
         rentCollection.updateOne(filter, update);
@@ -192,6 +190,7 @@ public class MongoRentRepository implements RentRepository {
             e.printStackTrace();
         }
     }
+
     /**
      * Quick POJO codec diagnostic – ensures MongoRent can be encoded/decoded.
      */

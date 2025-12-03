@@ -1,13 +1,13 @@
 package pl.facility_rental.user.dto.manager.mappers;
 
 
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
 import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 
-@Component
+@ApplicationScoped
 public class ResourceMgrMapper {
     public ResourceMgr createManagerRequest(CreateResourceMgrDto createResourceMgrDto) {
         return new ResourceMgr(createResourceMgrDto.getLogin(), createResourceMgrDto.getEmail(), createResourceMgrDto.isActive());

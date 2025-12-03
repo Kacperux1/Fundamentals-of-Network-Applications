@@ -1,8 +1,8 @@
 package pl.facility_rental.user.business;
 
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
+import jakarta.enterprise.context.RequestScoped;
+
 import pl.facility_rental.facility.exceptions.BadIdFormatException;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.business.model.User;
@@ -13,8 +13,7 @@ import pl.facility_rental.user.exceptions.UserNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-@Component
-@RequestScope
+@RequestScoped
 public class UserService {
 
     private final UserRepository userRepository;

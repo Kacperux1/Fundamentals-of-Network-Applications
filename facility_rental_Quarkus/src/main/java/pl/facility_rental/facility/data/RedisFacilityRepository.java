@@ -3,8 +3,8 @@ package pl.facility_rental.facility.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import pl.facility_rental.facility.business.SportsFacility;
 import redis.clients.jedis.Jedis;
 
@@ -12,14 +12,14 @@ import java.util.Optional;
 import java.util.Set;
 
 
-@Component("redis_facility_repo")
+@ApplicationScoped
 public class RedisFacilityRepository {
 
     private final Jedis jedis;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public RedisFacilityRepository(@Value("${redis.host}") String host,
-                              @Value("${redis.port}") int port) {
+    public RedisFacilityRepository(@ConfigProperty(name = "redis.host") String host,
+                              @ConfigProperty(name = "redis.port") int port) {
         jedis = new Jedis(host, port);
     }
 

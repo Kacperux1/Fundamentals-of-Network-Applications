@@ -1,24 +1,19 @@
 package pl.facility_rental.facility.endpoints;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ResponseStatusException;
+import jakarta.ws.rs.*;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 import pl.facility_rental.facility.dto.UpdateFacilityDto;
 import pl.facility_rental.facility.dto.mappers.FacilityMapper;
-import pl.facility_rental.facility.exceptions.BadIdFormatException;
+
 import pl.facility_rental.facility.exceptions.FacilityNotFoundException;
-import pl.facility_rental.facility.exceptions.RentsForFacilityExistsException;
-import pl.facility_rental.facility.exceptions.ValidationViolationFacilityException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@RestController
-@RequestMapping("/facilities")
+
+
+@Path("/facilities")
 public class FacilityController {
 
     private final FacilityService facilityService;
@@ -31,72 +26,38 @@ public class FacilityController {
     }
 
 
-    @GetMapping
+    @GET
     public List<ReturnedFacilityDto> getAllFacilities() {
         return facilityService.findAll().stream()
                 .map(facilityMapper::getFacilityDetails)
                 .toList();
     }
 
-    @GetMapping("/{id}")
-    public ReturnedFacilityDto getFacilityById(@PathVariable String id) {
+    @GET
+    @Path("/{id}")
+    public ReturnedFacilityDto getFacilityById(@PathParam("id") String id) {
         //pozniej dodac wyjatek
-        return facilityService.findById(id).map(facilityMapper::getFacilityDetails).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+        return facilityService.findById(id).map(facilityMapper::getFacilityDetails).orElseThrow(() -> new FacilityNotFoundException(
                 "facility with given id was not found"));
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedFacilityDto createFacility(@RequestBody CreateFacilityDto createFacilityDto) {
+    @POST
+    public ReturnedFacilityDto createFacility(CreateFacilityDto createFacilityDto) {
         return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
     }
 
-    @DeleteMapping("/{id}")
-    public ReturnedFacilityDto deleteFacility(@PathVariable String id) throws Exception {
+    @DELETE
+    @Path("/{id}")
+    public ReturnedFacilityDto deleteFacility(@PathParam("id") String id)  {
         return facilityMapper.getFacilityDetails(facilityService.deleteById(id));
     }
 
-    @PutMapping("/{facilityId}")
-    public ReturnedFacilityDto updateFacility(@PathVariable String facilityId,
-                                              @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
+    @PUT
+    @Path("/{facilityId}")
+    public ReturnedFacilityDto updateFacility(@PathParam("facilityId") String facilityId,
+                                               UpdateFacilityDto updateFacilityDto) {
         return facilityMapper.getFacilityDetails(facilityService
                 .update(facilityId, facilityMapper.updateFacilityRequest(updateFacilityDto)));
-    }
-
-    @RestControllerAdvice
-    public static class GlobalExceptionHandler {
-
-        @ExceptionHandler(BadIdFormatException.class)
-        public ResponseEntity<Map<String, String>> handleBadIdFormat(BadIdFormatException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.badRequest().body(body);
-        }
-
-        @ExceptionHandler(FacilityNotFoundException.class)
-        public ResponseEntity<Map<String, String>> handleFacilityNotFound(FacilityNotFoundException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(body);
-        }
-
-        @ExceptionHandler(RentsForFacilityExistsException.class)
-        public ResponseEntity<Map<String, String>> handleFacilityNotFound(RentsForFacilityExistsException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
-        }
-
-        @ExceptionHandler(ValidationViolationFacilityException.class)
-        public ResponseEntity<Map<String, String>> handleValidationViolationFacility(ValidationViolationFacilityException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.badRequest().body(body);
-        }
-
-
     }
 
 

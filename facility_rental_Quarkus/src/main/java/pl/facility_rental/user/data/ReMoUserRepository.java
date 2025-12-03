@@ -1,7 +1,8 @@
 package pl.facility_rental.user.data;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
+import io.quarkus.arc.DefaultBean;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
@@ -10,8 +11,8 @@ import pl.facility_rental.user.exceptions.UserNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("remo_user_repo")
-@Primary
+@ApplicationScoped
+@DefaultBean
 public class ReMoUserRepository implements UserRepository {
 
     private final MongoUserRepository mongo;

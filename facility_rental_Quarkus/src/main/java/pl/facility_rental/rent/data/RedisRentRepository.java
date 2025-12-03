@@ -5,22 +5,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import pl.facility_rental.rent.business.Rent;
 import redis.clients.jedis.Jedis;
 
 import java.util.Optional;
 import java.util.Set;
 
-@Component("redis_rent_repo")
+@ApplicationScoped
 public class RedisRentRepository {
 
     private final Jedis jedis;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public RedisRentRepository(@Value("${redis.host}") String host,
-                                   @Value("${redis.port}") int port) {
+    public RedisRentRepository(@ConfigProperty(name = "redis.host") String host,
+                               @ConfigProperty(name = "redis.port") int port) {
         jedis = new Jedis(host, port);
         mapper.registerModule(new JavaTimeModule());
     }
@@ -55,7 +55,9 @@ public class RedisRentRepository {
 
     public void evict(String id) {
         Optional<Rent> found = get(id);
-        if(found.isPresent()) {jedis.del("id:" + id);}
+        if (found.isPresent()) {
+            jedis.del("id:" + id);
+        }
     }
 
     public void evictAll() {

@@ -1,12 +1,12 @@
 package pl.facility_rental.user.dto.manager.mappers;
 
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
-import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.model.MongoResourceMgr;
 
-@Component
+@ApplicationScoped
 public class ManagerDataMapping {
 
     public MongoResourceMgr mapToDataLayer(ResourceMgr resourceMgr){

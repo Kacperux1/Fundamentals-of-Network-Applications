@@ -1,11 +1,11 @@
 package pl.facility_rental.user.dto.admin.mappers;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
-import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.model.MongoAdministrator;
 
-@Component
+@ApplicationScoped
 public class AdminDataMapper {
 
     public MongoAdministrator mapToDataLayer(Administrator administrator){

@@ -1,13 +1,13 @@
 package pl.facility_rental.user.dto.client.mappers;
 
 
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.dto.client.CreateClientDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.dto.client.UpdateClientDto;
 
-@Component
+@ApplicationScoped
 public class ClientMapper {
 
     public Client createClientRequest(CreateClientDto createClientDto) {

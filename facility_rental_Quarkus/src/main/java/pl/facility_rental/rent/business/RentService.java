@@ -1,7 +1,6 @@
 package pl.facility_rental.rent.business;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.RequestScope;
+import jakarta.enterprise.context.RequestScoped;
 import pl.facility_rental.facility.exceptions.BadIdFormatException;
 import pl.facility_rental.rent.data.RentRepository;
 import pl.facility_rental.rent.exceptions.*;
@@ -9,8 +8,7 @@ import pl.facility_rental.rent.exceptions.*;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-@RequestScope
+@RequestScoped
 public class RentService {
 
     private final RentRepository rentRepository;

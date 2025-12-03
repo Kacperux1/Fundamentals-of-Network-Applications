@@ -1,12 +1,12 @@
 package pl.facility_rental.facility.dto.mappers;
 
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
-import org.springframework.stereotype.Component;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.model.MongoSportsFacility;
 
-@Component
+@ApplicationScoped
 public class DataFacilityMapper {
 
     public MongoSportsFacility mapToDataLayer(SportsFacility sportsFacility) {

@@ -1,7 +1,7 @@
 package pl.facility_rental.rent.dto.mappers;
 
 
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.rent.business.Rent;
@@ -12,7 +12,7 @@ import pl.facility_rental.user.business.model.Client;
 
 import java.util.Optional;
 
-@Component
+@ApplicationScoped
 public class RentMapper {
 
     private final FacilityService facilityService;

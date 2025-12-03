@@ -3,6 +3,9 @@ package pl.facility_rental.user.endpoints;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import pl.facility_rental.user.business.UserService;
 import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.business.model.Client;
@@ -67,7 +70,7 @@ class UserController {
     @GET
     @Path("/{userId}")
     public ReturnedUserDto getUserById(@PathParam("userId") String userId) throws Exception {
-        return userService.getUserById(userId).map(this::mapSubtypes).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+        return userService.getUserById(userId).map(this::mapSubtypes).orElseThrow(() -> new UserNotFoundException(
                 "User with given id was not found"));
     }
 
@@ -75,7 +78,7 @@ class UserController {
     @Path("/login/{login}")
     public ReturnedUserDto getUserByLoginStrict(@PathParam("login") String login) throws Exception {
         return userService.getUserByLoginStrict(login).map(this::mapSubtypes).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with login " + login + " was not found"));
+                new UserNotFoundException("User with login " + login + " was not found"));
     }
 
     @GET
@@ -87,19 +90,19 @@ class UserController {
 
     @PUT
     @Path("/{userId}")
-    public ReturnedUserDto updateUser(@(PathParam) String userId,UpdateUserDto updatedUserDto) throws Exception {
+    public ReturnedUserDto updateUser(@PathParam("userId") String userId,UpdateUserDto updatedUserDto) throws Exception {
         return mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto)));
     }
 
     @PATCH
     @Path("/activate/{userId}")
-    public ReturnedUserDto activateUser(@PathParam String userId) throws Exception {
+    public ReturnedUserDto activateUser(@PathParam("userId") String userId) throws Exception {
         return mapSubtypes(userService.activate(userId));
     }
 
     @PATCH
     @Path("/deactivate/{userId}")
-    public ReturnedUserDto deactivateUser(@PathParam String userId) throws Exception {
+    public ReturnedUserDto deactivateUser(@PathParam("userId") String userId) throws Exception {
         return mapSubtypes(userService.deactivate(userId));
     }
 
@@ -150,51 +153,7 @@ class UserController {
         throw new RecognizingUserTypeException("Error retrieving the user's type.");
     }
 
-    @RestControllerAdvice
-    public static class GlobalExceptionHandler {
-
-        @ExceptionHandler(ValidationViolationUserException.class)
-        public ResponseEntity<Map<String, String>> handleValidationViolation(ValidationViolationUserException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-        }
 
 
-        @ExceptionHandler(DeletingActiveUserException.class)
-        public ResponseEntity<Map<String, String>> handleDeletingActiveUser(DeletingActiveUserException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
-        }
-
-        @ExceptionHandler(RecognizingUserTypeException.class)
-        public ResponseEntity<Map<String, String>> handleRecognizingUserType(RecognizingUserTypeException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-        }
-
-        @ExceptionHandler(UserNotFoundException.class)
-        public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-        }
-
-        @ExceptionHandler(UserDBException.class)
-        public ResponseEntity<Map<String, String>> handleUserDB(UserDBException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
-        }
-        @ExceptionHandler(BadIdFormatException.class)
-        public ResponseEntity<Map<String, String>> handleBadIdFormatException(BadIdFormatException ex) {
-            Map<String, String> body = new HashMap<>();
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-        }
-
-    }
 
 }

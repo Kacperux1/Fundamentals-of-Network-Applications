@@ -1,14 +1,15 @@
 package pl.facility_rental.rent.data;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
+import io.quarkus.arc.DefaultBean;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
 import pl.facility_rental.rent.business.Rent;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository("remo_rent_repo")
-@Primary
+@ApplicationScoped
+@DefaultBean
 public class ReMoRentRepository implements RentRepository{
 
     private final MongoRentRepository mongo;

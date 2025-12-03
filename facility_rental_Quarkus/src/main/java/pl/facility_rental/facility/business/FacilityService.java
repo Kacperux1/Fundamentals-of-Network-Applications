@@ -1,7 +1,6 @@
 package pl.facility_rental.facility.business;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.RequestScope;
+import jakarta.enterprise.context.RequestScoped;
 import pl.facility_rental.facility.data.FacilityRepository;
 import pl.facility_rental.facility.exceptions.BadIdFormatException;
 import pl.facility_rental.facility.exceptions.FacilityNotFoundException;
@@ -11,8 +10,7 @@ import pl.facility_rental.rent.business.RentService;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-@RequestScope
+@RequestScoped
 public class FacilityService {
 
     private final FacilityRepository facilityRepository;
