@@ -3,12 +3,14 @@ package pl.facility_rental.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.facility_rental.user.dto.admin.UpdateAdminDto;
 import pl.facility_rental.user.dto.client.UpdateClientDto;
 import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
@@ -26,18 +28,19 @@ import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 })
 @AllArgsConstructor
 @Getter
+@Setter
 @NoArgsConstructor
 public abstract class UpdateUserDto {
 
     @NotBlank
     @Size(min=1, message = "login jest zbyt krotki")
-    @Size(min=50, message = "login jest zbyt dlugi")
+    @Size(max=50, message = "login jest zbyt dlugi")
     private  String login;
 
     @NotBlank
     @Size(min=1, message = "email jest zbyt krotki")
-    @Size(min=50, message = "email jest zbyt dlugi")
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message="Niepoprawny format emiala")
+    @Size(max=50, message = "email jest zbyt dlugi")
+    @Email(message="Niepoprawny format emiala")
     private String email;
 
 }

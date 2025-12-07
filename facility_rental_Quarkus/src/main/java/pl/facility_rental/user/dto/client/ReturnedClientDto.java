@@ -5,11 +5,13 @@
     import lombok.AllArgsConstructor;
     import lombok.Getter;
     import lombok.NoArgsConstructor;
+    import lombok.Setter;
     import pl.facility_rental.user.dto.ReturnedUserDto;
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Setter
     public class ReturnedClientDto extends ReturnedUserDto {
         @JsonProperty("first_name")
         private String firstName;

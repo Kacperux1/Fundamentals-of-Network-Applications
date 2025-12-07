@@ -1,5 +1,6 @@
 package pl.facility_rental.facility.dto;
 
+import io.smallrye.context.api.NamedInstance;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -13,6 +14,7 @@ public record CreateFacilityDto(
         @Size(max = 100, message = "Nazwa jest zbyt dluga")
         String name,
 
+        @NotBlank
         @Pattern(regexp = "\\d+[A-Za-z]?", message = "Numer ulicy musi być liczbą, opcjonalnie z literą")
         String streetNumber,
 
@@ -26,6 +28,7 @@ public record CreateFacilityDto(
         @Size(max=50, message = "Nazwa miasta jest zbyt dluga")
         String city,
 
+        @NotBlank
         @Pattern(regexp = "\\d{2}-\\d{3}", message = "Kod pocztowy musi być w formacie 00-000")
         String postalCode,
 

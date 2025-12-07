@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.facility_rental.user.dto.admin.ReturnedAdminDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
@@ -21,6 +22,7 @@ import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
         @JsonSubTypes.Type(value = ReturnedResourceMgrDto.class, name = "resourceMgr")
 })
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class ReturnedUserDto {

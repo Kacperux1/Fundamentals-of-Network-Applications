@@ -1,6 +1,8 @@
 package integration;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 
 import io.restassured.response.Response;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,6 +23,7 @@ import static org.hamcrest.Matchers.*;
 
 
 @QuarkusTest
+@TestProfile(IntegrationTestProfile.class)
 public class FacilityIntegrationTest {
 
 
@@ -187,22 +191,26 @@ public class FacilityIntegrationTest {
 
     @Test
     void shouldRejectResourceWithInvalidSyntax() {
-        String invalidResourceJson = """
-        {
-          "name": "",
-          "capacity": -5
-        }
-    """;
+
+        Map<String, Object> invalidResource = Map.of(
+                "name", "",
+                "streetNumber", "12",
+                "street", "",
+                "city", "",
+                "postalCode", "12-345",
+                "basePrice", -5
+        );
 
         given()
                 .contentType(ContentType.JSON)
-                .body(invalidResourceJson)
+                .body(invalidResource)
                 .when()
                 .post("/facilities")
                 .then()
                 .log().all()
-                .statusCode(500);
+                .statusCode(400);
     }
+
 
     @Test
     public void shouldNotAllocateFacilityAlreadyAllocated() {

@@ -1,6 +1,9 @@
 package pl.facility_rental.facility.endpoints;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import pl.facility_rental.facility.business.FacilityService;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
@@ -14,6 +17,8 @@ import java.util.List;
 
 
 @Path("/facilities")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class FacilityController {
 
     private final FacilityService facilityService;
@@ -42,8 +47,9 @@ public class FacilityController {
     }
 
     @POST
-    public ReturnedFacilityDto createFacility(CreateFacilityDto createFacilityDto) {
-        return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
+    public Response createFacility(@Valid CreateFacilityDto createFacilityDto) {
+        var created =  facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @DELETE
@@ -55,7 +61,7 @@ public class FacilityController {
     @PUT
     @Path("/{facilityId}")
     public ReturnedFacilityDto updateFacility(@PathParam("facilityId") String facilityId,
-                                               UpdateFacilityDto updateFacilityDto) {
+                                               @Valid UpdateFacilityDto updateFacilityDto) {
         return facilityMapper.getFacilityDetails(facilityService
                 .update(facilityId, facilityMapper.updateFacilityRequest(updateFacilityDto)));
     }

@@ -1,6 +1,7 @@
 package pl.facility_rental.user.endpoints;
 
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -52,8 +53,9 @@ class UserController {
 
 
     @POST
-    public ReturnedUserDto createUser(CreateUserDto createUserDto) throws Exception {
-        return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
+    public Response createUser(@Valid CreateUserDto createUserDto) throws Exception {
+        var created =  mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @GET
@@ -90,7 +92,7 @@ class UserController {
 
     @PUT
     @Path("/{userId}")
-    public ReturnedUserDto updateUser(@PathParam("userId") String userId,UpdateUserDto updatedUserDto) throws Exception {
+    public ReturnedUserDto updateUser(@PathParam("userId") String userId, @Valid UpdateUserDto updatedUserDto) throws Exception {
         return mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto)));
     }
 

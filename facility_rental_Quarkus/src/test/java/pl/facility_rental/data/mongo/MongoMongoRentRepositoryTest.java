@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -45,6 +46,7 @@ import static pl.facility_rental.data.mongo.MongoTestResource.clearDatabase;
 
 @QuarkusTest
 @Testcontainers
+@TestProfile(UnitTestProfile.class)
 @QuarkusTestResource(MongoTestResource.class)
 public class MongoMongoRentRepositoryTest {
 
@@ -117,7 +119,7 @@ public class MongoMongoRentRepositoryTest {
 
         try {
             userRepository.save(user);
-            userRepository.save(user);
+            userRepository.save(user1);
             facilityRepository.save(facility);
             facilityRepository.save(facility1);
         } catch (Exception e) {

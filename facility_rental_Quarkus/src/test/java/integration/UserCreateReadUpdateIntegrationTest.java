@@ -1,6 +1,8 @@
 package integration;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -16,6 +18,7 @@ import static org.hamcrest.Matchers.*;
 
 
 @QuarkusTest
+@TestProfile(IntegrationTestProfile.class)
 public class UserCreateReadUpdateIntegrationTest {
 
     @BeforeAll
@@ -284,7 +287,7 @@ public class UserCreateReadUpdateIntegrationTest {
         String invalidUserJson = """
         {
           "name": "",
-          "email": "not-an-email"
+          "email": "not-an-email",
           "type": "client"
         }
     """;

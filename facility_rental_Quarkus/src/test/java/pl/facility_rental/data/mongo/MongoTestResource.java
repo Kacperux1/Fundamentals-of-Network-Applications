@@ -4,14 +4,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-import org.bson.Document;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.Map;
 
 public class MongoTestResource implements QuarkusTestResourceLifecycleManager {
-    // Dodaj statyczne metody do zarządzania danymi
     private static MongoClient mongoClient;
     private GenericContainer<?> mongoContainer;
 
@@ -24,7 +22,6 @@ public class MongoTestResource implements QuarkusTestResourceLifecycleManager {
                 .withEnv("MONGO_INITDB_DATABASE", "facility_rental");
         mongoContainer.start();
 
-        // Utwórz klienta MongoDB do czyszczenia
         String connectionString = String.format("mongodb://admin:adminpassword@%s:%d/?authSource=admin",
                 mongoContainer.getHost(), mongoContainer.getMappedPort(27017));
 
@@ -41,7 +38,6 @@ public class MongoTestResource implements QuarkusTestResourceLifecycleManager {
         );
     }
 
-    // Metoda do czyszczenia bazy przed testem
     public static void clearDatabase() {
         MongoDatabase db = mongoClient.getDatabase("facility_rental");
         db.drop();

@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import io.quarkus.arc.DefaultBean;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.UuidRepresentation;
@@ -57,6 +58,7 @@ public class MongoRentRepository implements RentRepository {
 //                        .automatic(true)
 //                        .conventions(List.of(Conventions.ANNOTATION_CONVENTION))
 //                        .build());
+        System.out.println(connectionPlainString);
     }
 
     @PostConstruct

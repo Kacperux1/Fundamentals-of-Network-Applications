@@ -1,6 +1,9 @@
 package pl.facility_rental.rent.endpoints;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.rent.dto.CreateRentDto;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
@@ -12,6 +15,8 @@ import java.util.List;
 
 
 @Path("/rents")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class RentController {
 
     private final RentService rentService;
@@ -29,8 +34,9 @@ public class RentController {
     }
 
     @POST
-    public ReturnedRentDto createRent( CreateRentDto rentDto)  {
-        return rentMapper.getRentDetails(rentService.save(rentMapper.CreateRentRequest(rentDto)));
+    public Response createRent(@Valid CreateRentDto rentDto)  {
+        var created =  rentMapper.getRentDetails(rentService.save(rentMapper.CreateRentRequest(rentDto)));
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @GET
