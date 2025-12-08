@@ -32,6 +32,7 @@ public class FacilityViweController {
                 .toList();
 
         model.addAttribute("facilities", facilities);
+        model.addAttribute("breadcrumb", "");
 
         return "facilityList";
     }
