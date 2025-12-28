@@ -42,7 +42,7 @@ public class FacilityRestClient {
     public ReturnedFacilityDto getById(String id) {
         return webClient
                 .get()
-                .uri("/facilities/{id}", id)
+                .uri("/{id}", id)
                 .retrieve()
                 .bodyToMono(ReturnedFacilityDto.class)
                 .block();

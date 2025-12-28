@@ -51,8 +51,8 @@ public class FacilityViewController {
         return newFacility;
     }
 
-    @GetMapping("update/{id}")
-    public String getFacilityDetails(@PathVariable String id, Model model) {
+    @GetMapping("/{id}")
+    public String getFacilityById(@PathVariable String id, Model model) {
         ReturnedFacilityDto facility = facilityClient.getById(id);
         model.addAttribute("facility", facility);
         return "updateFacility";
