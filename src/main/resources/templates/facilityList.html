@@ -8,6 +8,12 @@
         /*<![CDATA[*/ alert([[${Message}]]); /*]]>*/
     </script>
 
+    <div>
+        <button onclick="window.location.href='/view/facilities/add'">
+            Dodaj nowy obiekt
+        </button>
+    </div>
+
     <h1>Lista obiektów sportowych</h1>
 
     <table border="1">
@@ -28,6 +34,12 @@
                 <form th:action="@{|/view/facilities/delete/${u.id}|}" method="post"
                       class="btn btn-danger btn-sm" onsubmit="return confirm('Czy na pewno usunąć ten obiekt?');">
                     <button type="submit" >Usuń</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{|/view/facilities/update/${u.id}|}" method="post"
+                      class="btn btn-danger btn-sm">
+                    <button type="submit" >Edytuj</button>
                 </form>
             </td>
         </tr>

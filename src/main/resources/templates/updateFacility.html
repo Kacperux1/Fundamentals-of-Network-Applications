@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<div layout:fragment="content">
+
+    <h2>Szczegóły obiektu</h2>
+
+    <form id="facilityForm">
+
+        <input type="hidden" id="facilityId" th:value="${facility.id}"/>
+
+        <label>Nazwa</label>
+        <input type="text"
+               id="name"
+               th:value="${facility.name}"
+               maxlength="100"
+               required/>
+
+        <label>Cena bazowa</label>
+        <input type="number"
+               id="basePrice"
+               th:value="${facility.basePrice}"
+               step="0.01"
+               min="0.01"
+               required/>
+
+        <hr/>
+
+        <label>Numer ulicy</label>
+        <input type="text" th:value="${facility.streetNumber}" disabled/>
+
+        <label>Ulica</label>
+        <input type="text" th:value="${facility.street}" disabled/>
+
+        <label>Miasto</label>
+        <input type="text" th:value="${facility.city}" disabled/>
+
+        <label>Kod pocztowy</label>
+        <input type="text" th:value="${facility.postalCode}" disabled/>
+
+        <br/><br/>
+
+        <button type="submit">Zapisz zmiany</button>
+        <a th:href="@{/view/facilities}">Anuluj</a>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        document.getElementById("facilityForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("facilityId").value;
+
+            const data = {
+                name: document.getElementById("name").value,
+                basePrice: parseFloat(document.getElementById("basePrice").value)
+            };
+
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = "";
+
+            try {
+                const response = await fetch(`/facilities/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || "Błąd walidacji");
+                }
+
+                alert("Zapisano zmiany");
+                window.location.href = "/view/facilities";
+
+            } catch (err) {
+                messageDiv.innerHTML =
+                    "<div class='error'>" + err.message + "</div>";
+            }
+        });
+    </script>
+
+
+</div>
+
+</html>

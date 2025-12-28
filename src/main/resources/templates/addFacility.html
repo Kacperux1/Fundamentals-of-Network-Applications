@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<div layout:fragment="content">
+
+    <form id="facilityForm">
+        <label>Nazwa</label>
+        <input type="text" id="name" required maxlength="100">
+
+        <label>Numer ulicy</label>
+        <input type="text" id="streetNumber" placeholder="np. 12A">
+
+        <label>Ulica</label>
+        <input type="text" id="street" required maxlength="50">
+
+        <label>Miasto</label>
+        <input type="text" id="city" required maxlength="50">
+
+        <label>Kod pocztowy</label>
+        <input type="text" id="postalCode" placeholder="00-000">
+
+        <label>Cena bazowa</label>
+        <input type="number" id="basePrice" step="0.01" min="0.01" required>
+
+        <button type="submit">Dodaj</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        document.getElementById("facilityForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const data = {
+                name: document.getElementById("name").value,
+                streetNumber: document.getElementById("streetNumber").value,
+                street: document.getElementById("street").value,
+                city: document.getElementById("city").value,
+                postalCode: document.getElementById("postalCode").value,
+                basePrice: document.getElementById("basePrice").value
+            };
+
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/facilities", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || "Błąd walidacji");
+                }
+
+                alert("Obiekt został dodany");
+                window.location.href = "/view/facilities";
+
+            } catch (err) {
+                messageDiv.innerHTML = "<div class='error'>" + err.message + "</div>";
+            }
+        });
+    </script>
+
+
+</div>
+
+</html>
