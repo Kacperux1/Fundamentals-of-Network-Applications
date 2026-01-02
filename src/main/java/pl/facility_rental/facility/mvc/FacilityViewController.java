@@ -46,9 +46,8 @@ public class FacilityViewController {
     }
 
     @PostMapping("/add")
-    public ReturnedFacilityDto addFacility(CreateFacilityDto facility) {
-        ReturnedFacilityDto newFacility = facilityClient.addFacility(facility);
-        return newFacility;
+    public void addFacility(@ModelAttribute CreateFacilityDto facility) {
+        facilityClient.addFacility(facility);
     }
 
     @GetMapping("/{id}")

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<div layout:fragment="content">
+
+    <h1>Wybierz typ użytkownika do utworzenia</h1>
+
+    <div style="margin-top: 30px; display: flex; gap: 20px;">
+
+        <a href="/view/users/add/client">
+            <button style="padding: 15px 30px;">👤 Klient</button>
+        </a>
+
+        <a href="/view/users/add/admin">
+            <button style="padding: 15px 30px;">🧑‍💼 Administrator</button>
+        </a>
+
+        <a href="/view/users/add/manager">
+            <button style="padding: 15px 30px;">🧑‍🔧 Manager zasobów</button>
+        </a>
+
+    </div>
+
+</div>
+</html>

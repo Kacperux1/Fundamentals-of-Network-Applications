@@ -1,15 +1,15 @@
-package pl.facility_rental.facility.mvc;
+package pl.facility_rental.user.mvc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class WebClientConfig {
+public class WebUserClientConfig {
     @Bean
-    public WebClient facilityWebClient() {
+    public WebClient userWebClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/facilities")
+                .baseUrl("http://localhost:8080/users")
                 .build();
     }
 }

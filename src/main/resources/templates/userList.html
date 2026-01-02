@@ -1,25 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Users</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
 
-<h1>Lista uzytkownikow</h1>
+<div layout:fragment="content">
+    <script th:if="${Message}" th:inline="javascript">
+        /*<![CDATA[*/ alert([[${Message}]]); /*]]>*/
+    </script>
 
-<table border="1">
-    <tr>
-        <th>Id</th>
-        <th>Login</th>
-        <th>Email</th>
-    </tr>
+    <div>
+        <button onclick="window.location.href='/view/users/add'">
+            Stwórz nowego użytkownika
+        </button>
+    </div>
 
-    <tr th:each="u : ${users}">
-        <td th:text="${u.id}"></td>
-        <td th:text="${u.login}"></td>
-        <td th:text="${u.email}"></td>
-    </tr>
-</table>
+    <h1>Lista użytkowników</h1>
 
-</body>
+    <table border="1">
+        <tr>
+            <th>Id</th>
+            <th>Login</th>
+            <th>Email</th>
+        </tr>
+
+        <tr th:each="u : ${users}">
+            <td th:text="${u.id}"></td>
+            <td th:text="${u.login}"></td>
+            <td th:text="${u.email}"></td>
+
+            <td>
+                <form th:action="@{|/view/users/delete/${u.id}|}" method="post"
+                      class="btn btn-danger btn-sm" onsubmit="return confirm('Czy na pewno usunąć tego użytkownika?');">
+                    <button type="submit" >Usuń</button>
+                </form>
+            </td>
+
+<!--            <td>-->
+<!--                <form th:action="@{|/view/facilities/${u.id}|}" method="get"-->
+<!--                      class="btn btn-danger btn-sm">-->
+<!--                    <button type="submit" >Edytuj</button>-->
+<!--                </form>-->
+<!--            </td>-->
+        </tr>
+    </table>
+</div>
+
 </html>

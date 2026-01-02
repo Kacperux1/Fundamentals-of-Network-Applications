@@ -104,11 +104,11 @@ class UserController {
     }
 
 
-//    @DeleteMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public ReturnedUserDto deleteUser(@RequestParam String id) throws Exception {
-//        return mapSubtypes(userService.delete(id));
-//    }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ReturnedUserDto deleteUser(@PathVariable String id) throws Exception {
+        return mapSubtypes(userService.delete(id));
+    }
 
     private ReturnedUserDto mapSubtypes(User user) throws RecognizingUserTypeException {
         if (user instanceof Client) {

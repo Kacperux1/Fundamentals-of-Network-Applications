@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<div layout:fragment="content">
+
+    <h1>Dodaj managera zasobów</h1>
+
+    <form id="managerForm">
+
+        <label>Login</label>
+        <input type="text" id="login" required maxlength="50">
+
+        <label>Email</label>
+        <input type="email" id="email" required maxlength="50">
+
+        <label>Aktywny</label>
+        <input type="checkbox" id="active" checked>
+
+        <br><br>
+        <button type="submit">Utwórz managera</button>
+    </form>
+
+    <div id="message" style="color:red;"></div>
+
+    <script>
+        document.getElementById("managerForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const data = {
+                type: "resourceMgr",     // 🔥 MUSI PASOWAĆ
+                login: document.getElementById("login").value,
+                email: document.getElementById("email").value,
+                active: document.getElementById("active").checked
+            };
+
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/users", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || "Błąd walidacji");
+                }
+
+                alert("Manager zasobów został utworzony");
+                window.location.href = "/view/users";
+
+            } catch (err) {
+                messageDiv.innerHTML = err.message;
+            }
+        });
+    </script>
+
+</div>
+</html>

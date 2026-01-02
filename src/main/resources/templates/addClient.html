@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<div layout:fragment="content">
+
+    <h1>Dodaj klienta</h1>
+
+    <form id="clientForm">
+
+        <label>Login</label>
+        <input type="text" id="login" required maxlength="50">
+
+        <label>Email</label>
+        <input type="email" id="email" required maxlength="50">
+
+        <label>Imię</label>
+        <input type="text" id="firstName" required maxlength="50">
+
+        <label>Nazwisko</label>
+        <input type="text" id="lastName" required maxlength="50">
+
+        <label>Telefon</label>
+        <input type="text" id="phone" placeholder="+48 123 456 789" required>
+
+        <label>Aktywny</label>
+        <input type="checkbox" id="active" checked>
+
+        <br><br>
+        <button type="submit">Utwórz klienta</button>
+    </form>
+
+    <div id="message" style="color:red;"></div>
+
+    <script>
+        document.getElementById("clientForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const data = {
+                type: "client",              // 🔥 KLUCZOWE
+                login: document.getElementById("login").value,
+                email: document.getElementById("email").value,
+                active: document.getElementById("active").checked,
+                first_name: document.getElementById("firstName").value,
+                last_name: document.getElementById("lastName").value,
+                phone: document.getElementById("phone").value
+            };
+
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/users", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || "Błąd walidacji");
+                }
+
+                alert("Klient został utworzony");
+                window.location.href = "/view/users";
+
+            } catch (err) {
+                messageDiv.innerHTML = err.message;
+            }
+        });
+    </script>
+
+</div>
+
+</html>

@@ -1,25 +1,26 @@
-package pl.facility_rental.facility.mvc;
+package pl.facility_rental.user.mvc;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
+import pl.facility_rental.user.dto.ReturnedUserDto;
 
 import java.util.List;
 
 @Service
-public class FacilityRestClient {
+public class UserRestClient {
     private final WebClient webClient;
 
-    public FacilityRestClient(@Qualifier("facilityWebClient") WebClient facilityWebClient) {
-        this.webClient = facilityWebClient;
+    public UserRestClient(@Qualifier("userWebClient") WebClient userWebClient) {
+        this.webClient = userWebClient;
     }
 
-    public List<ReturnedFacilityDto> getAll() {
+    public List<ReturnedUserDto> getAll() {
         return webClient.get()
                 .retrieve()
-                .bodyToFlux(ReturnedFacilityDto.class)
+                .bodyToFlux(ReturnedUserDto.class)
                 .collectList()
                 .block();
     }
@@ -32,20 +33,11 @@ public class FacilityRestClient {
                 .block();
     }
 
-    public ReturnedFacilityDto addFacility(CreateFacilityDto facility){
+    public ReturnedUserDto addFacility(CreateFacilityDto facility){
         return webClient.post()
                 .bodyValue(facility)
                 .retrieve()
-                .bodyToMono(ReturnedFacilityDto.class)
-                .block();
-    }
-
-    public ReturnedFacilityDto getById(String id) {
-        return webClient
-                .get()
-                .uri("/{id}", id)
-                .retrieve()
-                .bodyToMono(ReturnedFacilityDto.class)
+                .bodyToMono(ReturnedUserDto.class)
                 .block();
     }
 }
