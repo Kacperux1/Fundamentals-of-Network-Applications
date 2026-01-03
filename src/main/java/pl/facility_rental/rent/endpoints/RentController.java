@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rents")
+@CrossOrigin( origins = "http://localhost:5173")
 public class RentController {
 
     private final RentService rentService;
