@@ -3,6 +3,7 @@ import './App.css'
 import MyButton from './MyButton'
 import axios from 'axios';
 import RentList from "./RentList.tsx";
+import AddFacilityForm from "./AddFacilityForm.tsx";
 
 axios.defaults.baseURL = 'http://localhost:8080';
 function App() {
@@ -37,10 +38,12 @@ function App() {
                   </li>
               ))}
           </ul>
-
       </div>
         <div>
             <RentList/>
+        </div>
+        <div>
+            <AddFacilityForm/>
         </div>
     </>
   )
