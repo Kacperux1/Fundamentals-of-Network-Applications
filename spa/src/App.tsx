@@ -15,7 +15,7 @@ function App() {
     return (
     <>
       <h1 className = "flex justify-center">Boiskownia</h1>
-        <div className= "flex m-4">
+        <div className= "flex m-4 justify-center">
             <NavLink to="/usersView">
                 <button className =" m-4">
                     Kliknij mnie :(
@@ -26,7 +26,6 @@ function App() {
                     a mnie to nie klikaj :P
                 </button>
             </NavLink>
-
         </div>
         <Outlet/>
     </>

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import getAllUsers from './services/UserService.ts';
+import {getAllUsers} from './services/UserService.ts';
 import type {User} from '../../utils/typedefs.ts';
 
 

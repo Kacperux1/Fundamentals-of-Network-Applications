@@ -23,3 +23,26 @@ export interface Rent {
     endDate: Date;
     totalPrice: number;
 }
+
+export interface Facility {
+    id: string;
+    name: string;
+    streetNumber: string;
+    street: string;
+    city: string;
+    postalCode: string;
+    price: number;
+}
+
+export interface Client extends User {
+    first_name: string;
+    last_name: string;
+    phone: string;
+}
+
+export interface RentForm {
+    clientId: string|undefined;
+    facilityId: string |undefined;
+    startDate: Date;
+    endDate: Date;
+}

@@ -1,10 +1,15 @@
 import  axios  from 'axios';
 
-async function getAllUsers(){
+export async function getAllUsers(){
 
     const response = await axios.get('/users');
     return response.data;
 }
 
-export default  getAllUsers ;
+export async function getAllClients(){
+    const response = await axios.get('/users/clients');
+    return response.data;
+}
+
+
 

@@ -3,6 +3,7 @@ import Users from "../components/users/Users.tsx";
 import Rents from "../components/rents/Rents.tsx";
 import UserDetails from "../components/users/UserDetails.tsx";
 import { createBrowserRouter } from "react-router-dom";
+import CreateRentForm from "../components/rents/CreateRentForm.tsx";
 
 
 
@@ -23,8 +24,15 @@ export const  router = createBrowserRouter([
             },
             {
                 path: '/rentsView',
-                element: <Rents/>
-            }
+                element: <Rents/>,
+                children: [
+                    {
+                        path: '/rentsView/createRent',
+                        element: <CreateRentForm/>
+                    }
+                ]
+            },
+
         ]
     }
 ]);
