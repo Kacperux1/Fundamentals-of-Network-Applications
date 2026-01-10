@@ -1,3 +1,5 @@
+
+
 function AddFacilityForm() {
 
     interface FacilityProps {
@@ -7,7 +9,6 @@ function AddFacilityForm() {
         postalCode: string;
         basePrice: number;
     }
-
     let givenFacilityProps: FacilityProps = {
         name: "",
         streetNumber: "",
