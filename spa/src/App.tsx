@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+
 import { NavLink, Outlet} from "react-router-dom";
 import './App.css'
 import axios from 'axios';
@@ -16,12 +16,12 @@ function App() {
     <>
       <h1 className = "flex justify-center">Boiskownia</h1>
         <div className= "flex m-4">
-            <NavLink to="/users">
+            <NavLink to="/usersView">
                 <button className =" m-4">
                     Kliknij mnie :(
                 </button>
             </NavLink>
-            <NavLink to ="/rents">
+            <NavLink to ="/rentsView">
                 <button className =" m-4">
                     a mnie to nie klikaj :P
                 </button>

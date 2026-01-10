@@ -1,13 +1,34 @@
-
-
+import {useState, useEffect} from 'react';
+import getAllRents from "./services/RentService.ts";
+import type {Rent} from '../../utils/typedefs.ts';
 
 function Rents(){
 
+    const [currentRents, setCurrentRents] = useState<Rent[]>([]);
+
+    function updateCurrentRents(){
+        getAllRents().then((rents: Rent[]) => {
+            setCurrentRents(rents);
+        })
+    }
+
+    useEffect(() => {
+        updateCurrentRents();
+    }, [])
+
     return (
         <>
-            <p>Chociażbym chodził ciemną doliną,
-                zła się nie ulęknę,
-                bo Ty jesteś ze mną.</p>
+            <h2 className ="text-xl">Lista rezerwacji obiektów sportowych:</h2>
+            <ul>
+                {currentRents.map((rent: Rent) => (
+                    <li key = {rent.rentId} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-30 p-4">
+                        Klient: {rent.firstName} {rent.lastName}, {rent.email} <br/>
+                        obiekt sportowy: {rent.facilityName}, {rent.street} {rent.streetNumber}, {rent.city} <br/>
+                        Początek: {rent.startDate.toLocaleString()} Koniec:
+                        {rent.endDate ===null? "nieokreślony" : rent.endDate.toLocaleString()}
+                    </li>
+                ))}
+            </ul>
         </>
     )
 }

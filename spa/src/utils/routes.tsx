@@ -1,7 +1,7 @@
-import App from "./App.tsx";
-import Users from "./components/users/Users.tsx";
-import Rents from "./components/rents/Rents.tsx";
-import UserDetails from "./components/users/UserDetails.tsx";
+import App from "../App.tsx";
+import Users from "../components/users/Users.tsx";
+import Rents from "../components/rents/Rents.tsx";
+import UserDetails from "../components/users/UserDetails.tsx";
 import { createBrowserRouter } from "react-router-dom";
 
 
@@ -12,17 +12,17 @@ export const  router = createBrowserRouter([
         element: <App/>,
         children: [
             {
-                path: '/users',
+                path: '/usersView',
                 element: <Users/>,
                 children: [
                     {
-                        path: '/users/:userId',
+                        path: '/usersView/:userId',
                         element: <UserDetails/>,
                     }
                 ]
             },
             {
-                path: '/rents',
+                path: '/rentsView',
                 element: <Rents/>
             }
         ]
