@@ -8,7 +8,13 @@ function Users() {
 
     const [currentUsers, setCurrentUsers] = useState<User[]>([]);
 
+    const [searchLogin, setSearchLogin] = useState('');
+
     //const {clientMgmntMode, setClientMgmntMode} = useContext(ClientContext);
+
+    const filteredUsers = currentUsers.filter(user =>
+        user.login.toLowerCase().includes(searchLogin.toLowerCase())
+    );
 
 
     function updateUserList() {
@@ -23,7 +29,6 @@ function Users() {
 
     function activateChosenUser(id: string) {
         activateUser(id).then(() => {
-            updateUserList();
             updateUserList();
             getUserById(id).then((user:User) => {
                 alert(`Aktywowano użytkownika: ${user.login}`)
@@ -43,32 +48,45 @@ function Users() {
         <>
             <h2>Lista użytkowników</h2>
 
+            <input
+                type="text"
+                placeholder="Szukaj po loginie..."
+                value={searchLogin}
+                onChange={(e) => setSearchLogin(e.target.value)}
+                className="border p-2 rounded w-full mb-4"
+            />
+
             <ul>
-                {currentUsers.map((user: User) => (
+                {filteredUsers.map((user: User) => (
                     <li key={user.id} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-15 p-4">
                         {user.login}, {user.email}, {user.type === "client" ? "klient" : user.type === "resourceMgr" ?
                         "pracownik" : "administrator"},
                         {user.active ? " aktywny" : " nieaktywny"}
                         {user.active ? <button type="button" className="bg-red" onClick={() => {
-                            deactivateChosenUser(user.id);
+                                deactivateChosenUser(user.id);
                             }}>Deaktywuj</button>
                             : <button type="button" className="bg-green"
                                       onClick={() => activateChosenUser(user.id)}>Aktywuj</button>}
                         {user.type == "client" ?
                             <NavLink to={`/${user.id}`}>
                                 <button>
-                                   Szczegóły
+                                    Szczegóły
                                 </button>
                             </NavLink> : ""}
-                            <NavLink to={`/usersView/updateUser/${user.id}`}>
-                                <button>
-                                    Modyfikuj
-                                </button>
-                            </NavLink>
+                        <NavLink to={`/usersView/updateUser/${user.id}`}>
+                            <button>
+                                Modyfikuj
+                            </button>
+                        </NavLink>
                     </li>
                 ))}
             </ul>
-            <NavLink to= "/usersView/createUser">
+
+            {filteredUsers.length === 0 && (
+                <p className="text-gray-500">Brak użytkowników spełniających kryteria</p>
+            )}
+
+            <NavLink to="/usersView/createUser">
                 <button>Dodaj nowego użytkownika</button>
             </NavLink>
             <Outlet/>
