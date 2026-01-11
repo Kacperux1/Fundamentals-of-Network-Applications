@@ -1,11 +1,9 @@
 import App from "../App.tsx";
 import Users from "../components/users/Users.tsx";
 import Rents from "../components/rents/Rents.tsx";
-import UserDetails from "../components/users/UserDetails.tsx";
+import ClientDetails from "../components/users/ClientDetails.tsx";
 import { createBrowserRouter } from "react-router-dom";
 import CreateRentForm from "../components/rents/CreateRentForm.tsx";
-
-
 
 export const  router = createBrowserRouter([
     {
@@ -14,13 +12,7 @@ export const  router = createBrowserRouter([
         children: [
             {
                 path: '/usersView',
-                element: <Users/>,
-                children: [
-                    {
-                        path: '/usersView/:userId',
-                        element: <UserDetails/>,
-                    }
-                ]
+                element: <Users/>
             },
             {
                 path: '/rentsView',
@@ -32,7 +24,10 @@ export const  router = createBrowserRouter([
                     }
                 ]
             },
-
+            {
+                path: '/:clientId',
+                element: <ClientDetails/>
+            }
         ]
     }
 ]);

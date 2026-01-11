@@ -12,4 +12,10 @@ export async function getAllClients(){
 }
 
 
+export async function getUserById(id:string){
+    const response = await axios.get(`/users/${id}`);
+    return response.data;
+}
+
+
 
