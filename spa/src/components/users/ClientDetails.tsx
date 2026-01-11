@@ -31,6 +31,7 @@ function ClientDetails() {
         // if (!clientId) {
         //     throw new Error("Client ID is missing");
         // }
+        console.log("Rents from API:", clientsRents);
         getClientsRents(clientId).then((rents: Rent[]) => {
             setClientsRents(rents);
         })

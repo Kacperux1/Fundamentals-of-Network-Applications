@@ -12,12 +12,12 @@ function CreateRentForm() {
     const [selectedClientId, setSelectedClientId] = useState<string>('');
     const [selectedFacilityId, setSelectedFacilityId] = useState<string>('');
     const [chosenStartDate, setChosenStartDate] = useState<string>(``);
-    const [chosenEndDate, setChosenEndDate] = useState<string|null>(null);
+    const [chosenEndDate, setChosenEndDate] = useState<string>('');
 
 
-    const [confirmedRentCreation, setConfirmedRentCreation] = useState<boolean>(false);
+    //const [confirmedRentCreation, setConfirmedRentCreation] = useState<boolean>(false);
 
-    const [openRentCreationPopup, setOpenRentCreationPopup] = useState(false);
+    //const [openRentCreationPopup, setOpenRentCreationPopup] = useState(false);
 
     //const [formData, setFormData] = useState<RentForm>();
 
@@ -41,15 +41,12 @@ function CreateRentForm() {
         const data: RentForm = {
             clientId: selectedClientId,
             facilityId: selectedFacilityId,
-            startDate: new Date(chosenStartDate),
-            endDate: undefined
-        }
-        if(chosenEndDate && chosenStartDate !== ''){
-            data.endDate = new Date(chosenEndDate);
+            startDate: chosenStartDate,
+            endDate: chosenEndDate,
         }
         createRent(data).then((rent:Rent) => {
             alert(`Wypożyczenie o ID ${rent.rentId}`);
-        })
+        }).catch((err) => {alert(err.body.message)});
     }
 
 //toDo: pytanie do dr. chomatka: czemu jak ustawilem ciemne tło to sie naprawiło jego mać?

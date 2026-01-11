@@ -70,4 +70,11 @@ public class ReMoRentRepository implements RentRepository{
     public Rent endRent(String id) {
         return mongo.endRent(id);
     }
+
+    @Override
+    public List<Rent> findClientsRents(String clientId) {
+        return mongo.findClientsRents(clientId);
+    }
+
+
 }

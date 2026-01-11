@@ -136,7 +136,7 @@ public class MongoRentRepository implements RentRepository {
     @Override
     public synchronized Rent delete(String id) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
-        Bson filter = Filters.eq("_id", id);
+        Bson filter = Filters.eq("_id",new ObjectId(id));
         MongoRent deleted = collection.find(filter).first();
         collection.deleteOne(filter);
         return dataRentMapper.mapToBusinessLayer(deleted);
@@ -163,7 +163,7 @@ public class MongoRentRepository implements RentRepository {
     @Override
     public Rent endRent(String rentId) {
         MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
-        Bson filter = Filters.eq("facility.id", new ObjectId(rentId));
+        Bson filter = Filters.eq("_id", new ObjectId(rentId));
         MongoRent updated = collection.find(filter).first();
         Bson update = Updates.combine(
                 Updates.set("end_date", LocalDateTime.now()),
@@ -171,6 +171,13 @@ public class MongoRentRepository implements RentRepository {
 
         collection.updateOne(filter, update);
         return dataRentMapper.mapToBusinessLayer(collection.find(filter).first());
+    }
+
+    @Override
+    public List<Rent> findClientsRents(String clientId) {
+        MongoCollection<MongoRent> collection = sportFacilityRentalDatabase.getCollection("rents", MongoRent.class);
+        Bson filter = Filters.eq("client._id", new ObjectId(clientId));
+        return collection.find(filter).into(new ArrayList<>()).stream().map(dataRentMapper::mapToBusinessLayer).toList();
     }
 
     private void debugPrintStoredDocument(ObjectId id) {

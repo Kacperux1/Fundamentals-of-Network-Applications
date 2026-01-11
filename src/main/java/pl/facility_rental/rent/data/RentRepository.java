@@ -14,4 +14,5 @@ public interface RentRepository {
     List<Rent> findRentsForFacility(String facilityId);
     List<Rent> getCurrentAndPastRentsForClient(String clientId);
     Rent endRent(String RentId);
+    List<Rent> findClientsRents(String clientId);
 }

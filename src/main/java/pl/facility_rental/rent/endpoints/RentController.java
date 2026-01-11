@@ -49,7 +49,8 @@ public class RentController {
     @GetMapping("/client/{clientId}")
     @ResponseStatus(HttpStatus.OK)
     public List<ReturnedRentDto> getRentsByClientId(@PathVariable String clientId) throws Exception {
-        return rentService.getCurrentAndPastClientsRents(clientId).stream().map(rentMapper::getRentDetails).toList();
+        //return rentService.getCurrentAndPastClientsRents(clientId).stream().map(rentMapper::getRentDetails).toList();
+        return rentService.getClientsRents(clientId).stream().map(rentMapper::getRentDetails).toList();
     }
 
     @DeleteMapping("/{id}")
@@ -60,7 +61,7 @@ public class RentController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ReturnedRentDto endRent(@PathVariable String id) throws Exception {
+    public ReturnedRentDto endRent(@PathVariable String id)  {
         return rentMapper.getRentDetails(rentService.endRent(id));
     }
 
@@ -130,6 +131,29 @@ public class RentController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(body);
         }
+
+        @ExceptionHandler(StartDateAfterEndDateException.class)
+        public ResponseEntity<?> handleStartDateAfterEndDate(StartDateAfterEndDateException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(body);
+        }
+
+        @ExceptionHandler(TooLongRentException.class)
+        public ResponseEntity<?> handleTooLongRent(TooLongRentException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(body);
+        }
+
+
+
+
+
 
 
     }
