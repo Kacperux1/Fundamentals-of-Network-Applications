@@ -28,6 +28,10 @@ function Users() {
     }, [])
 
     function activateChosenUser(id: string) {
+        const chosenUser = currentUsers.find(user => user.id === id);
+        if(!window.confirm(`Na pewno chcesz aktywować użytkownika ${chosenUser?.login} ?`)) {
+            return;
+        }
         activateUser(id).then(() => {
             updateUserList();
             getUserById(id).then((user:User) => {
@@ -37,6 +41,10 @@ function Users() {
     }
     //do zmiany lub nie wiem zeby nei pobierac z api
     function deactivateChosenUser(id: string) {
+        const chosenUser = currentUsers.find(user => user.id === id);
+        if(!window.confirm(`Na pewno chcesz deaktywować użytkownika ${chosenUser?.login} ?`)) {
+            return;
+        }
         deactivateUser(id).then(() => {
             updateUserList();
             getUserById(id).then((user:User) => {

@@ -16,7 +16,9 @@ function Rents(){
 
     function endGivenRent(rentId:string){
         const maybeRent = currentRents.find((rent:Rent) => rent.rentId === rentId);
-
+        if(!window.confirm(`Na pewno chcesz zakończyć wypożyczenie o ID ${rentId} ?`)) {
+            return;
+        }
         if(maybeRent &&maybeRent.startDate >= new Date(Date.now())) {
             alert(`Nie można zakończyć rezerwacji zaczynających się w przyszłości,
              w celu anulowania przyszłych rezerwacji należy dokonać usunięcia rezerwacji
@@ -30,6 +32,9 @@ function Rents(){
     }
 
     function deleteGivenRent(id:string){
+        if(!window.confirm(`Na pewno chcesz usunąć wypożyczenie o ID ${id} ?`)) {
+            return;
+        }
         deleteRent(id).then((rent: Rent) => {
             alert(`Usunięto planowaną rezerwację o ID:${rent.rentId}`);
             updateCurrentRents();

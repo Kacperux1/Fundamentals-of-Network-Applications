@@ -66,9 +66,15 @@ function CreateUserForm() {
     }));
 
     updateUserValidationSchema.concat(updateClientValidationSchema);
+
     function sendDataToCreateUser(userData:CreateUserFormData) {
+        if(!window.confirm(`Na pewno chcesz dodać użytkownika o loginie ${userData.login}, emailu: ${userData.email}, statusie:`
+        + userData.active ? `aktywnym` : `nieaktywnym` + 'roli: ' +
+        userData.type ==='client'? 'klient': userData.type === 'administrator'? 'administrator': 'pracownik' + ' ?')) {
+            return;
+        }
         createUser(userData).then((user: User) => {
-            alert(`Użytkownik o loginie ${user.login} ostał dodany do systemu.`);
+            alert(`Użytkownik o loginie ${user.login} został dodany do systemu.`);
         })
     }
 
@@ -83,7 +89,11 @@ function CreateUserForm() {
     useEffect(() => {
         getUpdatedUserInfo(userId);
     }, [userId])
+
     function sendDataToUpdateUser(userData:UpdateUserFormData) {
+        if(!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${userData.login} ?`)) {
+            return;
+        }
         if(userId) {
             updateUser(userId, userData).then((user: User) => {
                 alert(`zaktualizowano użytkownika o ID ${user.id}`);
@@ -95,7 +105,6 @@ function CreateUserForm() {
 
     async function handleCreationSubmit() {
         setValidationErrorMessage('');
-
         let userData: CreateUserFormData = {
             login: typedLogin,
             email: typedEmail,

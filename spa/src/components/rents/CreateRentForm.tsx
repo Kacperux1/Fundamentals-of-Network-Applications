@@ -44,6 +44,13 @@ function CreateRentForm() {
     }, [])
 
     function sendCreateRentData(data: RentForm) {
+        const chosenClient = currentClients.find((client:Client) => client.id === data.clientId);
+        const chosenFacility = currentFacilities.find((facility:Facility) => facility.id === data.facilityId);
+        if(!window.confirm(`Na pewno chcesz dodać wypożyczenie: ${chosenClient?.first_name}, ${chosenClient?.last_name} wypożycza 
+        ${chosenFacility?.name} od ${data.startDate}` + data.endDate!==''? `do ${data.endDate}`:'' + '?')) {
+            resetForm();
+            return;
+        }
         createRent(data).then((rent: Rent) => {
             alert(`Wypożyczenie o ID ${rent.rentId}`);
         }).catch((err) => {
