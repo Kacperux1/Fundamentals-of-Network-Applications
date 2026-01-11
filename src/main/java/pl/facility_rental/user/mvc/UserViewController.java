@@ -15,6 +15,7 @@ import pl.facility_rental.user.business.model.Administrator;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.business.model.User;
+import pl.facility_rental.user.dto.CreateUserDto;
 import pl.facility_rental.user.dto.ReturnedUserDto;
 import pl.facility_rental.user.dto.admin.mappers.AdminMapper;
 import pl.facility_rental.user.dto.client.mappers.ClientMapper;
@@ -67,9 +68,33 @@ public class UserViewController {
     public String getAddResourceMgr(Model model) {return "addResourceMgr";}
 
     @PostMapping("/add")
-    public ReturnedUserDto addFacility(CreateFacilityDto facility) {
-        ReturnedUserDto newUser = userClient.addFacility(facility);
+    public ReturnedUserDto addUser(CreateUserDto user) {
+        ReturnedUserDto newUser = userClient.addUser(user);
         return newUser;
+    }
+
+    @PostMapping("/activate/{id}")
+    public String activate(@PathVariable String id, RedirectAttributes redirectAttributes) {
+        try {
+            ReturnedUserDto user = userClient.activate(id);
+            redirectAttributes.addFlashAttribute("Message", "Użytkownik został aktywowany");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("Message",
+                    "Nie można aktywować użytkownika z powodu: " + e.getMessage());
+        }
+        return "redirect:/view/users";
+    }
+
+    @PostMapping("/deactivate/{id}")
+    public String deactivate(@PathVariable String id, RedirectAttributes redirectAttributes) {
+        try {
+            ReturnedUserDto user = userClient.deactivate(id);
+            redirectAttributes.addFlashAttribute("Message", "Użytkownik został zdezaktywowany");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("Message",
+                    "Nie można zdezaktywować użytkownika z powodu: " + e.getMessage());
+        }
+        return "redirect:/view/users";
     }
 
 }

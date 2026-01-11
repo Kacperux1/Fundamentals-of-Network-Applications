@@ -29,11 +29,28 @@
             <td th:text="${u.email}"></td>
 
             <td>
+                <!-- JEŚLI NIEAKTYWNY → AKTYWUJ -->
+                <form th:if="${!u.active}"
+                      th:action="@{|/view/users/activate/${u.id}|}"
+                      method="post">
+                    <button type="submit">Aktywuj</button>
+                </form>
+
+                <!-- JEŚLI AKTYWNY → DEZAKTYWUJ -->
+                <form th:if="${u.active}"
+                      th:action="@{|/view/users/deactivate/${u.id}|}"
+                      method="post">
+                    <button type="submit">Dezaktywuj</button>
+                </form>
+            </td>
+
+            <td>
                 <form th:action="@{|/view/users/delete/${u.id}|}" method="post"
                       class="btn btn-danger btn-sm" onsubmit="return confirm('Czy na pewno usunąć tego użytkownika?');">
                     <button type="submit" >Usuń</button>
                 </form>
             </td>
+
 
 <!--            <td>-->
 <!--                <form th:action="@{|/view/facilities/${u.id}|}" method="get"-->
