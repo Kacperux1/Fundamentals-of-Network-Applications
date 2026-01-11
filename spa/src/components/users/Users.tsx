@@ -58,10 +58,15 @@ function Users() {
 
             <ul>
                 {filteredUsers.map((user: User) => (
-                    <li key={user.id} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-15 p-4">
+
+                    <li key={user.id} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-25 p-4">
+                        <div className="text-lg">
                         {user.login}, {user.email}, {user.type === "client" ? "klient" : user.type === "resourceMgr" ?
                         "pracownik" : "administrator"},
                         {user.active ? " aktywny" : " nieaktywny"}
+                        </div>
+
+                        <div className="flex gap-3 justify-center">
                         {user.active ? <button type="button" className="bg-red" onClick={() => {
                                 deactivateChosenUser(user.id);
                             }}>Deaktywuj</button>
@@ -78,6 +83,7 @@ function Users() {
                                 Modyfikuj
                             </button>
                         </NavLink>
+                        </div>
                     </li>
                 ))}
             </ul>
