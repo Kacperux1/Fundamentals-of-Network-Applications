@@ -1,5 +1,4 @@
 
-
 db.users.insertMany([
     {
         login: "admin",
@@ -61,25 +60,12 @@ db.facilities.insertMany([
     }
 ]);
 
+const rentingClient = db.users.findOne({login: "stachudzons"});
+const rentedFacility = db.facilities.findOne({name: "Boisko przy Centrum Sportu"});
 db.rents.insertOne(
     {
-        client: {
-            login: "stachudzons",
-            email: "stasiu@piwo.pl",
-            active: false,
-            _class: "client",
-            first_name: "Stanisław",
-            last_name: "Dżons",
-            phone: "123456789"
-        },
-        facility: {
-            name: "Boisko przy Centrum Sportu",
-            street_number: "11",
-            street: "Aleje Politechniki",
-            city: "Łódź",
-            postal_code: "93-590",
-            base_price: NumberDecimal("50.00")
-        },
+        client: rentingClient,
+        facility: rentedFacility,
         start_date:ISODate("2025-11-16T15:30:00Z"),
         end_date:ISODate("2025-11-16T17:30:00Z"),
         total_price: NumberDecimal("100.00")

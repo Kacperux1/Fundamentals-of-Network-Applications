@@ -10,6 +10,8 @@ import pl.facility_rental.rent.exceptions.*;
 import pl.facility_rental.rent.model.MongoRent;
 import pl.facility_rental.user.business.UserService;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,12 +42,29 @@ public class RentService {
         if(!rent.getClient().isActive()) {
             throw new UserIncativeException("User is deactivated!!!");
         }
-        if(!findRentsForFacility(rent.getSportsFacility().getId()).stream()
+        if(!(rent.getEndDate() ==null) && !rent.getEndDate().isAfter(rent.getStartDate())) {
+            throw new StartDateAfterEndDateException("Start date cannot be after or equal to end date");
+        }
+
+        if(!(rent.getEndDate() ==null) && Duration.between(rent.getStartDate(), rent.getEndDate()).toHours() > 12) {
+            throw new TooLongRentException("Rent time cannot exceed 12 hours!");
+        }
+        if( (rent.getEndDate()!= null && !findRentsForFacility(rent.getSportsFacility().getId()).stream()
                 .filter(var -> var.getStartDate().isBefore(rent.getEndDate())
                         && var.getEndDate().isAfter(rent.getStartDate())
-                ).toList().isEmpty()) {
+                ).toList().isEmpty()) || (rent.getEndDate() ==null && !findRentsForFacility(rent.getSportsFacility().getId()).stream()
+                .filter(var -> { if(var.getEndDate() ==null) {
+                    return var.getStartDate().isBefore(rent.getStartDate().plusHours(12))
+                            && var.getStartDate().plusHours(12).isAfter(rent.getStartDate());
+                        }
+                            return var.getStartDate().isBefore(rent.getStartDate().plusHours(12))
+                                    && var.getEndDate().isAfter(rent.getStartDate());
+                        }
+                ).toList().isEmpty()
+                )) {
             throw new AlreadyAllocatedException("Given time period collides with another rent!");
         }
+
         return rentRepository.save(rent);
     }
 
@@ -67,9 +86,18 @@ public class RentService {
         return rentRepository.getCurrentAndPastRentsForClient(clientId);
     }
 
+
+    public List<Rent> getClientsRents(String clientId) {
+        return  rentRepository.findClientsRents(clientId);
+    }
+
     public Rent endRent(String rentId) {
         if(findById(rentId).isEmpty()) {
             throw new RentNotFoundException("Rent with given id was not found!");
+        }
+        if(!findById(rentId).get().getStartDate().isBefore(LocalDateTime.now())) {
+            throw new StartDateAfterEndDateException("The rent starts in the future. Future rents should be deleted" +
+                    "instead of closed");
         }
         if(findById(rentId).get().getEndDate() != null) {
             throw new AlreadyEndedRentException("Rent has been already closed!");
