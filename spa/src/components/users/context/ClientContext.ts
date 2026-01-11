@@ -1,10 +1,20 @@
 
 import {createContext} from "react";
 
-export const ClientContext = createContext<ClientContextType | null>(null)
-//to do zastanowienia
+
+export type ClientManagementMode = 'create' | 'update'
 
 interface ClientContextType {
-    clientId: string | null;
-    setClientId: React.Dispatch<React.SetStateAction<string | null>>;
+    clientMgmntMode: ClientManagementMode,
+    setClientMgmntMode: React.Dispatch<React.SetStateAction<ClientManagementMode>>;
 }
+
+
+export const ClientContext = createContext<ClientContextType>({
+    clientMgmntMode: "create",
+    setClientMgmntMode: () => {
+        throw new Error("setMode used outside ClientContext.Provider");
+    },
+})
+//to do zastanowienia
+

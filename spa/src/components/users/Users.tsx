@@ -8,6 +8,8 @@ function Users() {
 
     const [currentUsers, setCurrentUsers] = useState<User[]>([]);
 
+    //const {clientMgmntMode, setClientMgmntMode} = useContext(ClientContext);
+
 
     function updateUserList() {
         getAllUsers().then((users: User[]) => {
@@ -58,6 +60,11 @@ function Users() {
                                    Szczegóły
                                 </button>
                             </NavLink> : ""}
+                            <NavLink to={`/usersView/updateUser/${user.id}`}>
+                                <button>
+                                    Modyfikuj
+                                </button>
+                            </NavLink>
                     </li>
                 ))}
             </ul>

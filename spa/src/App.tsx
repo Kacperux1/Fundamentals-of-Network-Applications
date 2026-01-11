@@ -18,12 +18,17 @@ function App() {
         <div className= "flex m-4 justify-center">
             <NavLink to="/usersView">
                 <button className =" m-4">
-                    Kliknij mnie :(
+                    Lista użytkowników
                 </button>
             </NavLink>
             <NavLink to ="/rentsView">
                 <button className =" m-4">
-                    a mnie to nie klikaj :P
+                    Lista wypożyczeń
+                </button>
+            </NavLink>
+            <NavLink to ="/">
+                <button className =" m-4">
+                    Strona główna
                 </button>
             </NavLink>
         </div>

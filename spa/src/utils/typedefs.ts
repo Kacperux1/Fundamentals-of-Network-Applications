@@ -59,3 +59,14 @@ export interface CreateClientData extends CreateUserFormData {
     last_name: string;
     phone: string;
 }
+
+export interface UpdateUserFormData {
+    login: string |null;
+    email: string |null;
+}
+
+export interface UpdateClientData extends UpdateUserFormData {
+    first_name: string |null;
+    last_name: string |null;
+    phone: string |null;
+}
