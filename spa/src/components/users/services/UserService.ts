@@ -1,4 +1,5 @@
 import  axios  from 'axios';
+import type {CreateUserFormData} from "../../../utils/typedefs.ts";
 
 export async function getAllUsers(){
 
@@ -16,6 +17,24 @@ export async function getUserById(id:string){
     const response = await axios.get(`/users/${id}`);
     return response.data;
 }
+
+export async function createUser(user:CreateUserFormData) {
+    const response = await axios.post('/users', user);
+    return response.data;
+}
+
+
+export async function activateUser(id:string){
+    const response = await axios.patch(`/users/activate/${id}`);
+    return response.data;
+}
+
+export async function deactivateUser(id:string){
+    const response = await axios.patch(`/users/deactivate/${id}`);
+    return response.data;
+}
+
+
 
 
 

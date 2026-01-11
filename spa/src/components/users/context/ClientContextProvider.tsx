@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { ClientContext } from "./ClientContext";
+import { ClientContext } from "./ClientContext.ts";
 
 
 

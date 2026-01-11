@@ -41,8 +41,21 @@ export interface Client extends User {
 }
 
 export interface RentForm {
-    clientId: string|undefined;
-    facilityId: string |undefined;
+    clientId: string;
+    facilityId: string;
     startDate: Date;
-    endDate: Date;
+    endDate: Date | null|undefined;
+}
+
+export interface CreateUserFormData {
+    login: string;
+    email: string;
+    type: string;
+    active: boolean;
+}
+
+export interface CreateClientData extends CreateUserFormData {
+    first_name: string;
+    last_name: string;
+    phone: string;
 }

@@ -7,7 +7,8 @@ async function getAllRents() {
 }
 
 export async function createRent(formData: RentForm) {
-    return await axios.post('/rents', formData);
+    const response = await axios.post('/rents', formData);
+    return response.data;
 }
 
 export async function getClientsRents(clientId: string) {

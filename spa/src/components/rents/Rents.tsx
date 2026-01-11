@@ -22,11 +22,12 @@ function Rents(){
             <h2 className ="text-xl">Lista rezerwacji obiektów sportowych:</h2>
             <ul>
                 {currentRents.map((rent: Rent) => (
-                    <li key = {rent.rentId} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-30 p-4">
+                    <li key = {rent.rentId} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-35 p-4">
                         Klient: {rent.firstName} {rent.lastName}, {rent.email} <br/>
                         obiekt sportowy: {rent.facilityName}, {rent.street} {rent.streetNumber}, {rent.city} <br/>
                         Początek: {rent.startDate.toLocaleString()} Koniec:
-                        {rent.endDate ===null? "nieokreślony" : rent.endDate.toLocaleString()}
+                        {rent.endDate ===null? "nieokreślony" : rent.endDate.toLocaleString()} <br/>
+                        koszt rezerwacji: {rent.endDate===null? "rezerwacja jeszcze niezakończona": rent.totalPrice}
                     </li>
                 ))}
             </ul>

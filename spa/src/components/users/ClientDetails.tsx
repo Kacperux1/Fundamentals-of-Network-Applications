@@ -1,41 +1,51 @@
 import {useState, useEffect} from 'react';
-import type {User, Client, Rent} from '../../utils/typedefs.ts';
+import type {Client, Rent} from '../../utils/typedefs.ts';
 
 import {getUserById} from "./services/UserService.ts";
 import {useParams} from "react-router-dom";
 import {getClientsRents} from "../rents/services/RentService.ts";
 
-
+//toDo: popsuty cykl zycia i sie nie odswieza tak samo jak lista usero
 
 function ClientDetails() {
 
     const [client, setClient] = useState<Client | null>(null);
-    const {clientId} = useParams<{clientId:string}>();
+    const {clientId} = useParams<{ clientId: string }>();
+
+    console.log("render ClientDetails", clientId);
+
 
     const [clientsRents, setClientsRents] = useState<Rent[]>([]);
 
+    //ponizej do zmiany: nulle   use effect sa tyko dlatego zeby dane sie odsiezały
     function getClientInfo() {
-        if (!clientId) {
-            throw new Error("Client ID is missing");
-        }
+        // if (!clientId) {
+        //     throw new Error("Client ID is missing");
+        // }
         getUserById(clientId).then((client: Client) => {
             setClient(client);
         })
     }
 
     function updateClientsRents() {
-        if (!clientId) {
-            throw new Error("Client ID is missing");
-        }
+        // if (!clientId) {
+        //     throw new Error("Client ID is missing");
+        // }
         getClientsRents(clientId).then((rents: Rent[]) => {
             setClientsRents(rents);
         })
     }
 
     useEffect(() => {
+
+        if(!clientId) return;
+
+        setClient(null);
+        setClientsRents([]);
+
         getClientInfo();
         updateClientsRents();
-    }, [])
+    }, [clientId])
 
     return (
         <div>
