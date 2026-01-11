@@ -50,8 +50,8 @@ export interface RentForm {
 export interface CreateUserFormData {
     login: string;
     email: string;
-    type: string;
-    active: boolean;
+    type: string| null;
+    active: boolean |null;
 }
 
 export interface CreateClientData extends CreateUserFormData {
