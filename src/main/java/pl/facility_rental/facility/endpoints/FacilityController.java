@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin( origins = "http://localhost:5173")
+@CrossOrigin(
+        origins = "*",
+        allowedHeaders = "*",
+        methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
+)
 @RequestMapping("/facilities")
 public class FacilityController {
 
