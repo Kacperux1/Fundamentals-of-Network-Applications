@@ -1,16 +1,23 @@
-import "./global.css";
-import { Text, View } from "react-native";
-import { verifyInstallation } from "nativewind";
-import axios from "axios";
+    import "./global.css";
+    import {Pressable, Text, View} from "react-native";
+    import axios from "axios";
+    import {useNavigation, useRouter} from "expo-router";
 
-axios.defaults.baseURL = 'http://localhost:8080';
 
-export default function App() {
-    return (
-        <View className="flex-1 items-center justify-center bg-white">
-            <Text className="text-3xl font-bold text-red-600">
-                Welcome to Nativewind!
-            </Text>
-        </View>
-    );
-}
+    axios.defaults.baseURL = 'http://localhost:8080';
+
+
+
+    export default function App() {
+
+        const navigation = useRouter();
+        return (
+            <View>
+                <Pressable onPress={() => navigation.push("/users/UserList")}>
+                <Text>Użytkownicy</Text>
+            </Pressable><Pressable onPress={() => navigation.push('/rents/RentList')}>
+                <Text>Wypożyczenia</Text>
+            </Pressable>
+           </View>
+        );
+    }

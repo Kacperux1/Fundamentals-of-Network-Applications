@@ -1,10 +1,12 @@
 import {useState, useEffect} from 'react';
-import {getAllUsers, activateUser, deactivateUser, getUserById} from '../../api/user/UserService';
+import {getAllUsers, activateUser, deactivateUser, getUserById} from '../../src/api/user/UserService';
 import {Alert, Animated, FlatList, Pressable, Text, TextInput, View} from 'react-native';
 
 import {User} from "@/src/utils/typedefs";
 
-import {useNavigation} from "expo-router";
+
+import CreateUser from "@/app/users/CreateUser";
+import {Link, useNavigation} from "expo-router";
 
 
 function UserList() {
@@ -104,13 +106,13 @@ function UserList() {
                 data={filteredUsers}
                 keyExtractor={(user) => user.id}
                 renderItem={renderListItem}
-            </FlatList>
+            />
+            <Link href="/createUser" asChild>
+                <Pressable >
+                    <Text >Dodaj nowego użytkownika</Text>
+                </Pressable>
+            </Link>
 
-            {//filteredUsers.length === 0 && (
-               // <Text className="text-gray-500">Brak użytkowników spełniających kryteria</Text>)
-                 }
-                <Pressable onPress = {() => {navigation.navigate('CreateUser')}}>
-                    <Text>Dodaj nowego użytkownika</Text></Pressable>
         </View>
     )
 }

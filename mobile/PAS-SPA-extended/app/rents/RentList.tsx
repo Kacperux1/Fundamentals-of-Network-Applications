@@ -1,6 +1,6 @@
 
 import {useState, useEffect} from 'react';
-import type {Rent} from '../../utils/typedefs.ts';
+import type {Rent} from '../../src/utils/typedefs.ts';
 import getAllRents, {deleteRent, endRent} from "@/src/api/rent/RentService";
 import {View, Text, Alert} from "react-native";
 

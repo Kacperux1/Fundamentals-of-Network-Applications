@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import type {Client, Facility, RentForm, Rent} from '../../utils/typedefs.ts';
+import type {Client, Facility, RentForm, Rent} from '../../src/utils/typedefs.ts';
 
 import * as yup from 'yup';
 import getAllFacilities from "@/src/api/facility/FacilityService";

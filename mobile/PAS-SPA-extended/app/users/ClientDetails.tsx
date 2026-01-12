@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import type {Client, Rent} from '../../utils/typedefs.ts';
+import type {Client, Rent} from '../../src/utils/typedefs.ts';
 import {getClientsRents} from "@/src/api/rent/RentService";
 import {getUserById} from "@/src/api/user/UserService";
 import {Text, View} from 'react-native';

@@ -6,7 +6,7 @@ import type {
     UpdateClientData,
     UpdateUserFormData,
     User
-} from "../../utils/typedefs.ts";
+} from "../../src/utils/typedefs.ts";
 
 import * as yup from 'yup';
 import {createUser, getUserById, updateUser} from "@/src/api/user/UserService";
