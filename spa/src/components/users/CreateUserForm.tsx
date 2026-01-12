@@ -69,8 +69,8 @@ function CreateUserForm() {
 
     function sendDataToCreateUser(userData:CreateUserFormData) {
         if(!window.confirm(`Na pewno chcesz dodać użytkownika o loginie ${userData.login}, emailu: ${userData.email}, statusie:`
-        + userData.active ? `aktywnym` : `nieaktywnym` + 'roli: ' +
-        userData.type ==='client'? 'klient': userData.type === 'administrator'? 'administrator': 'pracownik' + ' ?')) {
+        + (userData.active ? `aktywnym` : `nieaktywnym`) + 'roli: ' +
+            (userData.type ==='client'? 'klient': userData.type === 'administrator'? 'administrator': 'pracownik') + ' ?')) {
             return;
         }
         createUser(userData).then((user: User) => {
