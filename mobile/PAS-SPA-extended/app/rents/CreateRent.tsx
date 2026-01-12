@@ -12,7 +12,7 @@ function CreateRentForm() {
     const [currentFacilities, setCurrentFacilities] = useState<Facility[]>([]);
     const [selectedClientId, setSelectedClientId] = useState<string>('');
     const [selectedFacilityId, setSelectedFacilityId] = useState<string>('');
-    const [chosenStartDate, setChosenStartDate] = useState<Date>(new Date());
+    const [chosenStartDate, setChosenStartDate] = useState<Date | null>(null);
     const [chosenEndDate, setChosenEndDate] = useState<Date | null>(null);
     const [validationError, setValidationError] = useState<string>('');
     const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
@@ -90,7 +90,7 @@ function CreateRentForm() {
     function resetForm() {
         setSelectedClientId('');
         setSelectedFacilityId('');
-        setChosenStartDate(new Date());
+        setChosenStartDate(null);
         setChosenEndDate(null);
     }
 
