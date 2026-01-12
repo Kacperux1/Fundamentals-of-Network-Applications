@@ -92,7 +92,7 @@ function ClientDetails() {
         );
     }
 
-    // Jeśli brak danych klienta
+
     if (!client) {
         return (
             <View>

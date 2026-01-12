@@ -1,11 +1,12 @@
 import {useState, useEffect} from 'react';
 import type {Rent} from '../../src/utils/typedefs.ts';
 import getAllRents, {deleteRent, endRent} from "@/src/api/rent/RentService";
-import {View, Text, Alert, FlatList, Pressable, ScrollView} from "react-native";
-import { Link } from 'expo-router'; // Zamiast NavLink
+import {View, Text, Alert, FlatList, Pressable, SafeAreaView} from "react-native";
+import { useRouter } from 'expo-router';
 
 function RentList(){
     const [currentRents, setCurrentRents] = useState<Rent[]>([]);
+    const router = useRouter();
 
     function updateCurrentRents(){
         getAllRents().then((rents: Rent[]) => {
@@ -54,48 +55,72 @@ function RentList(){
     }, [])
 
     return (
-        <ScrollView>
-            <Text className="text-xl">Lista rezerwacji obiektów sportowych:</Text>
-            <FlatList
-                data={currentRents}
-                keyExtractor={(item) => item.rentId}
-                renderItem={({item: rent}) => (
-                    <View key={rent.rentId} className="m-2 rounded-xl border-2 border-yellow-600 text-lg h-35 p-4">
-                        <Text>
-                            Klient: {rent.firstName} {rent.lastName}, {rent.email}
-                        </Text>
-                        <Text>
-                            obiekt sportowy: {rent.facilityName}, {rent.street} {rent.streetNumber}, {rent.city}
-                        </Text>
-                        <Text>
-                            Początek: {rent.startDate.toLocaleString()} Koniec:
-                            {rent.endDate === null ? "nieokreślony" : rent.endDate.toLocaleString()}
-                        </Text>
-                        <Text>
-                            koszt rezerwacji: {rent.endDate === null ? "rezerwacja jeszcze niezakończona" : rent.totalPrice}
-                        </Text>
+        <SafeAreaView className="flex-1">
+            <View className="p-4">
+                <Pressable
+                    onPress={() => router.push('/rents/CreateRent')}
+                    className="bg-blue-600 p-4 rounded-lg mb-4"
+                >
+                    <Text className="text-white text-center font-bold text-lg">
+                        Stwórz nową rezerwację
+                    </Text>
+                </Pressable>
+            </View>
 
-                        {rent.endDate === null && (
-                            <Pressable onPress={() => { endGivenRent(rent.rentId); }}>
-                                <Text>Zakończ rezerwację</Text>
-                            </Pressable>
-                        )}
+            <View className="flex-1 px-4">
+                <Text className="text-xl font-bold mb-4">Lista rezerwacji obiektów sportowych:</Text>
 
-                        {rent.endDate === null && (
-                            <Pressable onPress={() => { deleteGivenRent(rent.rentId) }}>
-                                <Text>Usuń rezerwację</Text>
-                            </Pressable>
-                        )}
-                    </View>
-                )}
-            />
+                <FlatList
+                    data={currentRents}
+                    keyExtractor={(item) => item.rentId}
+                    renderItem={({item: rent}) => (
+                        <View key={rent.rentId} className="mb-4 rounded-xl border-2 border-yellow-600 p-4">
+                            <Text className="mb-1">
+                                <Text className="font-semibold">Klient:</Text> {rent.firstName} {rent.lastName}, {rent.email}
+                            </Text>
+                            <Text className="mb-1">
+                                <Text className="font-semibold">Obiekt sportowy:</Text> {rent.facilityName}, {rent.street} {rent.streetNumber}, {rent.city}
+                            </Text>
+                            <Text className="mb-1">
+                                <Text className="font-semibold">Początek:</Text> {rent.startDate.toLocaleString()}
+                            </Text>
+                            <Text className="mb-1">
+                                <Text className="font-semibold">Koniec:</Text> {rent.endDate === null ? "nieokreślony" : rent.endDate.toLocaleString()}
+                            </Text>
+                            <Text className="mb-3">
+                                <Text className="font-semibold">Koszt rezerwacji:</Text> {rent.endDate === null ? "rezerwacja jeszcze niezakończona" : rent.totalPrice}
+                            </Text>
 
-            <Link href="/rents/CreateRent">
-                <View className="m-4">
-                    <Text>Stwórz nową rezerwację</Text>
-                </View>
-            </Link>
-        </ScrollView>
+                            <View className="flex-row space-x-3">
+                                {rent.endDate === null && (
+                                    <Pressable
+                                        onPress={() => { endGivenRent(rent.rentId); }}
+                                        className="bg-green-500 px-4 py-2 rounded flex-1"
+                                    >
+                                        <Text className="text-white text-center font-semibold">Zakończ rezerwację</Text>
+                                    </Pressable>
+                                )}
+
+                                {rent.endDate === null && (
+                                    <Pressable
+                                        onPress={() => { deleteGivenRent(rent.rentId) }}
+                                        className="bg-red-500 px-4 py-2 rounded flex-1"
+                                    >
+                                        <Text className="text-white text-center font-semibold">Usuń rezerwację</Text>
+                                    </Pressable>
+                                )}
+                            </View>
+                        </View>
+                    )}
+                    ListEmptyComponent={
+                        <Text className="text-center mt-8 text-gray-500">
+                            Brak rezerwacji do wyświetlenia
+                        </Text>
+                    }
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                />
+            </View>
+        </SafeAreaView>
     )
 }
 

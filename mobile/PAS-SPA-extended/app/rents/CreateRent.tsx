@@ -3,10 +3,9 @@ import type {Client, Facility, RentForm, Rent} from '../../src/utils/typedefs.ts
 import * as yup from 'yup';
 import getAllFacilities from "@/src/api/facility/FacilityService";
 import {createRent} from "@/src/api/rent/RentService";
-import {Alert, ScrollView, View, Text, Pressable, Platform} from "react-native";
+import {Alert, ScrollView, View, Text, Pressable, Modal, FlatList} from "react-native";
 import {getAllClients} from "@/src/api/user/UserService";
-import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 function CreateRentForm() {
     const [currentClients, setCurrentClients] = useState<Client[]>([]);
@@ -16,8 +15,10 @@ function CreateRentForm() {
     const [chosenStartDate, setChosenStartDate] = useState<Date>(new Date());
     const [chosenEndDate, setChosenEndDate] = useState<Date | null>(null);
     const [validationError, setValidationError] = useState<string>('');
-    const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-    const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+    const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
+    const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
+    const [showClientModal, setShowClientModal] = useState(false);
+    const [showFacilityModal, setShowFacilityModal] = useState(false);
 
     const createRentValidationSchema = yup.object({
         facilityId: yup.string().required("Podanie rezerwowanego obiektu jest wymagane!"),
@@ -93,20 +94,14 @@ function CreateRentForm() {
         setChosenEndDate(null);
     }
 
-    const onStartDateChange = (event: any, selectedDate?: Date) => {
-        setShowStartDatePicker(Platform.OS === 'ios');
-        if (selectedDate) {
-            setChosenStartDate(selectedDate);
-        }
+    const handleStartDateConfirm = (date: Date) => {
+        setChosenStartDate(date);
+        setStartDatePickerVisible(false);
     };
 
-    const onEndDateChange = (event: any, selectedDate?: Date) => {
-        setShowEndDatePicker(Platform.OS === 'ios');
-        if (selectedDate) {
-            setChosenEndDate(selectedDate);
-        } else {
-            setChosenEndDate(null);
-        }
+    const handleEndDateConfirm = (date: Date) => {
+        setChosenEndDate(date);
+        setEndDatePickerVisible(false);
     };
 
     const formatDate = (date: Date | null): string => {
@@ -120,94 +115,169 @@ function CreateRentForm() {
         });
     };
 
+    const getSelectedClientName = () => {
+        if (!selectedClientId) return 'Wybierz klienta...';
+        const client = currentClients.find(c => c.id === selectedClientId);
+        return client ? client.login : 'Wybierz klienta...';
+    };
+
+    const getSelectedFacilityName = () => {
+        if (!selectedFacilityId) return 'Wybierz obiekt...';
+        const facility = currentFacilities.find(f => f.id === selectedFacilityId);
+        return facility ? facility.name : 'Wybierz obiekt...';
+    };
+
     return (
-        <ScrollView className="p-4">
-            {validationError && <Text className="text-red-700 mb-4">{validationError}</Text>}
-            <View className="flex flex-col items-center">
-                <Text className="m-4">Podaj datę początkową:</Text>
-                <Pressable
-                    onPress={() => setShowStartDatePicker(true)}
-                    className="w-full border p-3 m-4"
-                >
-                    <Text>{formatDate(chosenStartDate)}</Text>
-                </Pressable>
+        <View className="flex-1">
+            <ScrollView className="p-4">
+                <Text className="text-2xl font-bold mb-6 text-center">Nowa rezerwacja</Text>
 
-                {showStartDatePicker && (
-                    <DateTimePicker
-                        value={chosenStartDate}
-                        mode="datetime"
-                        onChange={onStartDateChange}
-                        minimumDate={new Date()}
-                        locale="pl-PL"
-                    />
+                {validationError && (
+                    <View className="bg-red-100 p-3 rounded mb-4">
+                        <Text className="text-red-700 font-bold">Błąd:</Text>
+                        <Text className="text-red-700">{validationError}</Text>
+                    </View>
                 )}
 
-                <Text className="m-4">Podaj datę końcową (opcjonalnie):</Text>
-                <Pressable
-                    onPress={() => setShowEndDatePicker(true)}
-                    className="w-full border p-3 m-4"
-                >
-                    <Text>{formatDate(chosenEndDate)}</Text>
-                </Pressable>
+                <View className="flex-row space-x-3 mb-6">
+                    <Pressable
+                        onPress={handleCreateRentSubmit}
+                        className="flex-1 bg-green-600 p-4 rounded-lg"
+                    >
+                        <Text className="text-white text-center font-bold text-lg">Stwórz rezerwację</Text>
+                    </Pressable>
 
-                {showEndDatePicker && (
-                    <DateTimePicker
-                        value={chosenEndDate || new Date()}
-                        mode="datetime"
-                        onChange={onEndDateChange}
-                        minimumDate={chosenStartDate}
-                        locale="pl-PL"
+                    <Pressable
+                        onPress={resetForm}
+                        className="flex-1 bg-gray-500 p-4 rounded-lg"
+                    >
+                        <Text className="text-white text-center font-bold text-lg">Wyczyść</Text>
+                    </Pressable>
+                </View>
+
+                <View className="space-y-6">
+                    <View>
+                        <Text className="text-lg font-semibold mb-2">Podaj datę początkową:</Text>
+                        <Pressable
+                            onPress={() => setStartDatePickerVisible(true)}
+                            className="w-full border border-gray-300 p-3 rounded bg-white"
+                        >
+                            <Text className="text-lg">{formatDate(chosenStartDate)}</Text>
+                        </Pressable>
+                    </View>
+
+                    <View>
+                        <Text className="text-lg font-semibold mb-2">Podaj datę końcową (opcjonalnie):</Text>
+                        <Pressable
+                            onPress={() => setEndDatePickerVisible(true)}
+                            className="w-full border border-gray-300 p-3 rounded bg-white"
+                        >
+                            <Text className="text-lg">{formatDate(chosenEndDate)}</Text>
+                        </Pressable>
+                    </View>
+
+                    <View>
+                        <Text className="text-lg font-semibold mb-2">Wybierz rezerwującego klienta:</Text>
+                        <Pressable
+                            onPress={() => setShowClientModal(true)}
+                            className="w-full border border-gray-300 p-3 rounded bg-white"
+                        >
+                            <Text className="text-lg">{getSelectedClientName()}</Text>
+                        </Pressable>
+                    </View>
+
+                    <View>
+                        <Text className="text-lg font-semibold mb-2">Wybierz rezerwowany obiekt:</Text>
+                        <Pressable
+                            onPress={() => setShowFacilityModal(true)}
+                            className="w-full border border-gray-300 p-3 rounded bg-white"
+                        >
+                            <Text className="text-lg">{getSelectedFacilityName()}</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </ScrollView>
+
+            <DateTimePickerModal
+                isVisible={isStartDatePickerVisible}
+                mode="datetime"
+                onConfirm={handleStartDateConfirm}
+                onCancel={() => setStartDatePickerVisible(false)}
+                minimumDate={new Date()}
+                locale="pl_PL"
+            />
+
+            <DateTimePickerModal
+                isVisible={isEndDatePickerVisible}
+                mode="datetime"
+                onConfirm={handleEndDateConfirm}
+                onCancel={() => setEndDatePickerVisible(false)}
+                minimumDate={chosenStartDate}
+                locale="pl_PL"
+            />
+
+            <Modal visible={showClientModal} animationType="slide">
+                <View className="flex-1 p-4 bg-white">
+                    <Text className="text-2xl font-bold mb-6 text-center">Wybierz klienta</Text>
+                    <FlatList
+                        data={currentClients}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({item}) => (
+                            <Pressable
+                                onPress={() => {
+                                    setSelectedClientId(item.id);
+                                    setShowClientModal(false);
+                                }}
+                                className="p-4 border-b border-gray-300 active:bg-gray-100"
+                            >
+                                <Text className="text-lg">{item.login}</Text>
+                            </Pressable>
+                        )}
+                        ListEmptyComponent={
+                            <Text className="text-center mt-8 text-gray-500">Brak klientów</Text>
+                        }
                     />
-                )}
+                    <Pressable
+                        onPress={() => setShowClientModal(false)}
+                        className="bg-red-500 p-4 mt-4 rounded-lg active:bg-red-600"
+                    >
+                        <Text className="text-white text-center font-bold">Anuluj</Text>
+                    </Pressable>
+                </View>
+            </Modal>
 
-                <Text className="m-4">Wybierz rezerwującego klienta:</Text>
-                <Picker
-                    selectedValue={selectedClientId}
-                    onValueChange={setSelectedClientId}
-                    className="w-full m-4"
-                >
-                    <Picker.Item value="" label="" />
-                    {currentClients.map((client) => (
-                        <Picker.Item
-                            key={client.id}
-                            value={client.id}
-                            label={client.login}
-                        />
-                    ))}
-                </Picker>
-
-                <Text className="m-4">Wybierz rezerwowany obiekt:</Text>
-                <Picker
-                    selectedValue={selectedFacilityId}
-                    onValueChange={setSelectedFacilityId}
-                    className="w-full m-4"
-                >
-                    <Picker.Item value="" label="Wybierz typ..." />
-                    {currentFacilities.map((facility) => (
-                        <Picker.Item
-                            key={facility.id}
-                            value={facility.id}
-                            label={`${facility.name}, ${facility.street}
-                            ${facility.streetNumber} ${facility.postalCode} ${facility.city}, ${facility.price} zł/godz.`}
-                        />
-                    ))}
-                </Picker>
-
-                <Pressable
-                    onPress={handleCreateRentSubmit}
-                    className="bg-green-500 w-1/2 p-3 m-4"
-                >
-                    <Text className="text-center">Stwórz rezerwację</Text>
-                </Pressable>
-
-                <Pressable
-                    onPress={resetForm}
-                    className="bg-gray-500 w-1/2 p-3 m-4"
-                >
-                    <Text className="text-center text-white">Wyczyść formularz</Text>
-                </Pressable>
-            </View>
-        </ScrollView>
+            <Modal visible={showFacilityModal} animationType="slide">
+                <View className="flex-1 p-4 bg-white">
+                    <Text className="text-2xl font-bold mb-6 text-center">Wybierz obiekt</Text>
+                    <FlatList
+                        data={currentFacilities}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({item}) => (
+                            <Pressable
+                                onPress={() => {
+                                    setSelectedFacilityId(item.id);
+                                    setShowFacilityModal(false);
+                                }}
+                                className="p-4 border-b border-gray-300 active:bg-gray-100"
+                            >
+                                <Text className="text-lg font-semibold">{item.name}</Text>
+                                <Text className="text-gray-600">{item.street} {item.streetNumber}, {item.city}</Text>
+                                <Text className="text-gray-600">{item.price} zł/godz.</Text>
+                            </Pressable>
+                        )}
+                        ListEmptyComponent={
+                            <Text className="text-center mt-8 text-gray-500">Brak obiektów</Text>
+                        }
+                    />
+                    <Pressable
+                        onPress={() => setShowFacilityModal(false)}
+                        className="bg-red-500 p-4 mt-4 rounded-lg active:bg-red-600"
+                    >
+                        <Text className="text-white text-center font-bold">Anuluj</Text>
+                    </Pressable>
+                </View>
+            </Modal>
+        </View>
     )
 }
 
