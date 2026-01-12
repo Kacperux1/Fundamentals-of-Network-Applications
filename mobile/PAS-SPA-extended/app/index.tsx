@@ -1,8 +1,9 @@
 import "./global.css";
 import { Text, View } from "react-native";
 import { verifyInstallation } from "nativewind";
+import axios from "axios";
 
-console.log("NativeWind config:", verifyInstallation());
+axios.defaults.baseURL = 'http://localhost:8080';
 
 export default function App() {
     return (
