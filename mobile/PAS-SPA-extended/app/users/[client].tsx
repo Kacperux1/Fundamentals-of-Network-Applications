@@ -1,9 +1,9 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import type {Client, Rent} from '../../src/utils/typedefs.ts';
 import {getClientsRents} from "@/src/api/rent/RentService";
 import {getUserById} from "@/src/api/user/UserService";
 import {Text, View, FlatList, ActivityIndicator} from 'react-native';
-import {useLocalSearchParams} from "expo-router";
+import {useFocusEffect, useLocalSearchParams} from "expo-router";
 
 function ClientDetails() {
     const [client, setClient] = useState<Client | null>(null);
@@ -15,7 +15,7 @@ function ClientDetails() {
 
     console.log("render ClientDetails, clientId:", clientId);
 
-    // Funkcje pobierania danych
+
     const getClientInfo = async (id: string) => {
         try {
             const clientData = await getUserById(id);
@@ -37,7 +37,6 @@ function ClientDetails() {
     };
 
     useEffect(() => {
-        // clientId może być string lub string[] - konwertujemy na string
         const actualClientId = typeof clientId === 'string'
             ? clientId
             : Array.isArray(clientId)
@@ -49,6 +48,7 @@ function ClientDetails() {
             return;
         }
 
+
         console.log("Używam clientId:", actualClientId);
 
 
@@ -57,46 +57,33 @@ function ClientDetails() {
         setClientsRents([]);
 
 
-        const fetchData = async () => {
-            try {
-                await Promise.all([
-                    getClientInfo(actualClientId),
-                    updateClientsRents(actualClientId)
-                ]);
-            } catch (error) {
-                console.error("Błąd ładowania danych:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        fetchData();
     }, [clientId]);
 
+        useFocusEffect( () => {
+            const actualClientId = typeof clientId === 'string'
+                ? clientId
+                : Array.isArray(clientId)
+                    ? clientId[0]
+                    : undefined;
 
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" />
-                <Text>Ładowanie danych...</Text>
-            </View>
-        );
-    }
+            if (!actualClientId) {
+                console.log("Brak clientId");
+                return;
+            }
+
+                getClientInfo(actualClientId).then( () => {
+                    if(!client ) {return;}
+                    updateClientsRents(client?.id).then(()=> {});
+                });
+            });
 
 
-    if (!clientId) {
+
+    if (!client || !clientId) {
         return (
             <View>
-                <Text>Brak identyfikatora klienta</Text>
-            </View>
-        );
-    }
-
-
-    if (!client) {
-        return (
-            <View>
-                <Text>Nie znaleziono danych klienta</Text>
+                <Text>Nie znaleziono  klienta</Text>
             </View>
         );
     }
