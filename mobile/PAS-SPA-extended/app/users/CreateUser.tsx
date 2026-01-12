@@ -11,6 +11,7 @@ import type {
 import * as yup from 'yup';
 import {createUser, getUserById, updateUser} from "@/src/api/user/UserService";
 import {Picker} from "@react-native-picker/picker";
+import {RadioButton} from "react-native-paper";
 
 
 function CreateUserForm() {
@@ -30,6 +31,11 @@ function CreateUserForm() {
 
     const [validationErrorMessage, setValidationErrorMessage] = useState<string>('');
     const [updatedUser, setUpdatedUser] = useState<User | null>(null);
+
+
+    const [radioButtonState, setRadioButtonState] = useState<string>('');
+
+
 
     const createFormValidationSchema = yup.object(({
         login: yup.string().required("Login jest wymagany").max(50, "Login jest zbyt długi (max 50 znaków"),
@@ -186,32 +192,35 @@ function CreateUserForm() {
             }
             {validationErrorMessage !== '' &&
                 <Text>{validationErrorMessage}</Text>}
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                if (updateMode) {
-                    handleUpdateSubmit();
-                } else {
-                    handleCreationSubmit();
-                }
-            }}>
-                <label htmlFor="login-field">Podaj nazwę(login) użytkownika:</label>
-                <TextInput onChangeText={setTypedLogin}
-                        id="login-field" className="w-full"/>
-                <label htmlFor="email-field"> Podaj adres email:</label>
-                <TextInput onChangeText={setTypedEmail}
-                      id="email-field" className="w-full"/>
-                {!updateMode && <fieldset>
-                    <legend>Wybierz początkowy stan konta:</legend>
-                    <label htmlFor="active-option">Aktywny</label>
-                    <input onChange={e => {
-                        setWillBeActive(e.target.value === "active")
-                    }}
-                           type="radio" id="active-option" name="active-field" value="active" className="m-2"/><br/>
-                    <label htmlFor="inactive-option">Nieaktywny</label>
-                    <input type="radio" id="inactive-option" name="active-field" value="inactive" className="m-2"/><br/>
-                </fieldset>}
+            <View id="create-user-form">
+                <View>
+                    <Text>Podaj nazwę(login) użytkownika:</Text>
+                    <TextInput onChangeText={setTypedLogin}
+                               id="login-field" className="w-full"/>
+                </View>
+                <View>
+                    <Text> Podaj adres email:</Text>
+                    <TextInput onChangeText={setTypedEmail}
+                               id="email-field" className="w-full"/>
+                </View>
+                {!updateMode &&
+                    <View>
+                    <Text>Wybierz początkowy stan konta:</Text>
+                        <RadioButton.Group onValueChange={newValue => setWillBeActive(newValue ==='active')} value={radioButtonState}>
+                            <View>
+                                <RadioButton id="active-option" name="active-field" value="active" className="m-2"/><br/>
+                                <Text>Aktywny</Text>
+                            </View>
+                            <View>
+                                <RadioButton id="inactive-option" name="active-field" value="inactive" className="m-2"/><br/>
+                                    <label htmlFor="inactive-option">Nieaktywny</label>
+                                </View>
+                        </RadioButton.Group>
 
-                {!updateMode && <View><label htmlFor="type-selection">Wybierz typ konta użytkownika:</label>
+
+                </View>}
+
+                {!updateMode && <View><Text>Wybierz typ konta użytkownika:</Text>
                     <Picker
                     id="type-selection"
                     onValueChange={setChosenType}>
@@ -223,24 +232,41 @@ function CreateUserForm() {
 
                 {(chosenType === 'client' || updatedUser?.type === 'client') &&
                     <View className="w-full flex flex-col  m-4">
-                        <label htmlFor="first-name-field" className="ml-0">Podaj imię klienta:</label>
-                        <TextInput onChangeText={
-                            setClientFirstName
-                        }
-                               id="first-name-field"/>
-                        <label htmlFor="last-name-field">Podaj nazwisko klienta:</label>
-                        <TextInput onChangeText={setClientLastName
-                        }
-                              id="last-name-field"/>
-                        <label htmlFor="last-name-field">Podaj numer telefona klienta:</label>
-                        <TextInput onChangeText={setClientPhone}
-                               id="phone-field"/>
+                        <View>
+                            <Text>Podaj imię klienta:</Text>
+                            <TextInput onChangeText={
+                                setClientFirstName
+                            }
+                                       id="first-name-field"/>
+                        </View>
+                        <View>
+                            <Text>Podaj nazwisko klienta:</Text>
+                            <TextInput onChangeText={setClientLastName
+                            }
+                                       id="last-name-field"/>
+                        </View>
+                        <View>
+                            <Text>Podaj numer telefona klienta:</Text>
+                            <TextInput onChangeText={setClientPhone}
+                                       id="phone-field"/>
+                        </View>
                     </View>
                 }
 
-                <Pressable type="submit">{updateMode ? "zaktualizuj użytkownika" : "Dodaj użytkownika"}</Pressable>
-                <Pressable type="reset" onClick={() => resetForm()}>Wyczyść formularz</Pressable>
-            </form>
+                <Pressable onPress={() => {
+                    if (updateMode) {
+                        handleUpdateSubmit();
+                    } else {
+                        handleCreationSubmit();
+                    }
+                }} ><Text>{updateMode ? "zaktualizuj użytkownika" : "Dodaj użytkownika"}</Text>
+                </Pressable>
+                <Pressable onPress={() => resetForm()}>
+                    <Text>
+                        Wyczyść formularz
+                    </Text>
+                    </Pressable>
+            </View>
         </View>
     )
 }

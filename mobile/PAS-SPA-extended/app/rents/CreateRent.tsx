@@ -4,8 +4,9 @@ import type {Client, Facility, RentForm, Rent} from '../../src/utils/typedefs.ts
 import * as yup from 'yup';
 import getAllFacilities from "@/src/api/facility/FacilityService";
 import {createRent} from "@/src/api/rent/RentService";
-import {Alert, ScrollView} from "react-native";
+import {Alert, ScrollView, View, Text} from "react-native";
 import {getAllClients} from "@/src/api/user/UserService";
+import { Picker } from "@react-native-picker/picker";
 
 function CreateRentForm() {
 
@@ -89,8 +90,8 @@ function CreateRentForm() {
 
     return (
         <ScrollView className="w-3/4 ">
-            {validationError && <h2>Niepoprawne dane: {validationError}</h2>}
-            <form onSubmit={ (e) => {e.preventDefault(); handleCreateRentSubmit().then(r => {})}} id="rent-form"
+            {validationError && <Text>Niepoprawne dane: {validationError}</Text>}
+            <View onSubmit={ (e) => {e.preventDefault(); handleCreateRentSubmit().then(r => {})}} id="rent-form"
                   className="flex flex-col items-center m-4">
                 <label htmlFor="start-date-input" className="m-4">Podaj datę początkową:</label>
                 <input onChange={e => {
@@ -111,18 +112,18 @@ function CreateRentForm() {
                     ))}
                 </select>
                 <label htmlFor="facility-select" className="m-4">Wybierz rezerwowany obiekt:</label>
-                <select onChange={e => setSelectedFacilityId(e.target.value)}
+                <Picker onChange={e => setSelectedFacilityId(e.target.value)}
                         form="rent-form" className="bg-[#242424] w-full m-4" id="facility-select">
-                    <option value="" className="bg-[#242424] w-full m-4"></option>
+                    <Picker.Item value="" label ="Wybierz typ..."/>
                     {currentFacilities.map((facility) => (
-                        <option key={facility.id} value={facility.id}>{facility.name}, {facility.street}
-                            {facility.streetNumber} {facility.postalCode} {facility.city}, {facility.price} zł/godz.
-                        </option>
+                        <Picker.Item key={facility.id} value={facility.id} label = {`${facility.name}, ${facility.street}
+                            ${facility.streetNumber} ${facility.postalCode} ${facility.city}, ${facility.price} zł/godz.`}
+                        />
                     ))}
-                </select>
+                </Picker>
                 <button type="submit"  className="bg-green-500 w-1/2">Stwórz rezerwację</button>
                 <button type="reset"  className="bg-green-500 w-1/2" onClick={() => {resetForm()}}>Wyczyść formularz</button>
-            </form>
+            </View>
             {}
 
 

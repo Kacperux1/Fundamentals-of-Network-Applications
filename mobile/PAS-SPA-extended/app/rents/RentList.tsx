@@ -2,7 +2,7 @@
 import {useState, useEffect} from 'react';
 import type {Rent} from '../../src/utils/typedefs.ts';
 import getAllRents, {deleteRent, endRent} from "@/src/api/rent/RentService";
-import {View, Text, Alert} from "react-native";
+import {View, Text, Alert, FlatList} from "react-native";
 
 function RentList(){
 
@@ -64,7 +64,7 @@ function RentList(){
     return (
         <>
             <Text className ="text-xl">Lista rezerwacji obiektów sportowych:</Text>
-            <ul>
+            <FlatList>
                 {currentRents.map((rent: Rent) => (
                     <li key = {rent.rentId} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-35 p-4">
                         Klient: {rent.firstName} {rent.lastName}, {rent.email} <br/>
@@ -85,7 +85,7 @@ function RentList(){
 
                     </li>
                 ))}
-            </ul>
+            </FlatList>
             <NavLink to = "/rentsView/createRent">
                 <button className ="m-4">
                     Stwórz nową rezerwację
