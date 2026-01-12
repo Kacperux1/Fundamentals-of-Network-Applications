@@ -1,33 +1,28 @@
 import {useState, useEffect} from 'react';
 import type {Client, Facility, RentForm, Rent} from '../../src/utils/typedefs.ts';
-
 import * as yup from 'yup';
 import getAllFacilities from "@/src/api/facility/FacilityService";
 import {createRent} from "@/src/api/rent/RentService";
-import {Alert, ScrollView, View, Text} from "react-native";
+import {Alert, ScrollView, View, Text, Pressable, Platform} from "react-native";
 import {getAllClients} from "@/src/api/user/UserService";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 function CreateRentForm() {
-
     const [currentClients, setCurrentClients] = useState<Client[]>([]);
     const [currentFacilities, setCurrentFacilities] = useState<Facility[]>([]);
-
     const [selectedClientId, setSelectedClientId] = useState<string>('');
     const [selectedFacilityId, setSelectedFacilityId] = useState<string>('');
-    const [chosenStartDate, setChosenStartDate] = useState<string>(``);
-    const [chosenEndDate, setChosenEndDate] = useState<string>('');
+    const [chosenStartDate, setChosenStartDate] = useState<Date>(new Date());
+    const [chosenEndDate, setChosenEndDate] = useState<Date | null>(null);
     const [validationError, setValidationError] = useState<string>('');
-    const [confirmedToSend, setConfirmedToSend] = useState<boolean | null>(null);
-
-    //const [confirmedRentCreation, setConfirmedRentCreation] = useState<boolean>(false);
-
-    //const [openRentCreationPopup, setOpenRentCreationPopup] = useState(false);
+    const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+    const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
     const createRentValidationSchema = yup.object({
         facilityId: yup.string().required("Podanie rezerwowanego obiektu jest wymagane!"),
         clientId: yup.string().required("Podanie zamawiającego klienta jest wymagane"),
-        startDate: yup.string().required("Data rozpoczęcia jest wymagana do rezerwacji")
+        startDate: yup.date().required("Data rozpoczęcia jest wymagana do rezerwacji")
     })
 
     function updateFacilityList() {
@@ -51,15 +46,23 @@ function CreateRentForm() {
         const chosenClient = currentClients.find((client:Client) => client.id === data.clientId);
         const chosenFacility = currentFacilities.find((facility:Facility) => facility.id === data.facilityId);
 
-        Alert.alert('Na pewno?' ,`Na pewno chcesz dodać wypożyczenie: ${chosenClient?.first_name}, ${chosenClient?.last_name} wypożycza 
-        ${chosenFacility?.name} od ${data.startDate}` + data.endDate!==''? `do ${data.endDate}`:'' + '?', [
-            {text: "Tak", onPress: () => {createRent(data).then((rent: Rent) => {
-                    Alert.alert(`Wypożyczenie o ID ${rent.rentId} zostało utworzone`);
-                }).catch((err) => {
-                    Alert.alert(err.body.message)
-                });}},
-            {text: 'Nie'},
-        ])
+        const startDateStr = new Date(data.startDate).toLocaleString('pl-PL');
+        const endDateStr = data.endDate ? new Date(data.endDate).toLocaleString('pl-PL') : 'nieokreślony';
+
+        Alert.alert('Na pewno?' ,`Na pewno chcesz dodać wypożyczenie:\n\nKlient: ${chosenClient?.first_name} ${chosenClient?.last_name}\nObiekt: ${chosenFacility?.name}\nOd: ${startDateStr}\nDo: ${endDateStr}`, [
+            {text: "Anuluj", style: 'cancel'},
+            {
+                text: "Tak",
+                onPress: () => {
+                    createRent(data).then((rent: Rent) => {
+                        Alert.alert('Sukces', `Wypożyczenie o ID ${rent.rentId} zostało utworzone`);
+                        resetForm();
+                    }).catch((err) => {
+                        Alert.alert('Błąd', err.body?.message || 'Wystąpił błąd podczas tworzenia rezerwacji');
+                    });
+                }
+            },
+        ]);
     }
 
     async function handleCreateRentSubmit() {
@@ -67,66 +70,143 @@ function CreateRentForm() {
         const data: RentForm = {
             clientId: selectedClientId,
             facilityId: selectedFacilityId,
-            startDate: chosenStartDate,
-            endDate: chosenEndDate,
+            startDate: chosenStartDate.toISOString(),
+            endDate: chosenEndDate ? chosenEndDate.toISOString() : '',
         }
         try {
             await createRentValidationSchema.validate(data);
-        } catch (error) {
+            if (chosenEndDate && chosenEndDate <= chosenStartDate) {
+                setValidationError("Data zakończenia musi być późniejsza niż data rozpoczęcia");
+                return;
+            }
+            sendCreateRentData(data);
+        } catch (error: any) {
             setValidationError(error.message);
             return;
         }
-        sendCreateRentData(data);
     }
 
     function resetForm() {
         setSelectedClientId('');
         setSelectedFacilityId('');
-        setChosenStartDate('');
-        setChosenEndDate('');
+        setChosenStartDate(new Date());
+        setChosenEndDate(null);
     }
-//toDo: pytanie do dr. chomatka: czemu jak ustawilem ciemne tło to sie naprawiło jego mać?
-    //w sensie ze w select-cie nie bylo widac innych opcji niz ta na ktorej był hover
+
+    const onStartDateChange = (event: any, selectedDate?: Date) => {
+        setShowStartDatePicker(Platform.OS === 'ios');
+        if (selectedDate) {
+            setChosenStartDate(selectedDate);
+        }
+    };
+
+    const onEndDateChange = (event: any, selectedDate?: Date) => {
+        setShowEndDatePicker(Platform.OS === 'ios');
+        if (selectedDate) {
+            setChosenEndDate(selectedDate);
+        } else {
+            setChosenEndDate(null);
+        }
+    };
+
+    const formatDate = (date: Date | null): string => {
+        if (!date) return 'Nie wybrano';
+        return date.toLocaleString('pl-PL', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
 
     return (
-        <ScrollView className="w-3/4 ">
-            {validationError && <Text>Niepoprawne dane: {validationError}</Text>}
-            <View onSubmit={ (e) => {e.preventDefault(); handleCreateRentSubmit().then(r => {})}} id="rent-form"
-                  className="flex flex-col items-center m-4">
-                <label htmlFor="start-date-input" className="m-4">Podaj datę początkową:</label>
-                <input onChange={e => {
-                    setChosenStartDate(e.target.value)
-                }}
-                       type="datetime-local" name="start-date" id="start-date-input " className="w-full m-4"/>
-                <label htmlFor="end-date-input" className="m-4">Podaj datę końcową (opcjonalnie):</label>
-                <input onChange={e => {
-                    setChosenEndDate(e.target.value)
-                }}
-                       type="datetime-local" name="end-date" id="end-date-input" className="w-full m-4"/>
-                <label htmlFor="client-select" className="m-4">Wybierz rezerwującego klienta:</label>
-                <select onChange={e => setSelectedClientId(e.target.value)}
-                        form="rent-form" className="bg-[#242424] w-full m-4" id="client-select">
-                    <option value="" className="bg-[#242424] w-full m-4"></option>
+        <ScrollView className="p-4">
+            {validationError && <Text className="text-red-700 mb-4">{validationError}</Text>}
+            <View className="flex flex-col items-center">
+                <Text className="m-4">Podaj datę początkową:</Text>
+                <Pressable
+                    onPress={() => setShowStartDatePicker(true)}
+                    className="w-full border p-3 m-4"
+                >
+                    <Text>{formatDate(chosenStartDate)}</Text>
+                </Pressable>
+
+                {showStartDatePicker && (
+                    <DateTimePicker
+                        value={chosenStartDate}
+                        mode="datetime"
+                        onChange={onStartDateChange}
+                        minimumDate={new Date()}
+                        locale="pl-PL"
+                    />
+                )}
+
+                <Text className="m-4">Podaj datę końcową (opcjonalnie):</Text>
+                <Pressable
+                    onPress={() => setShowEndDatePicker(true)}
+                    className="w-full border p-3 m-4"
+                >
+                    <Text>{formatDate(chosenEndDate)}</Text>
+                </Pressable>
+
+                {showEndDatePicker && (
+                    <DateTimePicker
+                        value={chosenEndDate || new Date()}
+                        mode="datetime"
+                        onChange={onEndDateChange}
+                        minimumDate={chosenStartDate}
+                        locale="pl-PL"
+                    />
+                )}
+
+                <Text className="m-4">Wybierz rezerwującego klienta:</Text>
+                <Picker
+                    selectedValue={selectedClientId}
+                    onValueChange={setSelectedClientId}
+                    className="w-full m-4"
+                >
+                    <Picker.Item value="" label="" />
                     {currentClients.map((client) => (
-                        <option key={client.id} value={client.id}>{client.login}</option>
+                        <Picker.Item
+                            key={client.id}
+                            value={client.id}
+                            label={client.login}
+                        />
                     ))}
-                </select>
-                <label htmlFor="facility-select" className="m-4">Wybierz rezerwowany obiekt:</label>
-                <Picker onChange={e => setSelectedFacilityId(e.target.value)}
-                        form="rent-form" className="bg-[#242424] w-full m-4" id="facility-select">
-                    <Picker.Item value="" label ="Wybierz typ..."/>
+                </Picker>
+
+                <Text className="m-4">Wybierz rezerwowany obiekt:</Text>
+                <Picker
+                    selectedValue={selectedFacilityId}
+                    onValueChange={setSelectedFacilityId}
+                    className="w-full m-4"
+                >
+                    <Picker.Item value="" label="Wybierz typ..." />
                     {currentFacilities.map((facility) => (
-                        <Picker.Item key={facility.id} value={facility.id} label = {`${facility.name}, ${facility.street}
+                        <Picker.Item
+                            key={facility.id}
+                            value={facility.id}
+                            label={`${facility.name}, ${facility.street}
                             ${facility.streetNumber} ${facility.postalCode} ${facility.city}, ${facility.price} zł/godz.`}
                         />
                     ))}
                 </Picker>
-                <button type="submit"  className="bg-green-500 w-1/2">Stwórz rezerwację</button>
-                <button type="reset"  className="bg-green-500 w-1/2" onClick={() => {resetForm()}}>Wyczyść formularz</button>
+
+                <Pressable
+                    onPress={handleCreateRentSubmit}
+                    className="bg-green-500 w-1/2 p-3 m-4"
+                >
+                    <Text className="text-center">Stwórz rezerwację</Text>
+                </Pressable>
+
+                <Pressable
+                    onPress={resetForm}
+                    className="bg-gray-500 w-1/2 p-3 m-4"
+                >
+                    <Text className="text-center text-white">Wyczyść formularz</Text>
+                </Pressable>
             </View>
-            {}
-
-
         </ScrollView>
     )
 }

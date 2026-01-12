@@ -12,9 +12,12 @@ import * as yup from 'yup';
 import {createUser, getUserById, updateUser} from "@/src/api/user/UserService";
 import {Picker} from "@react-native-picker/picker";
 import {RadioButton} from "react-native-paper";
+import {useParams} from "react-router-native";
+import {useLocalSearchParams} from "expo-router";
 
 function CreateUserForm() {
-    const {userId} = useParams<{ userId: string | undefined }>();
+    const params = useLocalSearchParams();
+    const userId = params.userId ? String(params.userId) : undefined;
 
     const updateMode: boolean = Boolean(userId);
     const [typedLogin, setTypedLogin] = useState<string>('');

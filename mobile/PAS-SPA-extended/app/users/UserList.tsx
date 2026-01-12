@@ -1,28 +1,17 @@
 import {useState, useEffect} from 'react';
 import {getAllUsers, activateUser, deactivateUser, getUserById} from '../../src/api/user/UserService';
-import {Alert, Animated, FlatList, Pressable, Text, TextInput, View} from 'react-native';
-
+import {Alert, FlatList, Pressable, Text, TextInput, View, ScrollView} from 'react-native';
 import {User} from "@/src/utils/typedefs";
-
-
-import CreateUser from "@/app/users/CreateUser";
-import {Link, useNavigation} from "expo-router";
-
+import {Link, useRouter} from "expo-router";
 
 function UserList() {
-
     const [currentUsers, setCurrentUsers] = useState<User[]>([]);
-
     const [searchLogin, setSearchLogin] = useState('');
-
-    //const {clientMgmntMode, setClientMgmntMode} = useContext(ClientContext);
-
-    const navigation = useNavigation();
+    const router = useRouter();
 
     const filteredUsers = currentUsers.filter(user =>
         user.login.toLowerCase().includes(searchLogin.toLowerCase())
     );
-
 
     function updateUserList() {
         getAllUsers().then((users: User[]) => {
@@ -41,13 +30,12 @@ function UserList() {
                     updateUserList();
                     getUserById(id).then((user:User) => {
                         Alert.alert('Sukces',`Aktywowano użytkownika: ${user.login}`);
-
                     })
                 });}},
             {text: 'Nie', },
         ]);
     }
-    //do zmiany lub nie wiem zeby nei pobierac z api
+
     function deactivateChosenUser(id: string) {
         const chosenUser = currentUsers.find(user => user.id === id);
         Alert.alert('Na pewno?', `Na pewno chcesz deaktywować użytkownika ${chosenUser?.login} ?`, [
@@ -61,59 +49,79 @@ function UserList() {
         ]);
     }
 
-    const renderListItem = (user: {item: User}) => (
-        <View  className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-25 p-4">
+    const renderListItem = ({item}: {item: User}) => (
+        <View className="m-2 rounded-xl border-2 border-gray-300 p-4">
             <Text className="text-lg">
-                {user.item.login}, {user.item.email}, {user.item.type === "client" ? "klient" : user.item.type === "resourceMgr" ?
+                {item.login}, {item.email}, {item.type === "client" ? "klient" : item.type === "resourceMgr" ?
                 "pracownik" : "administrator"},
-                {user.item.active ? " aktywny" : " nieaktywny"}
+                {item.active ? " aktywny" : " nieaktywny"}
             </Text>
 
-            <View className="flex gap-3 justify-center">
-                {user.item.active ? <Pressable className="bg-red" onPress={() => {
-                        deactivateChosenUser(user.item.id);}}>
-                        <Text>Deaktywuj</Text>
-                </Pressable>
-                    : <Pressable className="bg-green"
-                              onPress={() => activateChosenUser(user.item.id)}>
-                        <Text>Aktywuj</Text>
-                    </Pressable>}
-                {user.item.type == "client"  && (
-                        <Pressable onPress ={ () => navigation.navigate('ClientDetails', {userId: user.item.id})}>
-                           <Text>Szczegóły</Text>
-                        </Pressable>
-                    )}
-                    <Pressable onPress ={ () => navigation.navigate('CreateUser', {userId: user.item.id})}>
-                        Modyfikuj
+            <View className="flex flex-row gap-3 justify-center mt-2">
+                {item.active ?
+                    <Pressable
+                        className="bg-red-500 p-2 rounded"
+                        onPress={() => deactivateChosenUser(item.id)}
+                    >
+                        <Text className="text-white">Deaktywuj</Text>
                     </Pressable>
+                    :
+                    <Pressable
+                        className="bg-green-500 p-2 rounded"
+                        onPress={() => activateChosenUser(item.id)}
+                    >
+                        <Text className="text-white">Aktywuj</Text>
+                    </Pressable>
+                }
+
+                {item.type === "client" && (
+                    <Pressable
+                        className="bg-blue-500 p-2 rounded"
+                        onPress={() => router.push(`/users/${item.id}`)}
+                    >
+                        <Text className="text-white">Szczegóły</Text>
+                    </Pressable>
+                )}
+
+                <Pressable
+                    className="bg-yellow-500 p-2 rounded"
+                    onPress={() => router.push(`/users/CreateUser?userId=${item.id}`)}
+                >
+                    <Text className="text-white">Modyfikuj</Text>
+                </Pressable>
             </View>
         </View>
     );
 
-
     return (
-        <View>
-            <Text>Lista użytkowników</Text>
+        <ScrollView className="p-4">
+            <Text className="text-2xl font-bold mb-4">Lista użytkowników</Text>
 
             <TextInput
                 placeholder="Szukaj po loginie..."
                 value={searchLogin}
                 onChangeText={setSearchLogin}
-                className="border p-2 rounded w-full mb-4"
+                className="border border-gray-300 p-2 rounded mb-4"
             />
 
             <FlatList
                 data={filteredUsers}
-                keyExtractor={(user) => user.id}
+                keyExtractor={(item) => item.id}
                 renderItem={renderListItem}
+                scrollEnabled={false}
+                ListEmptyComponent={
+                    <Text className="text-center mt-4">Brak użytkowników do wyświetlenia</Text>
+                }
             />
-            <Link href="/createUser" asChild>
-                <Pressable >
-                    <Text >Dodaj nowego użytkownika</Text>
-                </Pressable>
-            </Link>
 
-        </View>
+
+            <Pressable
+                className="bg-blue-500 p-3 rounded mt-4"
+                onPress={() => router.push('/users/CreateUser')}
+            >
+                <Text className="text-white text-center">Dodaj nowego użytkownika</Text>
+            </Pressable>
+        </ScrollView>
     )
 }
 

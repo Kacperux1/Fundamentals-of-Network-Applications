@@ -1,14 +1,11 @@
-
 import {useState, useEffect} from 'react';
 import type {Rent} from '../../src/utils/typedefs.ts';
 import getAllRents, {deleteRent, endRent} from "@/src/api/rent/RentService";
-import {View, Text, Alert, FlatList} from "react-native";
+import {View, Text, Alert, FlatList, Pressable, ScrollView} from "react-native";
+import { Link } from 'expo-router'; // Zamiast NavLink
 
 function RentList(){
-
     const [currentRents, setCurrentRents] = useState<Rent[]>([]);
-
-    const [confirmedAction, setConfirmedAction] = useState<boolean|null>(null);
 
     function updateCurrentRents(){
         getAllRents().then((rents: Rent[]) => {
@@ -16,86 +13,89 @@ function RentList(){
         })
     }
 
-    function showConfirmationAlert(message: string) {
-        Alert.alert('Na pewno?', message, [
-            {text: "Tak", onPress: () => {setConfirmedAction(true)}},
-            {text: 'Nie', onPress: () => {setConfirmedAction(false)}},
+    function endGivenRent(rentId:string){
+        const maybeRent = currentRents.find((rent:Rent) => rent.rentId === rentId);
+
+        Alert.alert('Na pewno?', `Na pewno chcesz zakończyć wypożyczenie o ID ${rentId} ?`, [
+            {text: "Anuluj", style: 'cancel'},
+            {
+                text: "Tak",
+                onPress: () => {
+                    if(maybeRent && maybeRent.startDate >= new Date(Date.now())) {
+                        Alert.alert('Błąd!', `Nie można zakończyć rezerwacji zaczynających się w przyszłości, w celu anulowania przyszłych rezerwacji należy dokonać usunięcia rezerwacji`);
+                        return;
+                    }
+                    endRent(rentId).then((rent: Rent) => {
+                        Alert.alert('Sukces!', `Zakończono rezerwację o ID ${rent.rentId}, całkowity koszt wypożyczenia obiektu: ${rent.totalPrice} zł`);
+                        updateCurrentRents();
+                    });
+                }
+            },
         ]);
     }
 
-    function endGivenRent(rentId:string){
-        const maybeRent = currentRents.find((rent:Rent) => rent.rentId === rentId);
-        showConfirmationAlert(`Na pewno chcesz zakończyć wypożyczenie o ID ${rentId} ?`);
-        if(!confirmedAction) {
-            setConfirmedAction(null);
-            return;
-        }
-        if(maybeRent &&maybeRent.startDate >= new Date(Date.now())) {
-            Alert.alert('Błont!',`Nie można zakończyć rezerwacji zaczynających się w przyszłości,
-             w celu anulowania przyszłych rezerwacji należy dokonać usunięcia rezerwacji
-            `);
-            setConfirmedAction(null);
-            return;
-        }
-        endRent(rentId).then((rent: Rent) => {
-            Alert.alert('Sukces!',`Zakończono rezerwację o ID ${rent.rentId}, całkowity koszt wypożyczenia obiektu: ${rent.totalPrice} zł`)
-            updateCurrentRents();
-            setConfirmedAction(null);
-        });
-    }
-
     function deleteGivenRent(id:string){
-        showConfirmationAlert(`Na pewno chcesz usunąć wypożyczenie o ID ${id} ?`)
-        if(!confirmedAction) {
-            setConfirmedAction(null);
-            return;
-        }
-        deleteRent(id).then((rent: Rent) => {
-            Alert.alert('Sukces!', `Usunięto planowaną rezerwację o ID:${rent.rentId}`);
-            updateCurrentRents();
-            setConfirmedAction(null);
-        })
+        Alert.alert('Na pewno?', `Na pewno chcesz usunąć wypożyczenie o ID ${id} ?`, [
+            {text: "Anuluj", style: 'cancel'},
+            {
+                text: "Tak",
+                onPress: () => {
+                    deleteRent(id).then((rent: Rent) => {
+                        Alert.alert('Sukces!', `Usunięto planowaną rezerwację o ID:${rent.rentId}`);
+                        updateCurrentRents();
+                    })
+                }
+            },
+        ]);
     }
 
     useEffect(() => {
         updateCurrentRents();
-    }, [currentRents])
+    }, [])
 
     return (
-        <>
-            <Text className ="text-xl">Lista rezerwacji obiektów sportowych:</Text>
-            <FlatList>
-                {currentRents.map((rent: Rent) => (
-                    <li key = {rent.rentId} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-35 p-4">
-                        Klient: {rent.firstName} {rent.lastName}, {rent.email} <br/>
-                        obiekt sportowy: {rent.facilityName}, {rent.street} {rent.streetNumber}, {rent.city} <br/>
-                        Początek: {rent.startDate.toLocaleString()} Koniec:
-                        {rent.endDate ===null? "nieokreślony" : rent.endDate.toLocaleString()} <br/>
-                        koszt rezerwacji: {rent.endDate===null? "rezerwacja jeszcze niezakończona": rent.totalPrice}
+        <ScrollView>
+            <Text className="text-xl">Lista rezerwacji obiektów sportowych:</Text>
+            <FlatList
+                data={currentRents}
+                keyExtractor={(item) => item.rentId}
+                renderItem={({item: rent}) => (
+                    <View key={rent.rentId} className="m-2 rounded-xl border-2 border-yellow-600 text-lg h-35 p-4">
+                        <Text>
+                            Klient: {rent.firstName} {rent.lastName}, {rent.email}
+                        </Text>
+                        <Text>
+                            obiekt sportowy: {rent.facilityName}, {rent.street} {rent.streetNumber}, {rent.city}
+                        </Text>
+                        <Text>
+                            Początek: {rent.startDate.toLocaleString()} Koniec:
+                            {rent.endDate === null ? "nieokreślony" : rent.endDate.toLocaleString()}
+                        </Text>
+                        <Text>
+                            koszt rezerwacji: {rent.endDate === null ? "rezerwacja jeszcze niezakończona" : rent.totalPrice}
+                        </Text>
 
-                        {rent.endDate ===null && <button onClick={() => {
-                            endGivenRent(rent.rentId);
-                        }}>Zakończ rezerwację</button>
-                        }
+                        {rent.endDate === null && (
+                            <Pressable onPress={() => { endGivenRent(rent.rentId); }}>
+                                <Text>Zakończ rezerwację</Text>
+                            </Pressable>
+                        )}
 
-                        {rent.endDate ===null && <button onClick={() => {deleteGivenRent(rent.rentId)}}>
-                            Usuń rezerwację
-                        </button>
-                        }
+                        {rent.endDate === null && (
+                            <Pressable onPress={() => { deleteGivenRent(rent.rentId) }}>
+                                <Text>Usuń rezerwację</Text>
+                            </Pressable>
+                        )}
+                    </View>
+                )}
+            />
 
-                    </li>
-                ))}
-            </FlatList>
-            <NavLink to = "/rentsView/createRent">
-                <button className ="m-4">
-                    Stwórz nową rezerwację
-                </button>
-            </NavLink>
-            <View className="flex justify-center">
-                <Outlet/>
-            </View>
-
-        </>
+            <Link href="/rents/CreateRent">
+                <View className="m-4">
+                    <Text>Stwórz nową rezerwację</Text>
+                </View>
+            </Link>
+        </ScrollView>
     )
 }
 
