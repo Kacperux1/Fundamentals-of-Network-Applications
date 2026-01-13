@@ -31,7 +31,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin( origins = "http://localhost:5173")
+@CrossOrigin(
+        origins = "*",
+        allowedHeaders = "*",
+        methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
+)
 @RequestMapping("/users")
 class UserController {
 

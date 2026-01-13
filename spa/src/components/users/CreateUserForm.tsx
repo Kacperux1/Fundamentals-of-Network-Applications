@@ -131,7 +131,12 @@ function CreateUserForm() {
                 await createFormValidationSchema.validate(userData, {abortEarly: true});
             }
         } catch (error) {
-            setValidationErrorMessage(error.message);
+            if (error instanceof Error) {
+                setValidationErrorMessage(error.message);
+            } else {
+                setValidationErrorMessage("wystompił nieznany błont");
+            }
+
             return;
         }
         sendDataToCreateUser(userData);
@@ -163,8 +168,13 @@ function CreateUserForm() {
                 await updateUserValidationSchema.validate(userData, {abortEarly: true});
             }
         } catch (error) {
-            setValidationErrorMessage(error.message);
+            if(error instanceof Error) {
+                setValidationErrorMessage(error.message);
+            } else {
+                setValidationErrorMessage('Wystompił nieznay błont');
+            }
             return;
+
         }
         sendDataToUpdateUser(userData);
     }

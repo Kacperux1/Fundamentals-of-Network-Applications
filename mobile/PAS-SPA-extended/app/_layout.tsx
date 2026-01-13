@@ -11,15 +11,17 @@ export default function RootLayout() {
                 name="users/UsersList"
             />
             <Stack.Screen
-                name="users/ClientDetails"
+                name="users/[client]"
             />
             <Stack.Screen
                 name="users/CreateUser"
             />
             <Stack.Screen
                 name="rents/RentList"
-
             />
+            <Stack.Screen
+                name="rents/CreateRent"
+                />
         </Stack>
     );
 }

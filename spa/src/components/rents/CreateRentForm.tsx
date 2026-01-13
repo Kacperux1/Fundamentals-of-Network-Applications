@@ -69,7 +69,9 @@ function CreateRentForm() {
         try {
             await createRentValidationSchema.validate(data);
         } catch (error) {
-            setValidationError(error.message);
+            if(error instanceof Error) {
+                setValidationError(error.message);
+            }
             return;
         }
         sendCreateRentData(data);
@@ -87,7 +89,7 @@ function CreateRentForm() {
     return (
         <div className="w-3/4 ">
             {validationError && <h2>Niepoprawne dane: {validationError}</h2>}
-            <form onSubmit={ (e) => {e.preventDefault(); handleCreateRentSubmit().then(r => {})}} id="rent-form"
+            <form onSubmit={ (e) => {e.preventDefault(); handleCreateRentSubmit().then()}} id="rent-form"
                       className="flex flex-col items-center m-4">
                 <label htmlFor="start-date-input" className="m-4">Podaj datę początkową:</label>
                 <input onChange={e => {

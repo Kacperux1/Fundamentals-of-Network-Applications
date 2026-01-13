@@ -19,18 +19,20 @@ function ClientDetails() {
 
     //ponizej do zmiany: nulle   use effect sa tyko dlatego zeby dane sie odsiezały
     function getClientInfo() {
-        // if (!clientId) {
-        //     throw new Error("Client ID is missing");
-        // }
-        getUserById(clientId).then((client: Client) => {
-            setClient(client);
-        })
+        if(clientId) {
+            getUserById(clientId).then((client: Client) => {
+                setClient(client);
+            })
+        } else {
+            alert('clientId is missing');
+        }
+
     }
 
     function updateClientsRents() {
-        // if (!clientId) {
-        //     throw new Error("Client ID is missing");
-        // }
+        if (!clientId) {
+            throw new Error("Client ID is missing");
+        }
         console.log("Rents from API:", clientsRents);
         getClientsRents(clientId).then((rents: Rent[]) => {
             setClientsRents(rents);
@@ -41,6 +43,7 @@ function ClientDetails() {
 
         if(!clientId) return;
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setClient(null);
         setClientsRents([]);
 

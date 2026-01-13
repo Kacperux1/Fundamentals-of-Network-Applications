@@ -13,10 +13,13 @@ import pl.facility_rental.rent.exceptions.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@CrossOrigin(
+        origins = "*",
+        allowedHeaders = "*",
+        methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
+)
 @RestController
 @RequestMapping("/rents")
-@CrossOrigin( origins = "http://localhost:5173")
 public class RentController {
 
     private final RentService rentService;
