@@ -196,6 +196,17 @@ class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
         }
 
+        @ExceptionHandler(UserWithLoginExistsException.class)
+        public ResponseEntity<Map<String, String>> handleUserWithLoginExists(UserWithLoginExistsException ex) {
+            Map<String, String> body = new HashMap<>();
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        }
+
+
+
     }
+
+
 
 }
