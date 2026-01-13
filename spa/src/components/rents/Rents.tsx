@@ -19,6 +19,7 @@ function Rents(){
         if(!window.confirm(`Na pewno chcesz zakończyć wypożyczenie o ID ${rentId} ?`)) {
             return;
         }
+        // eslint-disable-next-line react-hooks/purity
         if(maybeRent &&maybeRent.startDate >= new Date(Date.now())) {
             alert(`Nie można zakończyć rezerwacji zaczynających się w przyszłości,
              w celu anulowania przyszłych rezerwacji należy dokonać usunięcia rezerwacji
