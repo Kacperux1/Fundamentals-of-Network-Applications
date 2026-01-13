@@ -5,7 +5,7 @@ import axios from 'axios';
 
 
 
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = 'http://31.3.218.72:8080';
 
 
 
