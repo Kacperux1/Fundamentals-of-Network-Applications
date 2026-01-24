@@ -32,6 +32,9 @@ public abstract class MongoUser {
     @BsonProperty("email")
     private String email;
 
+    @BsonProperty("password")
+    private String password;
+
     @Setter
     @BsonProperty("active")
     private boolean active;
@@ -40,16 +43,19 @@ public abstract class MongoUser {
     public MongoUser(@BsonProperty("_id") ObjectId id,
                      @BsonProperty("login") String login,
                      @BsonProperty("email") String email,
+                     @BsonProperty("password") String password,
                      @BsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;
         this.email = email;
+        this.password = password;
         this.active = active;
     }
 
-    public MongoUser(String login, String email, boolean active) {
+    public MongoUser(String login, String email, String password,boolean active) {
         this.login = login;
         this.email = email;
+        this.password = password;
         this.active = active;
     }
 }

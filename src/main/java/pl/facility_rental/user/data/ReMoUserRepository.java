@@ -95,6 +95,11 @@ public class ReMoUserRepository implements UserRepository {
         return user;
     }
 
+    @Override
+    public User updatePassword(String id, String password) {
+        return mongo.updatePassword(id, password);
+    }
+
     public void clearCache() {
         redis.evictAll();
     }

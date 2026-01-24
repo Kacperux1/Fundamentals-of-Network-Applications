@@ -19,6 +19,10 @@ db.createCollection("users", {
                     pattern: "^[\\w\\.]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$",
                     description: "must be unique, string type, required, matches pattern *@*"
                 },
+                password: {
+                    bsonType: "string",
+                    description: "must be unique, string type, required"
+                },
                 active: {
                     bsonType: "bool",
                     description: "must be boolean"

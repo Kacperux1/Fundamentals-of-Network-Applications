@@ -273,6 +273,13 @@ class MongoUserRepository implements UserRepository {
         return mapSubtypeToUserBusinessModel(userCollection.findOneAndDelete(filter));
     }
 
+    @Override
+    public User updatePassword(String id, String password) {
+        MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
+        userCollection.findOneAndUpdate(Filters.eq("_id", new ObjectId(id)), Updates.set("password", password));
+        return  mapSubtypeToUserBusinessModel(userCollection.find(Filters.eq("_id", new ObjectId(id))).first());
+    }
+
 
     private User mapSubtypeToUserBusinessModel(MongoUser mongoUser) throws RecognizingUserTypeException {
         if(mongoUser instanceof MongoDbClient){

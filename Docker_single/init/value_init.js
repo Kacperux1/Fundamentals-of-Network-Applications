@@ -3,18 +3,21 @@ db.users.insertMany([
     {
         login: "admin",
         email: "admin@example.com",
+        passord: "$2a$12$w7rX0LMIkm0OnolBzNfveOhrmph14y8aK3tjW9afhRaYOIuGPfEwm",
         active: true,
         _class: "administrator"
     },
     {
         login: "manager",
         email: "manager@example.pl",
+        password: "$2a$12$.YFBOlQ.BZ78cKtX81C4kOmIb5SgBpXeXyaRER681cjXTy1DznYFy",
         active: true,
         _class: "resourceMgr"
     },
     {
         login: "stachudzons",
         email: "stasiu@piwo.pl",
+        password: "$2a$12$1KZGVp2ua8RgqjAHReLA2uIkglu.8k3NmAQvjxWFCIfD0fc9X2nqa",
         active: false,
         _class: "client",
         first_name: "Stanisław",
@@ -24,6 +27,7 @@ db.users.insertMany([
     {
         login: "j_bwicz",
         email: "janek@2ws.pl",
+        password: "$2a$12$1KZGVp2ua8RgqjAHReLA2uIkglu.8k3NmAQvjxWFCIfD0fc9X2nqa",
         active: true,
         _class: "client",
         first_name: "Janusz",

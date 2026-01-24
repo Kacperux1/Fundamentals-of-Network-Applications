@@ -21,15 +21,15 @@ public class MongoResourceMgr extends MongoUser {
 
     @BsonCreator
     public MongoResourceMgr(@BsonProperty("_id")ObjectId id,@BsonProperty("login") String login, @BsonProperty("email") String email,
-                            @BsonProperty("active") boolean active //@BsonProperty("first_name") String firstName,
+                            @BsonProperty("password") String password, @BsonProperty("active") boolean active //@BsonProperty("first_name") String firstName,
                             //@BsonProperty("last_name") String lastName
     ) {
-        super(id, login, email, active);
+        super(id, login, email, password, active);
 //        this.firstName = firstName;
 //        this.lastName = lastName;
     }
 
-    public MongoResourceMgr( String login, String email, boolean active) {
-        super(login, email, active);
+    public MongoResourceMgr( String login, String email, String password, boolean active) {
+        super(login, email, password, active);
     }
 }

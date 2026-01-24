@@ -23,22 +23,26 @@ public abstract class User {
     @NotBlank
     private String login;
     private String email;
+    private String password;
     private boolean active;
 
     @JsonCreator
     public User(@JsonProperty("id") String id,
                 @JsonProperty("login") String login,
                 @JsonProperty("email") String email,
+                @JsonProperty("password") String password,
                 @JsonProperty("active") boolean active) {
         this.id = id;
         this.login = login;
         this.email = email;
+        this.password = password;
         this.active = active;
     }
 
-    public User(String login, String email, boolean active) {
+    public User(String login, String email, String password, boolean active) {
         this.login = login;
         this.email = email;
+        this.password = password;
         this.active = active;
     }
 

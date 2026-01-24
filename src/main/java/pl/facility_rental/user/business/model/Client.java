@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import java.util.UUID;
 @Getter
-@Setter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Client extends User {
@@ -25,18 +24,19 @@ public class Client extends User {
     public Client(@JsonProperty("id") String id,
                   @JsonProperty("login") String login,
                   @JsonProperty("email") String email,
+                  @JsonProperty("password") String password,
                   @JsonProperty("active") boolean active,
                   @JsonProperty("firstName") String firstName,
                   @JsonProperty("lastName") String lastName,
                   @JsonProperty("phone") String phone) {
-        super(id, login, email, active);
+        super(id, login, email, password, active);
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
     }
 
-    public Client(String login, String email, boolean active, String firstName, String lastName, String phone) {
-        super(login, email, active);
+    public Client(String login, String email, boolean active, String password,  String firstName, String lastName, String phone) {
+        super(login, email,password, active);
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;

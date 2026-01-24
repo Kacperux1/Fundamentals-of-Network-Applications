@@ -30,5 +30,7 @@ public interface UserRepository {
     List<User> findUsersIfLoginMatchesValue(String value);
 
     User delete(String id);
+
+    User updatePassword(String id, String password);
 }
 

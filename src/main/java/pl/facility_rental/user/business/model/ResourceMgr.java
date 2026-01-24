@@ -10,11 +10,11 @@ import java.util.UUID;
 public class ResourceMgr extends User{
 
 
-    public ResourceMgr(String id, String login, String email, boolean active) {
-        super(id, login, email, active);
+    public ResourceMgr(String id, String login, String email, String password, boolean active) {
+        super(id, login, email, password, active);
     }
 
-    public ResourceMgr(String login, String email, boolean active) {
-        super(login, email, active);
+    public ResourceMgr(String login, String email,String password, boolean active) {
+        super(login, email, password, active);
     }
 }

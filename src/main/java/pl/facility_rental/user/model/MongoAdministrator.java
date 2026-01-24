@@ -21,16 +21,16 @@ public class MongoAdministrator extends MongoUser {
 
     @BsonCreator
     public MongoAdministrator(@BsonProperty("_id") ObjectId id, @BsonProperty("login") String login, @BsonProperty("email") String email,
-                              @BsonProperty("active") boolean status //@BsonProperty("first_name") String firstName,
+                              @BsonProperty("password") String password,@BsonProperty("active") boolean status //@BsonProperty("first_name") String firstName,
                               //@BsonProperty("last_name") String lastName//
                 ) {
-        super(id, login, email, status);
+        super(id, login, email, password, status);
 //        this.firstName = firstName;
 //        this.lastName = lastName;
     }
 
-    public MongoAdministrator(String login, String email, boolean status) {
-        super(login, email, status);
+    public MongoAdministrator(String login, String email,String password, boolean status) {
+        super(login, email, password,status);
     }
 
 }
