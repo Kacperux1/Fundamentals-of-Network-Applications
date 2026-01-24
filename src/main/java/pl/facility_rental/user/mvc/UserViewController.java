@@ -17,8 +17,11 @@ import pl.facility_rental.user.business.model.ResourceMgr;
 import pl.facility_rental.user.business.model.User;
 import pl.facility_rental.user.dto.CreateUserDto;
 import pl.facility_rental.user.dto.ReturnedUserDto;
+import pl.facility_rental.user.dto.admin.ReturnedAdminDto;
 import pl.facility_rental.user.dto.admin.mappers.AdminMapper;
+import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.dto.client.mappers.ClientMapper;
+import pl.facility_rental.user.dto.manager.ReturnedResourceMgrDto;
 import pl.facility_rental.user.dto.manager.mappers.ResourceMgrMapper;
 import pl.facility_rental.user.exceptions.RecognizingUserTypeException;
 
@@ -71,6 +74,23 @@ public class UserViewController {
     public ReturnedUserDto addUser(CreateUserDto user) {
         ReturnedUserDto newUser = userClient.addUser(user);
         return newUser;
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editUser(@PathVariable String id, Model model) {
+        ReturnedUserDto user = userClient.getUserById(id);
+        if (user instanceof ReturnedClientDto) {
+            model.addAttribute("client", user);
+            return "updateClient";
+        } else if (user instanceof ReturnedAdminDto) {
+            model.addAttribute("admin", user);
+            return "updateAdmin";
+        } else if (user instanceof ReturnedResourceMgrDto) {
+            model.addAttribute("mgr", user);
+            return "updateResourceMgr";
+        } else {
+            throw new RecognizingUserTypeException("Nieobsługiwany typ użytkownika");
+        }
     }
 
     @PostMapping("/activate/{id}")

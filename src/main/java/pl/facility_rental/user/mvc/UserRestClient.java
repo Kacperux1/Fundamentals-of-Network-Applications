@@ -7,6 +7,7 @@ import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 import pl.facility_rental.user.dto.CreateUserDto;
 import pl.facility_rental.user.dto.ReturnedUserDto;
+import pl.facility_rental.user.dto.UpdateUserDto;
 
 import java.util.List;
 
@@ -26,6 +27,14 @@ public class UserRestClient {
                 .block();
     }
 
+    public ReturnedUserDto getUserById(String id) {
+        return webClient.get()
+                .uri("/{id}", id)
+                .retrieve()
+                .bodyToMono(ReturnedUserDto.class)
+                .block();
+    }
+
     public void deleteById(String id) {
         webClient.delete()
                 .uri("/{id}", id)
@@ -36,6 +45,15 @@ public class UserRestClient {
 
     public ReturnedUserDto addUser(CreateUserDto user){
         return webClient.post()
+                .bodyValue(user)
+                .retrieve()
+                .bodyToMono(ReturnedUserDto.class)
+                .block();
+    }
+
+    public ReturnedUserDto editUser(UpdateUserDto user, String id){
+        return webClient.put()
+                .uri("/{id}", id)
                 .bodyValue(user)
                 .retrieve()
                 .bodyToMono(ReturnedUserDto.class)

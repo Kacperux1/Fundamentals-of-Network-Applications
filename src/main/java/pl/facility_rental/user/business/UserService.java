@@ -10,6 +10,7 @@ import pl.facility_rental.user.data.UserRepository;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.exceptions.DeletingActiveUserException;
 import pl.facility_rental.user.exceptions.UserNotFoundException;
+import pl.facility_rental.user.exceptions.UserWithLoginExistsException;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,9 @@ public class UserService {
     }
 
     public User createUser(User user) throws Exception {
+        if(getUserByLoginStrict(user.getLogin()).isPresent()) {
+            throw new UserWithLoginExistsException("User with that login already exists");
+        }
         return userRepository.save(user);
     }
 
