@@ -67,7 +67,7 @@ public class MongoUserRepositoryTest {
     @Test
     public void shouldSaveUserToDatabase() {
         //given
-        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true,"123455", "Janusz", "Wons"
                 , "123456789");
         //when
         try {
@@ -85,9 +85,9 @@ public class MongoUserRepositoryTest {
     @Test
     public void shouldFindAllUsers() {
         //given
-        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true, "123455","Janusz", "Wons"
                 , "123456789");
-        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "123455","Stanisław", "Lańckoroński",
                 "987654321");
         try {
             userRepository.save(user);
@@ -112,9 +112,9 @@ public class MongoUserRepositoryTest {
     @Test
     public void shouldFindUserById() {
         //given
-        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true,"123455", "Janusz", "Wons"
                 , "123456789");
-        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+        User user1 = new Client("stachu", "janusz@kutakabre.pl", true, "123455","Stanisław", "Lańckoroński",
                 "987654321");
         //when
         try {
@@ -135,7 +135,7 @@ public class MongoUserRepositoryTest {
 
     @Test
     public void updateTest() {
-        User user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user = new Client("mak", "stachu@dzons.pl", true, "123455","Janusz", "Wons"
                 , "123456789");
 
         try {
@@ -160,7 +160,7 @@ public class MongoUserRepositoryTest {
 
     @Test
     public void conversionTest() {
-        User original = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User original = new Client("mak", "stachu@dzons.pl", true,"123455", "Janusz", "Wons"
                 , "123456789");
 
         try {
@@ -178,9 +178,9 @@ public class MongoUserRepositoryTest {
 
     @Test
     public void shouldNotAdduserWhenLoginIsRepeated() {
-        User user = new Client("mak", "stachu@dzons.pl", true, "Stefan", "Pieron"
+        User user = new Client("mak", "stachu@dzons.pl", true, "123455","Stefan", "Pieron"
                 , "987654321");
-        User user1 = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        User user1 = new Client("mak", "stachu@dzons.pl", true,"123455", "Janusz", "Wons"
                 , "123456789");
 
         assertDoesNotThrow(() -> userRepository.save(user));

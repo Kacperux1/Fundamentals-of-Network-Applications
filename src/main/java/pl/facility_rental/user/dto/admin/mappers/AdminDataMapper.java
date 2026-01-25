@@ -10,14 +10,15 @@ public class AdminDataMapper {
 
     public MongoAdministrator mapToDataLayer(Administrator administrator){
         if(administrator.getId() == null){
-           return new MongoAdministrator(administrator.getLogin(), administrator.getEmail(), administrator.isActive());
+           return new MongoAdministrator(administrator.getLogin(), administrator.getEmail(), administrator.getPassword(),
+                   administrator.isActive());
         }
         return new MongoAdministrator(new ObjectId(administrator.getId()),
-                administrator.getLogin(), administrator.getEmail(), administrator.isActive());
+                administrator.getLogin(), administrator.getEmail(), administrator.getPassword(),administrator.isActive());
     }
 
     public Administrator mapToBusinessLayer(MongoAdministrator administrator){
         return new Administrator(administrator.getId().toHexString(),
-                administrator.getLogin(), administrator.getEmail(), administrator.isActive());
+                administrator.getLogin(), administrator.getEmail(),  administrator.getPassword(),administrator.isActive());
     }
 }

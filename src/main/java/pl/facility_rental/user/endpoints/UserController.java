@@ -2,6 +2,7 @@ package pl.facility_rental.user.endpoints;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.user.business.UserService;
@@ -55,12 +56,14 @@ class UserController {
 
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
         return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
     }
 
     @GetMapping("/clients")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public List<ReturnedClientDto> getAllClients() {
         return userService.getAllClients().stream().map(clientMapper::getClientDetails).toList();
@@ -68,41 +71,47 @@ class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public List<ReturnedUserDto> getAllUsers() {
         return userService.getAllUsers().stream().map(this::mapSubtypes).toList();
     }
 
     @GetMapping("/{userId}")
-    public ReturnedUserDto getUserById(@PathVariable("userId") String userId) throws Exception {
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ReturnedUserDto getUserById(@PathVariable String userId) throws Exception {
         return userService.getUserById(userId).map(this::mapSubtypes).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "User with given id was not found"));
     }
 
     @GetMapping("/login/{login}")
-    public ReturnedUserDto getUserByLoginStrict(@PathVariable("login") String login) throws Exception {
+    public ReturnedUserDto getUserByLoginStrict(@PathVariable String login) throws Exception {
         return userService.getUserByLoginStrict(login).map(this::mapSubtypes).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with login " + login + " was not found"));
     }
 
     @GetMapping("/login_matching/{loginPart}")
-    public List<ReturnedUserDto> getUserByLoginPart(@PathVariable("loginPart") String loginPart) throws Exception {
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public List<ReturnedUserDto> getUserByLoginPart(@PathVariable String loginPart) throws Exception {
         return userService.getUsersIfLoginMatchesValue(loginPart).stream().map(this::mapSubtypes).toList();
     }
 
 
     @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto) throws Exception {
         return mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto)));
     }
 
     @PatchMapping("/activate/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto activateUser(@PathVariable String userId) throws Exception {
         return mapSubtypes(userService.activate(userId));
     }
 
     @PatchMapping("/deactivate/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto deactivateUser(@PathVariable String userId) throws Exception {
         return mapSubtypes(userService.deactivate(userId));
@@ -110,6 +119,7 @@ class UserController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto deleteUser(@PathVariable String id) throws Exception {
         return mapSubtypes(userService.delete(id));

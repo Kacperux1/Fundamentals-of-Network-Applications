@@ -34,8 +34,8 @@ public class ClientMapper {
     }
 
     public Client updateClient(UpdateClientDto updateClientDto) {
-        return new Client(updateClientDto.getLogin(), updateClientDto.getEmail(), false, updateClientDto.getFirstName(),
-                updateClientDto.getLastName(), updateClientDto.getPhone() );
+        return new Client(updateClientDto.getLogin(), updateClientDto.getEmail(), false, "",updateClientDto.getFirstName(),
+                updateClientDto.getLastName(), updateClientDto.getPhone());
     }
 
 

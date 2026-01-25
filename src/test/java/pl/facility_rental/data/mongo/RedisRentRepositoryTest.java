@@ -50,7 +50,7 @@ public class RedisRentRepositoryTest {
         SportsFacility facility = new SportsFacility("boisko", "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
         facility.setId("1");
 
-        Client client = new Client("adamowo", "a@a", true, "Adam", "Azer", "111");
+        Client client = new Client("adamowo", "a@a", true, "juhuu","Adam", "Azer", "111");
         client.setId("1");
 
         Rent rent = new Rent(client, facility, LocalDateTime.now(), null);
@@ -75,7 +75,7 @@ public class RedisRentRepositoryTest {
         SportsFacility facility = new SportsFacility("boisko", "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
         facility.setId("1");
 
-        Client client = new Client("adamowo", "a@a", true, "Adam", "Azer", "111");
+        Client client = new Client("adamowo", "a@a", true,"juhuu", "Adam", "Azer", "111");
         client.setId("1");
 
         Rent rent = new Rent(client, facility, LocalDateTime.now(), null);
@@ -98,10 +98,10 @@ public class RedisRentRepositoryTest {
         SportsFacility facility1 = new SportsFacility("kort", "11", "zombie", "Lublin", "16-102", new BigDecimal(10));
         facility.setId("2");
 
-        Client client = new Client("adamowo", "a@a", true, "Adam", "Azer", "111");
+        Client client = new Client("adamowo", "a@a", true, "juhuu","Adam", "Azer", "111");
         client.setId("1");
 
-        Client client1 = new Client("pozor", "cos@xd.pl", true, "Tomek", "Tar", "123");
+        Client client1 = new Client("pozor", "cos@xd.pl", true,"2839282", "Tomek", "Tar", "123");
         client.setId("2");
 
         Rent rent = new Rent(client, facility, LocalDateTime.now(), null);

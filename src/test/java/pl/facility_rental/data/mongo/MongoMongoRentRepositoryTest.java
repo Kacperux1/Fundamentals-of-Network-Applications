@@ -83,7 +83,7 @@ public class MongoMongoRentRepositoryTest {
     @Test
     public void shouldSaveRentTest() {
         //given
-        Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        Client user = new Client("mak", "stachu@dzons.pl", true,"123455", "Janusz", "Wons"
                 , "123456789");
 
         try {
@@ -118,9 +118,9 @@ public class MongoMongoRentRepositoryTest {
     @Test
     public void shouldFindAllRents() {
         //given
-        Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        Client user = new Client("mak", "stachu@dzons.pl", true, "123455","Janusz", "Wons"
                 , "123456789");
-        Client user1 =  new Client("stachu", "janusz@kutakabre.pl", true, "Stanisław", "Lańckoroński",
+        Client user1 =  new Client("stachu", "janusz@kutakabre.pl", true,"123455", "Stanisław", "Lańckoroński",
                 "987654321");
 
         SportsFacility facility = new SportsFacility("boisko",
@@ -161,7 +161,7 @@ public class MongoMongoRentRepositoryTest {
     @Test
     public void shouldFindRentById() {
         //given
-        Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        Client user = new Client("mak", "stachu@dzons.pl", true,"123455", "Janusz", "Wons"
                 , "123456789");
         SportsFacility facility = new SportsFacility("boisko",
                 "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));
@@ -223,7 +223,7 @@ public class MongoMongoRentRepositoryTest {
     @Test
     public void conversionTest() {
         //given
-        Client user = new Client("mak", "stachu@dzons.pl", true, "Janusz", "Wons"
+        Client user = new Client("mak", "stachu@dzons.pl", true, "123455","Janusz", "Wons"
                 , "123456789");
         SportsFacility facility = new SportsFacility("boisko",
                 "24", "pomidorowa", "Warszawa", "92-208", new BigDecimal(30));

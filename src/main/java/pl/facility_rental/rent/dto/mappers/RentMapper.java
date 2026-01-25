@@ -7,7 +7,6 @@ import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.rent.business.Rent;
 import pl.facility_rental.rent.dto.CreateRentDto;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
-import pl.facility_rental.rent.exceptions.ValidationViolationRentException;
 import pl.facility_rental.user.business.UserService;
 import pl.facility_rental.user.business.model.Client;
 

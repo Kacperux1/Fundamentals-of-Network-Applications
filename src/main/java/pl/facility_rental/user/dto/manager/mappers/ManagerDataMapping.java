@@ -11,9 +11,9 @@ public class ManagerDataMapping {
 
     public MongoResourceMgr mapToDataLayer(ResourceMgr resourceMgr){
         if(resourceMgr.getId() == null) {
-            return new MongoResourceMgr(resourceMgr.getLogin(), resourceMgr.getEmail(), resourceMgr.isActive() );
+            return new MongoResourceMgr(resourceMgr.getLogin(), resourceMgr.getEmail(), resourceMgr.getPassword(),resourceMgr.isActive());
         }
-        return new MongoResourceMgr(new ObjectId(resourceMgr.getId()), resourceMgr.getLogin(), resourceMgr.getEmail(), resourceMgr.isActive() );
+        return new MongoResourceMgr(new ObjectId(resourceMgr.getId()), resourceMgr.getLogin(), resourceMgr.getEmail(),  resourceMgr.getPassword(),resourceMgr.isActive() );
     }
 
 

@@ -2,12 +2,13 @@ package pl.facility_rental.rent.endpoints;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.rent.business.RentService;
 import pl.facility_rental.rent.dto.CreateRentDto;
-import pl.facility_rental.rent.dto.mappers.RentMapper;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
+import pl.facility_rental.rent.dto.mappers.RentMapper;
 import pl.facility_rental.rent.exceptions.*;
 
 import java.util.HashMap;
@@ -63,6 +64,7 @@ public class RentController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedRentDto endRent(@PathVariable String id)  {
         return rentMapper.getRentDetails(rentService.endRent(id));

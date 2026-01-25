@@ -1,13 +1,21 @@
 package pl.facility_rental.auth.endpoints;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import pl.facility_rental.auth.dto.*;
+import pl.facility_rental.auth.exceptions.InactiveUserLoginAttemptException;
+import pl.facility_rental.auth.exceptions.PasswordsDontMatchException;
+import pl.facility_rental.auth.exceptions.UnknownUserTypeException;
 import pl.facility_rental.auth.exceptions.UserWithSuchLoginNotFoundException;
 import pl.facility_rental.auth.service.AuthService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/")
+@RequestMapping("/auth")
 class AuthController {
 
 
@@ -26,7 +34,13 @@ class AuthController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public SuccessfulLoginDto login(@RequestBody LoginDto loginDto) throws UserWithSuchLoginNotFoundException {
-        return new SuccessfulLoginDto(authService.authenticate(loginDto.login(), loginDto.rawPassword()));
+        System.out.println("Login attempt: " + loginDto.login());
+        try{
+            return new SuccessfulLoginDto(authService.authenticate(loginDto.login(), loginDto.rawPassword()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Login attempt failed");
+        }
     }
 
     @PutMapping("/changePassword")
@@ -34,4 +48,6 @@ class AuthController {
     public void changePassword(@RequestBody ChangePasswordDto changePasswordDto){
         authService.changePassword(changePasswordDto);
     }
+
+
 }

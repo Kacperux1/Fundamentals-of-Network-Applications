@@ -46,8 +46,10 @@ public class RedisUserRepositoryTest {
                 "login1",
                 "mail@mail.com",
                 true,
+                "2837623",
                 "Janusz",
                 "Wons",
+
                 "123"
         );
 
@@ -73,6 +75,7 @@ public class RedisUserRepositoryTest {
                 "loginX",
                 "mail@mail.com",
                 true,
+                "2837623",
                 "Zdzichu",
                 "Kowal",
                 "987"
@@ -91,8 +94,9 @@ public class RedisUserRepositoryTest {
     @Test
     public void shouldEvictAll() {
         // given
-        User u1 = new Client("a", "a@a", true, "A", "A", "111");
-        User u2 = new Client("b", "b@b", true, "B", "B", "222");
+        User u1 = new Client("a", "a@a", true, "2837623","A", "A", "111");
+        User u2 = new Client("b", "b@b", true,"373982", "B", "B", "222");
+        User u3 = new Client("b", "b@b", true,"373982" ,"B", "B", "222");
 
         u1.setId("11");
         u2.setId("22");

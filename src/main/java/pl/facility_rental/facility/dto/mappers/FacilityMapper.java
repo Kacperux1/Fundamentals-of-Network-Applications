@@ -5,9 +5,6 @@ import pl.facility_rental.facility.business.SportsFacility;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 import pl.facility_rental.facility.dto.UpdateFacilityDto;
-import pl.facility_rental.facility.exceptions.ValidationViolationFacilityException;
-
-import java.math.BigDecimal;
 
 
 @Component

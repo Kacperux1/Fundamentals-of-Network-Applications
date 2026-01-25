@@ -2,6 +2,7 @@ package pl.facility_rental.facility.endpoints;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.facility.business.FacilityService;
@@ -52,17 +53,20 @@ public class FacilityController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ReturnedFacilityDto createFacility(@RequestBody CreateFacilityDto createFacilityDto) {
         return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ReturnedFacilityDto deleteFacility(@PathVariable String id) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService.deleteById(id));
     }
 
     @PutMapping("/{facilityId}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ReturnedFacilityDto updateFacility(@PathVariable String facilityId,
                                               @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService

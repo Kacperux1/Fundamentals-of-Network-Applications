@@ -31,6 +31,6 @@ public class AdminMapper {
 
 
     public Administrator updateAdmin(UpdateAdminDto updateAdminDto ) {
-        return new Administrator(updateAdminDto.getLogin(), updateAdminDto.getEmail(), false);
+        return new Administrator(updateAdminDto.getLogin(), updateAdminDto.getEmail(),"", false);
     }
 }

@@ -3,7 +3,7 @@ db.users.insertMany([
     {
         login: "admin",
         email: "admin@example.com",
-        passord: "$2a$12$w7rX0LMIkm0OnolBzNfveOhrmph14y8aK3tjW9afhRaYOIuGPfEwm",
+        password: "$2a$12$c0VwB9.RSYqpi78kLALDLeROaxHKik1BcrG/0Ax6snMvNjdQkabPW",
         active: true,
         _class: "administrator"
     },
