@@ -5,6 +5,7 @@
     import {useContext, useEffect} from "react";
     import {UserContext} from "./components/users/context/UserContext.ts";
     import axios from "axios";
+    import AccessLevelNameMapping from "./utils/AccessLevelNameMapping.ts";
 
 
     axios.defaults.baseURL = "http://localhost:8080";
@@ -76,6 +77,9 @@
                 Strona główna
                 </button>
                 </NavLink>
+                <NavLink to="passwordChange">
+                    <button className=" m-4 border-b-fuchsia-500">Zmień hasło</button>
+                </NavLink>
                 <button className=" m-4" onClick={handleLogout}>Wyloguj się</button>
                 </div><Outlet /></>
             : <>
@@ -86,7 +90,14 @@
                         <Outlet />
                     </div>
             </>}
-
+            <footer>
+                <p>Witaj, {payload?.sub}</p>
+                <p>
+                    poziom dostępu: {payload?.roles[0] && payload?.roles[0] in AccessLevelNameMapping
+                    ? AccessLevelNameMapping[payload?.roles[0] as keyof typeof AccessLevelNameMapping]
+                    : "brak dostępu"}
+                </p>
+            </footer>
         </>
       )
     }

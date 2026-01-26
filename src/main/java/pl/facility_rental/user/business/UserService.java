@@ -91,8 +91,8 @@ public class UserService {
         return userRepository.delete(id);
     }
 
-    public User updatePassword(String id, String password) {
-        return userRepository.updatePassword(id, password);
+    public User updatePassword(String login, String password) {
+        return userRepository.updatePassword(login, password);
     }
 
 

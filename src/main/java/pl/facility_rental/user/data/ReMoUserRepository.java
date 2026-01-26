@@ -96,8 +96,8 @@ public class ReMoUserRepository implements UserRepository {
     }
 
     @Override
-    public User updatePassword(String id, String password) {
-        return mongo.updatePassword(id, password);
+    public User updatePassword(String login, String password) {
+        return mongo.updatePassword(login, password);
     }
 
     public void clearCache() {

@@ -1,9 +1,10 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import type {Client, Facility, RentForm, Rent} from '../../utils/typedefs.ts';
 import getAllFacilities from '../facilities/services/FacilityService.ts';
 import {createRent} from "./services/RentService.ts";
 import {getAllClients} from '../users/services/UserService.ts'
 import * as yup from 'yup';
+import {UserContext} from "../users/context/UserContext.ts";
 
 function CreateRentForm() {
 
@@ -16,9 +17,9 @@ function CreateRentForm() {
     const [chosenEndDate, setChosenEndDate] = useState<string>('');
     const [validationError, setValidationError] = useState<string>('');
 
-    //const [confirmedRentCreation, setConfirmedRentCreation] = useState<boolean>(false);
+    const context = useContext(UserContext);
 
-    //const [openRentCreationPopup, setOpenRentCreationPopup] = useState(false);
+    const {payload} = context!;
 
     const createRentValidationSchema = yup.object({
         facilityId: yup.string().required("Podanie rezerwowanego obiektu jest wymagane!"),
@@ -26,22 +27,22 @@ function CreateRentForm() {
         startDate: yup.string().required("Data rozpoczęcia jest wymagana do rezerwacji")
     })
 
-    function updateFacilityList() {
-        getAllFacilities().then((response) => {
-            setCurrentFacilities(response);
-        })
-    }
-
-    function updateClientList() {
-        getAllClients().then((response) => {
-            setCurrentClients(response);
-        })
-    }
 
     useEffect(() => {
-        updateClientList();
-        updateFacilityList();
-    }, [])
+        
+        getAllClients().then((clients) => {
+            setCurrentClients(clients);
+            
+            if(payload?.roles[0] === "Client") {
+                const client = clients.find((c: Client) => c.login === payload.sub);
+                if(client) setSelectedClientId(client.id);
+            }
+        });
+        
+        getAllFacilities().then(setCurrentFacilities);
+    }, [payload]);
+
+
 
     function sendCreateRentData(data: RentForm) {
         const chosenClient = currentClients.find((client:Client) => client.id === data.clientId);
@@ -97,18 +98,20 @@ function CreateRentForm() {
                 }}
                        type="datetime-local" name="start-date" id="start-date-input " className="w-full m-4"/>
                 <label htmlFor="end-date-input" className="m-4">Podaj datę końcową (opcjonalnie):</label>
-                <input onChange={e => {
-                    setChosenEndDate(e.target.value)
-                }}
-                       type="datetime-local" name="end-date" id="end-date-input" className="w-full m-4"/>
-                <label htmlFor="client-select" className="m-4">Wybierz rezerwującego klienta:</label>
-                <select onChange={e => setSelectedClientId(e.target.value)}
+                { payload?.roles[0] !== "Client" &&
+                    <><input onChange={e => {
+                        setChosenEndDate(e.target.value);
+                    }}
+                             type="datetime-local" name="end-date" id="end-date-input" className="w-full m-4"/><label
+                        htmlFor="client-select" className="m-4">Wybierz rezerwującego klienta:</label><select
+                        onChange={e => setSelectedClientId(e.target.value)}
                         form="rent-form" className="bg-[#242424] w-full m-4" id="client-select">
-                    <option value="" className="bg-[#242424] w-full m-4"></option>
-                    {currentClients.map((client) => (
-                        <option key={client.id} value={client.id}>{client.login}</option>
-                    ))}
-                </select>
+                        <option value="" className="bg-[#242424] w-full m-4"></option>
+                        {currentClients.map((client) => (
+                            <option key={client.id} value={client.id}>{client.login}</option>
+                        ))}
+                    </select></>}
+
                 <label htmlFor="facility-select" className="m-4">Wybierz rezerwowany obiekt:</label>
                 <select onChange={e => setSelectedFacilityId(e.target.value)}
                         form="rent-form" className="bg-[#242424] w-full m-4" id="facility-select">

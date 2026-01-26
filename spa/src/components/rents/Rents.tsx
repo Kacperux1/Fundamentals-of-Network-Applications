@@ -2,7 +2,7 @@ import {useState, useEffect, useContext} from 'react';
 import getAllRents from "./services/RentService.ts";
 import {endRent, deleteRent} from "./services/RentService.ts";
 import type {Rent} from '../../utils/typedefs.ts';
-import {NavLink, Outlet} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import {UserContext} from "../users/context/UserContext.ts";
 
 function Rents(){
@@ -74,14 +74,11 @@ function Rents(){
                     </li>
                 ))}
             </ul>
-            <NavLink to = "/rentsView/createRent">
+            <NavLink to = "/createRent">
                 <button className ="m-4">
                     Stwórz nową rezerwację
                 </button>
             </NavLink>
-            <div className="flex justify-center">
-                <Outlet/>
-            </div>
 
         </>
     )

@@ -86,3 +86,9 @@ export interface FacilityForm {
     postalCode: string;
     basePrice: number;
 }
+
+export interface changePasswordForm {
+    login: string | undefined;
+    password: string;
+    newPassword: string;
+}

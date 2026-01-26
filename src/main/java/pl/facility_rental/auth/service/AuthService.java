@@ -84,7 +84,7 @@ public class AuthService {
         if(!passwordEncoder.matches(changePasswordDto.password(), user.get().getPassword())){
             throw new PasswordsDontMatchException("Podano niepoprawne hasło!");
         }
-        return userService.updatePassword(changePasswordDto.login(), passwordEncoder.encode(changePasswordDto.password()));
+        return userService.updatePassword(changePasswordDto.login(), passwordEncoder.encode(changePasswordDto.newPassword()));
     }
 
 }

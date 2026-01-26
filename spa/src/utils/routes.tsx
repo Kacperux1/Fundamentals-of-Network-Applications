@@ -10,6 +10,7 @@
     import Facilities from "../components/facilities/Facilities.tsx";
     import CreateFacilityForm from "../components/facilities/CreateFacilityForm.tsx";
     import ClientOwnDetails from "../components/users/ClientOwnDetails.tsx";
+    import ChangePasswordForm from "../components/auth/ChangePasswordForm.tsx";
 
     export const  router = createBrowserRouter([
         {
@@ -33,12 +34,10 @@
                 {
                     path: 'rentsView',
                     element: <Rents/>,
-                    children: [
-                        {
-                            path: 'createRent',
-                            element: <CreateRentForm/>
-                        }
-                    ]
+                },
+                {
+                    path: 'createRent',
+                    element: <CreateRentForm/>
                 },
                 {
                     //jak dałem /clients/clientId to router dostał głupawki
@@ -62,6 +61,10 @@
                 {
                     path: 'myAccount',
                     element: <ClientOwnDetails/>
+                },
+                {
+                    path: 'passwordChange',
+                    element: <ChangePasswordForm/>
                 }
             ]
         }

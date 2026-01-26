@@ -1,4 +1,5 @@
 import axios, {AxiosError} from "axios";
+import type {changePasswordForm} from "../../../utils/typedefs.ts";
 
 export default async function login(username: string, password: string) {
     try {
@@ -21,5 +22,16 @@ export function decodePayload(token: string) {
         decoded.roles = decoded.roles.map((role: {authority:string}) => role.authority.split("_")[1]);
     console.log(decoded)
     return decoded;
+}
+
+export async function changePassword(data: changePasswordForm) {
+    try {
+        const response = await axios.put("http://localhost:8080/auth/changePassword",
+            data);
+        return response.data;
+    } catch (err: unknown) {
+        const error = err as AxiosError;
+        alert(error.response?.data);
+    }
 }
 

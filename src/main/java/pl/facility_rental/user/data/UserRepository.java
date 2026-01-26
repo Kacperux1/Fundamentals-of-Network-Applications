@@ -31,6 +31,6 @@ public interface UserRepository {
 
     User delete(String id);
 
-    User updatePassword(String id, String password);
+    User updatePassword(String login, String password);
 }
 

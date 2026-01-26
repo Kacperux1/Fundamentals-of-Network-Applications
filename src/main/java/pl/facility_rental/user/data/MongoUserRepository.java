@@ -274,10 +274,11 @@ class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public User updatePassword(String id, String password) {
+    public User updatePassword(String login, String password) {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
-        userCollection.findOneAndUpdate(Filters.eq("_id", new ObjectId(id)), Updates.set("password", password));
-        return  mapSubtypeToUserBusinessModel(userCollection.find(Filters.eq("_id", new ObjectId(id))).first());
+        userCollection.findOneAndUpdate(Filters.eq("login", login), Updates.set("password", password),
+                new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+        return  mapSubtypeToUserBusinessModel(userCollection.find(Filters.eq("login", login)).first());
     }
 
 
