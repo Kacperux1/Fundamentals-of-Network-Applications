@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -77,14 +78,15 @@ public class AuthService {
 
 
     public User changePassword(ChangePasswordDto changePasswordDto){
-        var user = userService.getUserByLoginStrict(changePasswordDto.login());
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        var user = userService.getUserByLoginStrict(login);
         if(user.isEmpty()){
             throw new UserWithSuchLoginNotFoundException("Nie istnieje użytkownik o takim loginie!");
         }
         if(!passwordEncoder.matches(changePasswordDto.password(), user.get().getPassword())){
             throw new PasswordsDontMatchException("Podano niepoprawne hasło!");
         }
-        return userService.updatePassword(changePasswordDto.login(), passwordEncoder.encode(changePasswordDto.newPassword()));
+        return userService.updatePassword(login, passwordEncoder.encode(changePasswordDto.newPassword()));
     }
 
 }

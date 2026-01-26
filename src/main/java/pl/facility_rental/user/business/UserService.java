@@ -45,7 +45,7 @@ public class UserService {
         return userRepository.findClientById(id);
     }
 
-    public Optional<User> getUserById(String id) throws Exception {
+    public Optional<User> getUserById(String id)  {
         return userRepository.findById(id);
     }
 

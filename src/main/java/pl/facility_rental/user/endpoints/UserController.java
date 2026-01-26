@@ -40,7 +40,7 @@ import java.util.UUID;
         methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
 )
 @RequestMapping("/users")
-class UserController {
+public class UserController {
 
     private final UserService userService;
 
@@ -83,7 +83,7 @@ class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
-    public ResponseEntity<ReturnedUserDto> getUserById(@PathVariable String userId) throws Exception {
+    public ResponseEntity<ReturnedUserDto> getUserById(@PathVariable String userId)  {
 
         var user  = userService.getUserById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "User with given id was not found"));
@@ -109,7 +109,7 @@ class UserController {
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto,
-                                      @RequestHeader String etag) throws Exception {
+                                      @RequestHeader("If-Match") String etag) throws Exception {
         if(etag == null || etag.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
         }
@@ -124,7 +124,8 @@ class UserController {
     @PatchMapping("/activate/{userId}")
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ReturnedUserDto> activateUser(@PathVariable String userId, @RequestHeader String etag) throws Exception {
+    public ResponseEntity<ReturnedUserDto> activateUser(@PathVariable String userId,
+                                                        @RequestHeader("If-Match") String etag) throws Exception {
         if(etag == null || etag.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
         }
@@ -139,7 +140,8 @@ class UserController {
     @PatchMapping("/deactivate/{userId}")
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ReturnedUserDto> deactivateUser(@PathVariable String userId,  @RequestHeader String etag) throws Exception {
+    public ResponseEntity<ReturnedUserDto> deactivateUser(@PathVariable String userId,
+                                                          @RequestHeader("If-Match") String etag) throws Exception {
 
         if(etag == null || etag.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");

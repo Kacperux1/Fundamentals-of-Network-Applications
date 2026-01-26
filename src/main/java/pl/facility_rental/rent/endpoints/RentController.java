@@ -1,5 +1,7 @@
 package pl.facility_rental.rent.endpoints;
 
+import org.apache.catalina.connector.Response;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,7 @@ import pl.facility_rental.rent.dto.CreateRentDto;
 import pl.facility_rental.rent.dto.ReturnedRentDto;
 import pl.facility_rental.rent.dto.mappers.RentMapper;
 import pl.facility_rental.rent.exceptions.*;
+import pl.facility_rental.rent.hateoas.RentAssembler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,41 +28,43 @@ public class RentController {
 
     private final RentService rentService;
     private final RentMapper rentMapper;
+    private final RentAssembler rentAssembler;
 
 
-    public RentController(RentService rentService, RentMapper rentMapper) {
+    public RentController(RentService rentService, RentMapper rentMapper, RentAssembler rentAssembler) {
         this.rentService = rentService;
         this.rentMapper = rentMapper;
+        this.rentAssembler = rentAssembler;
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<ReturnedRentDto> getAllRents(){
-        return rentService.findAll().stream().map(rentMapper::getRentDetails).toList();
+    public ResponseEntity<List<EntityModel<ReturnedRentDto>>>  getAllRents(){
+        var rentList  = rentService.findAll();
+               return ResponseEntity.ok().body(rentList.stream().map(rentAssembler::wrapDto).toList());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedRentDto createRent(@RequestBody CreateRentDto rentDto) throws Exception {
+    public ReturnedRentDto createRent(@RequestBody CreateRentDto rentDto)  {
         return rentMapper.getRentDetails(rentService.save(rentMapper.CreateRentRequest(rentDto)));
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ReturnedRentDto getRentById(@PathVariable String id) throws Exception {
-        return rentService.findById(id).map(rentMapper::getRentDetails)
+    public ResponseEntity<EntityModel<ReturnedRentDto>> getRentById(@PathVariable String id) {
+       var rent = rentService.findById(id)
                 .orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND, "Rent with given id was not found"));
+       return ResponseEntity.ok().body(rentAssembler.wrapDto(rent));
     }
     @GetMapping("/client/{clientId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReturnedRentDto> getRentsByClientId(@PathVariable String clientId) throws Exception {
+    public List<ReturnedRentDto> getRentsByClientId(@PathVariable String clientId) {
         //return rentService.getCurrentAndPastClientsRents(clientId).stream().map(rentMapper::getRentDetails).toList();
         return rentService.getClientsRents(clientId).stream().map(rentMapper::getRentDetails).toList();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ReturnedRentDto deleteRent(@PathVariable String id) throws Exception {
+    public ReturnedRentDto deleteRent(@PathVariable String id){
         return rentMapper.getRentDetails(rentService.delete(id));
     }
 

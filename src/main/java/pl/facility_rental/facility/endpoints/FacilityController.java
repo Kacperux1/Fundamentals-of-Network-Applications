@@ -46,10 +46,10 @@ public class FacilityController {
     }
 
     @GetMapping("/{id}")
-    public ReturnedFacilityDto getFacilityById(@PathVariable String id) {
+    public ResponseEntity<ReturnedFacilityDto> getFacilityById(@PathVariable String id) {
         //pozniej dodac wyjatek
-        return facilityService.findById(id).map(facilityMapper::getFacilityDetails).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "facility with given id was not found"));
+        return ResponseEntity.ok().body(facilityService.findById(id).map(facilityMapper::getFacilityDetails).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "facility with given id was not found")));
     }
 
     @PostMapping
