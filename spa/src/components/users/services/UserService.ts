@@ -19,7 +19,7 @@ export async function getUserById(id:string){
 }
 
 export async function getUserByLogin(login:string){
-    const response = await axios.get(`/users/${login}`);
+    const response = await axios.get(`/users/login/${login}`);
     return response.data;
 }
 

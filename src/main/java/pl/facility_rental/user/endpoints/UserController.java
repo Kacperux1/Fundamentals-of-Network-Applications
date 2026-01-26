@@ -17,7 +17,6 @@ import pl.facility_rental.user.dto.admin.CreateAdminDto;
 import pl.facility_rental.user.dto.admin.UpdateAdminDto;
 import pl.facility_rental.user.dto.admin.mappers.AdminMapper;
 import pl.facility_rental.user.dto.client.UpdateClientDto;
-import pl.facility_rental.user.dto.client.mappers.ClientDataMapper;
 import pl.facility_rental.user.dto.client.mappers.ClientMapper;
 import pl.facility_rental.user.dto.client.CreateClientDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
@@ -31,7 +30,6 @@ import pl.facility_rental.user.jws.JwsUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @CrossOrigin(
@@ -93,14 +91,14 @@ public class UserController {
     }
 
     @GetMapping("/login/{login}")
-    public ReturnedUserDto getUserByLoginStrict(@PathVariable String login) throws Exception {
+    public ReturnedUserDto getUserByLoginStrict(@PathVariable String login) {
         return userService.getUserByLoginStrict(login).map(this::mapSubtypes).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with login " + login + " was not found"));
     }
 
     @GetMapping("/login_matching/{loginPart}")
     @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
-    public List<ReturnedUserDto> getUserByLoginPart(@PathVariable String loginPart) throws Exception {
+    public List<ReturnedUserDto> getUserByLoginPart(@PathVariable String loginPart) {
         return userService.getUsersIfLoginMatchesValue(loginPart).stream().map(this::mapSubtypes).toList();
     }
 
@@ -109,7 +107,7 @@ public class UserController {
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto,
-                                      @RequestHeader("If-Match") String etag) throws Exception {
+                                      @RequestHeader("If-Match") String etag) {
         if(etag == null || etag.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
         }
@@ -125,7 +123,7 @@ public class UserController {
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> activateUser(@PathVariable String userId,
-                                                        @RequestHeader("If-Match") String etag) throws Exception {
+                                                        @RequestHeader("If-Match") String etag) {
         if(etag == null || etag.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
         }
@@ -141,7 +139,7 @@ public class UserController {
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> deactivateUser(@PathVariable String userId,
-                                                          @RequestHeader("If-Match") String etag) throws Exception {
+                                                          @RequestHeader("If-Match") String etag) {
 
         if(etag == null || etag.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
@@ -158,7 +156,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto deleteUser(@PathVariable String id) throws Exception {
+    public ReturnedUserDto deleteUser(@PathVariable String id){
         return mapSubtypes(userService.delete(id));
     }
 
