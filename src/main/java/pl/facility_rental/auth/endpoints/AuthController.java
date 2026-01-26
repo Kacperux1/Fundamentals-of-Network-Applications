@@ -1,5 +1,6 @@
 package pl.facility_rental.auth.endpoints;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,13 +33,13 @@ class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public SuccessfulRegistrationDto register(@RequestBody RegistrationDto  registrationDto) throws Exception {
+    public SuccessfulRegistrationDto register(@RequestBody @Valid RegistrationDto  registrationDto) throws Exception {
         return authService.register(registrationDto);
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public SuccessfulLoginDto login(@RequestBody LoginDto loginDto) throws UserWithSuchLoginNotFoundException {
+    public SuccessfulLoginDto login(@RequestBody @Valid LoginDto loginDto) throws UserWithSuchLoginNotFoundException {
         System.out.println("Login attempt: " + loginDto.login());
         try{
             return new SuccessfulLoginDto(authService.authenticate(loginDto.login(), loginDto.rawPassword()));
@@ -50,7 +51,7 @@ class AuthController {
 
     @PutMapping("/changePassword")
     @ResponseStatus(HttpStatus.OK)
-    public void changePassword(@RequestBody ChangePasswordDto changePasswordDto){
+    public void changePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto){
         authService.changePassword(changePasswordDto);
     }
 

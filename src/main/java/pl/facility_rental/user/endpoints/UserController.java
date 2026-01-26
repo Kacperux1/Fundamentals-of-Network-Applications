@@ -1,5 +1,6 @@
 package pl.facility_rental.user.endpoints;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ import pl.facility_rental.user.dto.manager.CreateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 import pl.facility_rental.user.dto.manager.mappers.ResourceMgrMapper;
 import pl.facility_rental.user.exceptions.*;
+import pl.facility_rental.user.jws.JwsUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,13 +48,16 @@ class UserController {
     private final AdminMapper adminMapper;
     private final ResourceMgrMapper resourceManagerMapper;
 
-    UserController(UserService userService, ClientMapper clientMapper, AdminMapper adminMapper, ResourceMgrMapper resourceManagerMapper) {
+    private final JwsUtil jwsUtil;
+
+    UserController(UserService userService, ClientMapper clientMapper, AdminMapper adminMapper, ResourceMgrMapper resourceManagerMapper, JwsUtil jwsUtil) {
 
         this.userService = userService;
         this.clientMapper = clientMapper;
         this.adminMapper = adminMapper;
         this.resourceManagerMapper = resourceManagerMapper;
-      }
+        this.jwsUtil = jwsUtil;
+    }
 
 
     @PostMapping
@@ -78,9 +83,13 @@ class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
-    public ReturnedUserDto getUserById(@PathVariable String userId) throws Exception {
-        return userService.getUserById(userId).map(this::mapSubtypes).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+    public ResponseEntity<ReturnedUserDto> getUserById(@PathVariable String userId) throws Exception {
+
+        var user  = userService.getUserById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "User with given id was not found"));
+        return ResponseEntity.ok()
+                .eTag(jwsUtil.generateJws(user.getId(), user.getLogin()))
+                .body(mapSubtypes(user));
     }
 
     @GetMapping("/login/{login}")
@@ -98,23 +107,49 @@ class UserController {
 
     @PutMapping("/{userId}")
     @PreAuthorize("hasRole('Administrator')")
-    @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto) throws Exception {
-        return mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto)));
+    //@ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ReturnedUserDto> updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto,
+                                      @RequestHeader String etag) throws Exception {
+        if(etag == null || etag.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
+        }
+        if(!checkEtag(etag, userId)) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
+        }
+
+        return ResponseEntity.ok()
+                .body(mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto))));
     }
 
     @PatchMapping("/activate/{userId}")
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto activateUser(@PathVariable String userId) throws Exception {
-        return mapSubtypes(userService.activate(userId));
+    public ResponseEntity<ReturnedUserDto> activateUser(@PathVariable String userId, @RequestHeader String etag) throws Exception {
+        if(etag == null || etag.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
+        }
+        if(!checkEtag(etag, userId)) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
+        }
+
+        return ResponseEntity.ok()
+                .body(mapSubtypes(userService.activate(userId)));
     }
 
     @PatchMapping("/deactivate/{userId}")
     @PreAuthorize("hasRole('Administrator')")
-    @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto deactivateUser(@PathVariable String userId) throws Exception {
-        return mapSubtypes(userService.deactivate(userId));
+    //@ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ReturnedUserDto> deactivateUser(@PathVariable String userId,  @RequestHeader String etag) throws Exception {
+
+        if(etag == null || etag.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
+        }
+        if(!checkEtag(etag, userId)) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
+        }
+
+        return ResponseEntity.ok()
+                .body(mapSubtypes(userService.deactivate(userId)));
     }
 
 
@@ -123,6 +158,20 @@ class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto deleteUser(@PathVariable String id) throws Exception {
         return mapSubtypes(userService.delete(id));
+    }
+
+    private boolean checkEtag(String etag, String urlUserId) {
+        String tokenUrl ="";
+        try {
+            tokenUrl = jwsUtil.parseId(etag);
+            if(!tokenUrl.equals(urlUserId)) {
+                return false;
+            }
+
+        }  catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+        return true;
     }
 
     private ReturnedUserDto mapSubtypes(User user) throws RecognizingUserTypeException {
