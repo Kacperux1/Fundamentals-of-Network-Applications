@@ -29,9 +29,13 @@ import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 @NoArgsConstructor
 public abstract class UpdateUserDto {
 
+    @Size(min=1, message = "email jest zbyt krotki")
+    @Size(max=50, message = "email jest zbyt dlugi")
+    private String login;
+
     @NotBlank
     @Size(min=1, message = "email jest zbyt krotki")
-    @Size(min=50, message = "email jest zbyt dlugi")
+    @Size(max=50, message = "email jest zbyt dlugi")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message="Niepoprawny format emiala")
     private String email;
 

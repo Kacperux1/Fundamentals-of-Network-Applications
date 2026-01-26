@@ -56,4 +56,6 @@ public class FacilityViewController {
         model.addAttribute("facility", facility);
         return "updateFacility";
     }
+
+
 }
