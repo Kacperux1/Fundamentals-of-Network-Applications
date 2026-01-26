@@ -1,7 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {getAllUsers, activateUser, deactivateUser, getUserById} from './services/UserService.ts';
 import type {User} from '../../utils/typedefs.ts';
 import {NavLink, Outlet} from "react-router-dom";
+import {UserContext} from "./context/UserContext.ts";
 
 
 function Users() {
@@ -10,10 +11,12 @@ function Users() {
 
     const [searchLogin, setSearchLogin] = useState('');
 
-    //const {clientMgmntMode, setClientMgmntMode} = useContext(ClientContext);
+    const context = useContext(UserContext);
+
+    const {payload} = context!;
 
     const filteredUsers = currentUsers.filter(user =>
-        user.login.toLowerCase().includes(searchLogin.toLowerCase())
+        user?.login.toLowerCase().includes(searchLogin.toLowerCase())
     );
 
 
@@ -29,29 +32,31 @@ function Users() {
 
     function activateChosenUser(id: string) {
         const chosenUser = currentUsers.find(user => user.id === id);
-        if(!window.confirm(`Na pewno chcesz aktywować użytkownika ${chosenUser?.login} ?`)) {
+        if (!window.confirm(`Na pewno chcesz aktywować użytkownika ${chosenUser?.login} ?`)) {
             return;
         }
         activateUser(id).then(() => {
             updateUserList();
-            getUserById(id).then((user:User) => {
+            getUserById(id).then((user: User) => {
                 alert(`Aktywowano użytkownika: ${user.login}`)
             })
         })
     }
+
     //do zmiany lub nie wiem zeby nei pobierac z api
     function deactivateChosenUser(id: string) {
         const chosenUser = currentUsers.find(user => user.id === id);
-        if(!window.confirm(`Na pewno chcesz deaktywować użytkownika ${chosenUser?.login} ?`)) {
+        if (!window.confirm(`Na pewno chcesz deaktywować użytkownika ${chosenUser?.login} ?`)) {
             return;
         }
         deactivateUser(id).then(() => {
             updateUserList();
-            getUserById(id).then((user:User) => {
+            getUserById(id).then((user: User) => {
                 alert(`Deaktywowano użytkownika: ${user.login}`)
             })
         })
     }
+
     return (
         <>
             <h2>Lista użytkowników</h2>
@@ -69,40 +74,56 @@ function Users() {
 
                     <li key={user.id} className=" m-2 rounded-xl border-2 border-yellow-600 text-lg h-25 p-4">
                         <div className="text-lg">
-                        {user.login}, {user.email}, {user.type === "client" ? "klient" : user.type === "resourceMgr" ?
-                        "pracownik" : "administrator"},
-                        {user.active ? " aktywny" : " nieaktywny"}
+                            {user.login}, {user.email}, {user.type === "client" ? "klient" : user.type === "resourceMgr" ?
+                            "pracownik" : "administrator"},
+                            {user.active ? " aktywny" : " nieaktywny"}
                         </div>
 
                         <div className="flex gap-3 justify-center">
-                        {user.active ? <button type="button" className="bg-red" onClick={() => {
-                                deactivateChosenUser(user.id);
-                            }}>Deaktywuj</button>
-                            : <button type="button" className="bg-green"
-                                      onClick={() => activateChosenUser(user.id)}>Aktywuj</button>}
+                            {(payload?.roles?.includes("Administrator") && payload?.sub !== user.login) && (
+                                <>
+                                    {user.active ? (
+                                        <button
+                                            type="button"
+                                            className="bg-red"
+                                            onClick={() => deactivateChosenUser(user.id)}
+                                        >
+                                            Deaktywuj
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            className="bg-green"
+                                            onClick={() => activateChosenUser(user.id)}
+                                        >
+                                            Aktywuj
+                                        </button>
+                                    )}
+
+                                    <NavLink to={`/usersView/updateUser/${user.id}`}>
+                                        <button>Modyfikuj</button>
+                                    </NavLink>
+                                </>
+                            )}
                         {user.type == "client" ?
                             <NavLink to={`/${user.id}`}>
                                 <button>
                                     Szczegóły
                                 </button>
                             </NavLink> : ""}
-                        <NavLink to={`/usersView/updateUser/${user.id}`}>
-                            <button>
-                                Modyfikuj
-                            </button>
-                        </NavLink>
-                        </div>
+                    </div>
                     </li>
-                ))}
+                    ))}
             </ul>
 
             {filteredUsers.length === 0 && (
                 <p className="text-gray-500">Brak użytkowników spełniających kryteria</p>
             )}
+            {payload?.roles?.includes("Administrator") &&
+                <NavLink to="/usersView/createUser">
+                    <button>Dodaj nowego użytkownika</button>
+                </NavLink>}
 
-            <NavLink to="/usersView/createUser">
-                <button>Dodaj nowego użytkownika</button>
-            </NavLink>
             <Outlet/>
         </>
     )

@@ -56,14 +56,14 @@ class UserController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.CREATED)
     public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
         return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
     }
 
     @GetMapping("/clients")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.OK)
     public List<ReturnedClientDto> getAllClients() {
         return userService.getAllClients().stream().map(clientMapper::getClientDetails).toList();
@@ -71,13 +71,13 @@ class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     public List<ReturnedUserDto> getAllUsers() {
         return userService.getAllUsers().stream().map(this::mapSubtypes).toList();
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     public ReturnedUserDto getUserById(@PathVariable String userId) throws Exception {
         return userService.getUserById(userId).map(this::mapSubtypes).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "User with given id was not found"));
@@ -90,28 +90,28 @@ class UserController {
     }
 
     @GetMapping("/login_matching/{loginPart}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     public List<ReturnedUserDto> getUserByLoginPart(@PathVariable String loginPart) throws Exception {
         return userService.getUsersIfLoginMatchesValue(loginPart).stream().map(this::mapSubtypes).toList();
     }
 
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto) throws Exception {
         return mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto)));
     }
 
     @PatchMapping("/activate/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto activateUser(@PathVariable String userId) throws Exception {
         return mapSubtypes(userService.activate(userId));
     }
 
     @PatchMapping("/deactivate/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto deactivateUser(@PathVariable String userId) throws Exception {
         return mapSubtypes(userService.deactivate(userId));
@@ -119,7 +119,7 @@ class UserController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedUserDto deleteUser(@PathVariable String id) throws Exception {
         return mapSubtypes(userService.delete(id));

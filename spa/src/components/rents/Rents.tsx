@@ -1,11 +1,14 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import getAllRents from "./services/RentService.ts";
 import {endRent, deleteRent} from "./services/RentService.ts";
 import type {Rent} from '../../utils/typedefs.ts';
 import {NavLink, Outlet} from "react-router-dom";
+import {UserContext} from "../users/context/UserContext.ts";
 
 function Rents(){
 
+    const context = useContext(UserContext);
+    const {payload}  = context!;
     const [currentRents, setCurrentRents] = useState<Rent[]>([]);
 
     function updateCurrentRents(){
@@ -44,7 +47,7 @@ function Rents(){
 
     useEffect(() => {
         updateCurrentRents();
-    }, [currentRents])
+    }, [payload])
 
     return (
         <>

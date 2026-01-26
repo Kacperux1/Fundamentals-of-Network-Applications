@@ -45,7 +45,7 @@ public class JwtUtils {
     }
 
 
-    public boolean validateToken(String token) throws EditedTokenException {
+    public boolean validateToken(String token) throws EditedTokenException, ExpiredTokenException {
         try {
             Jwts.parser().verifyWith(secretKey).build()
                     .parse(token);

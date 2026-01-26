@@ -18,6 +18,6 @@ public class ManagerDataMapping {
 
 
     public ResourceMgr mapToBusinessLayer(MongoResourceMgr resourceMgr){
-        return new ResourceMgr(resourceMgr.getId().toHexString(),resourceMgr.getLogin(), resourceMgr.getEmail(), resourceMgr.isActive());
+        return new ResourceMgr(resourceMgr.getId().toHexString(),resourceMgr.getLogin(), resourceMgr.getEmail(), resourceMgr.getPassword(), resourceMgr.isActive());
     }
 }

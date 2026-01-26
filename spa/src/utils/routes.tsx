@@ -5,11 +5,16 @@
     import { createBrowserRouter } from "react-router-dom";
     import CreateRentForm from "../components/rents/CreateRentForm.tsx";
     import CreateUserForm from "../components/users/CreateUserForm.tsx";
+    import LoginForm from "../components/auth/LoginForm.tsx";
+    import {UserContextProvider} from "../components/users/context/UserContextProvider.tsx";
+    import Facilities from "../components/facilities/Facilities.tsx";
+    import CreateFacilityForm from "../components/facilities/CreateFacilityForm.tsx";
+    import ClientOwnDetails from "../components/users/ClientOwnDetails.tsx";
 
     export const  router = createBrowserRouter([
         {
             path: '/',
-            element: <App/>,
+            element: <UserContextProvider><App/></UserContextProvider>,
             children: [
                 {
                     path: 'usersView',
@@ -26,7 +31,7 @@
                     ]
                 },
                 {
-                    path: '/rentsView',
+                    path: 'rentsView',
                     element: <Rents/>,
                     children: [
                         {
@@ -37,8 +42,26 @@
                 },
                 {
                     //jak dałem /clients/clientId to router dostał głupawki
-                    path: '/:clientId',
+                    path: ':clientId',
                     element: <ClientDetails/>
+                },
+                {
+                    path: 'login',
+                    element: <LoginForm/>
+                },
+                {
+                    path: 'facilitiesView',
+                    element: <Facilities/>,
+                    children: [
+                        {
+                            path: 'createFacility',
+                            element: <CreateFacilityForm/>
+                        }
+                    ]
+                },
+                {
+                    path: 'myAccount',
+                    element: <ClientOwnDetails/>
                 }
             ]
         }

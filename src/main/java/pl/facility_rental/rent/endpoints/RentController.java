@@ -64,7 +64,7 @@ public class RentController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ResourceMgr')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedRentDto endRent(@PathVariable String id)  {
         return rentMapper.getRentDetails(rentService.endRent(id));

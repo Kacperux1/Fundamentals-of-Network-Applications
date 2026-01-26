@@ -70,3 +70,19 @@ export interface UpdateClientData extends UpdateUserFormData {
     last_name: string |null;
     phone: string |null;
 }
+
+
+export interface Jwt {
+        sub: string;
+        roles: string[]
+        exp: number;
+}
+
+export interface FacilityForm {
+    name: string;
+    streetNumber: string;
+    street: string;
+    city: string;
+    postalCode: string;
+    basePrice: number;
+}

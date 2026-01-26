@@ -18,6 +18,11 @@ export async function getUserById(id:string){
     return response.data;
 }
 
+export async function getUserByLogin(login:string){
+    const response = await axios.get(`/users/${login}`);
+    return response.data;
+}
+
 export async function createUser(user:CreateUserFormData) {
     const response = await axios.post('/users', user);
     return response.data;

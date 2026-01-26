@@ -53,20 +53,20 @@ public class FacilityController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.CREATED)
     public ReturnedFacilityDto createFacility(@RequestBody CreateFacilityDto createFacilityDto) {
         return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     public ReturnedFacilityDto deleteFacility(@PathVariable String id) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService.deleteById(id));
     }
 
     @PutMapping("/{facilityId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     public ReturnedFacilityDto updateFacility(@PathVariable String facilityId,
                                               @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService
