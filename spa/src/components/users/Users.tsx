@@ -1,6 +1,6 @@
 import {useState, useEffect, useContext} from 'react';
 import {getAllUsers, activateUser, deactivateUser, getUserById} from './services/UserService.ts';
-import type {User} from '../../utils/typedefs.ts';
+import type {User, UserEtag} from '../../utils/typedefs.ts';
 import {NavLink, Outlet} from "react-router-dom";
 import {UserContext} from "./context/UserContext.ts";
 
@@ -9,6 +9,7 @@ function Users() {
 
     const [currentUsers, setCurrentUsers] = useState<User[]>([]);
 
+    const [currentlyUpdatedUser, setCurrentlyUpdatedUser] = useState<UserEtag | null>(null);
     const [searchLogin, setSearchLogin] = useState('');
 
     const context = useContext(UserContext);
@@ -31,30 +32,40 @@ function Users() {
     }, [])
 
     function activateChosenUser(id: string) {
-        const chosenUser = currentUsers.find(user => user.id === id);
-        if (!window.confirm(`Na pewno chcesz aktywować użytkownika ${chosenUser?.login} ?`)) {
-            return;
+        getUserById(id).then( (userEtag: UserEtag) => {
+                if (!window.confirm(`Na pewno chcesz aktywować użytkownika ${userEtag?.login} ?`)) {
+                    return;
+                }
+                console.log("UserEtag:", userEtag);
+                console.log("ETag:", userEtag.etag);
+                activateUser(id, userEtag.etag).then(() => {
+
+                    updateUserList();
+                    getUserById(id).then((user: User) => {
+                        alert(`Aktywowano użytkownika: ${user.login}`)
+                    })
+                })
         }
-        activateUser(id).then(() => {
-            updateUserList();
-            getUserById(id).then((user: User) => {
-                alert(`Aktywowano użytkownika: ${user.login}`)
-            })
-        })
+        );
+
     }
 
     //do zmiany lub nie wiem zeby nei pobierac z api
     function deactivateChosenUser(id: string) {
-        const chosenUser = currentUsers.find(user => user.id === id);
-        if (!window.confirm(`Na pewno chcesz deaktywować użytkownika ${chosenUser?.login} ?`)) {
-            return;
-        }
-        deactivateUser(id).then(() => {
-            updateUserList();
-            getUserById(id).then((user: User) => {
-                alert(`Deaktywowano użytkownika: ${user.login}`)
-            })
-        })
+        getUserById(id).then( (userEtag: UserEtag) => {
+                if (!window.confirm(`Na pewno chcesz deaktywować użytkownika ${userEtag?.login} ?`)) {
+                    return;
+                }
+            console.log("UserEtag:", userEtag);
+            console.log("ETag:", userEtag.etag);
+                deactivateUser(id, userEtag.etag).then(() => {
+                    updateUserList();
+                    getUserById(id).then((user: User) => {
+                        alert(`Aktywowano użytkownika: ${user.login}`)
+                    })
+                })
+            }
+        );
     }
 
     return (

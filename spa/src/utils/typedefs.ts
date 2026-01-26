@@ -114,3 +114,25 @@ interface HateOasLink {
     rel: string;
     href: string;
 }
+
+
+
+export interface UserEtag {
+    id: string;
+    login: string;
+    email: string;
+    active: boolean;
+    type: string;
+    etag: string;
+}
+
+
+
+export interface ClientEtag extends UserEtag {
+    first_name: string;
+    last_name: string;
+    phone: string;
+}
+
+
+

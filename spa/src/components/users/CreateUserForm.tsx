@@ -4,7 +4,7 @@ import type {
     CreateUserFormData,
     UpdateClientData,
     UpdateUserFormData,
-    User
+    User, UserEtag
 } from "../../utils/typedefs.ts";
 import {createUser, getUserById, updateUser} from "./services/UserService.ts";
 import {useParams} from "react-router-dom";
@@ -27,6 +27,7 @@ function CreateUserForm() {
     const [clientLastName, setClientLastName] = useState<string>('');
     const [clientPhone, setClientPhone] = useState<string>('');
 
+    const [currentUser, setCurrentUser] = useState<UserEtag | null>(null);
     const [validationErrorMessage, setValidationErrorMessage] = useState<string>('');
     const [updatedUser, setUpdatedUser] = useState<User | null>(null);
 
@@ -48,6 +49,7 @@ function CreateUserForm() {
     }))
 
     createFormValidationSchema.concat(createClientValidationSchema);
+
 
 
     const updateUserValidationSchema = yup.object(({
@@ -82,7 +84,7 @@ function CreateUserForm() {
         if(userId === undefined) {
             return;
         }
-        getUserById(userId).then((user: User) => {
+        getUserById(userId).then((user: UserEtag) => {
             setUpdatedUser(user);
         })
     }
@@ -91,14 +93,21 @@ function CreateUserForm() {
     }, [userId])
 
     function sendDataToUpdateUser(userData:UpdateUserFormData) {
-        if(!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${userData.login} ?`)) {
+        if(userId === undefined) {
+            alert("Błont!!!! ni ma id usera");
             return;
         }
-        if(userId) {
-            updateUser(userId, userData).then((user: User) => {
-                alert(`zaktualizowano użytkownika o ID ${user.id}`);
-            })
-        }
+        getUserById(userId).then((user: UserEtag) => {
+            if(!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${userData.login} ?`)) {
+                return;
+            }
+            if(userId) {
+                updateUser(userId,userData , user.etag).then((user: User) => {
+                    alert(`zaktualizowano użytkownika o ID ${user.id}`);
+                })
+            }
+        })
+
 
     }
 

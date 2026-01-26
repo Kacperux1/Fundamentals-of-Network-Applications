@@ -107,56 +107,56 @@ public class UserController {
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto,
-                                      @RequestHeader("If-Match") String etag) {
-        if(etag == null || etag.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
-        }
-        if(!checkEtag(etag, userId)) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
-        }
+                                      @RequestHeader("If-Match") String etag)  throws ResponseStatusException{
+        totalEtagCheck(userId, etag);
 
         return ResponseEntity.ok()
                 .body(mapSubtypes(userService.update(userId, mapUpdatedSubtypes(updatedUserDto))));
     }
 
-    @PatchMapping("/activate/{userId}")
+    @PutMapping("/activate/{userId}")
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> activateUser(@PathVariable String userId,
-                                                        @RequestHeader("If-Match") String etag) {
-        if(etag == null || etag.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
-        }
-        if(!checkEtag(etag, userId)) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
-        }
+                                                        @RequestHeader("If-Match") String etag) throws ResponseStatusException{
+        totalEtagCheck(userId, etag);
 
         return ResponseEntity.ok()
                 .body(mapSubtypes(userService.activate(userId)));
     }
 
-    @PatchMapping("/deactivate/{userId}")
+    @PutMapping("/deactivate/{userId}")
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReturnedUserDto> deactivateUser(@PathVariable String userId,
-                                                          @RequestHeader("If-Match") String etag) {
+                                                          @RequestHeader("If-Match") String etag) throws ResponseStatusException{
 
-        if(etag == null || etag.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
-        }
-        if(!checkEtag(etag, userId)) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
-        }
+        totalEtagCheck(userId, etag);
 
         return ResponseEntity.ok()
                 .body(mapSubtypes(userService.deactivate(userId)));
+    }
+
+    private void totalEtagCheck(@PathVariable String userId, @RequestHeader("If-Match") String etag) {
+        if(etag == null || etag.isEmpty()) {
+            System.out.println("etag is null");
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "ETag is pusty");
+
+        }
+        if(!checkEtag(etag, userId)) {
+            System.out.println("etag is null");
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag is not poprawny");
+        }
     }
 
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.OK)
-    public ReturnedUserDto deleteUser(@PathVariable String id){
+    public ReturnedUserDto deleteUser(@PathVariable String id,
+                                      @RequestHeader("If-Match") String etag) throws ResponseStatusException{
+        totalEtagCheck(id, etag);
+
         return mapSubtypes(userService.delete(id));
     }
 
