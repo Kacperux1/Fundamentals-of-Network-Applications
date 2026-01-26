@@ -19,39 +19,19 @@ function ClientOwnDetails() {
 
     const [clientsRents, setClientsRents] = useState<Rent[]>([]);
 
-    //ponizej do zmiany: nulle   use effect sa tyko dlatego zeby dane sie odsiezały
-    function getClientInfo() {
-        if(payload) {
-            getUserByLogin(payload.sub!).then((client: Client) => {
-                setClient(client);
-            })
-        } else {
-            alert('clientId is missing');
-        }
-
-    }
-
-    function updateClientsRents() {
-        if (!payload || !client) {
-            throw new Error("Client ID is missing");
-        }
-        console.log("Rents from API:", clientsRents);
-        getClientsRents(client.id).then((rents: Rent[]) => {
-            setClientsRents(rents);
-        })
-    }
 
     useEffect(() => {
+        if (!payload || !payload.sub) return;
 
-        if(!payload) return;
+        getUserByLogin(payload.sub!)
+            .then((client: Client) => {
+                setClient(client);
+               getClientsRents(client.id).then((rents: Rent[]) => {
+                   setClientsRents(rents);
+               })
+            });
+    }, [payload]);
 
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setClient(null);
-        setClientsRents([]);
-
-        getClientInfo();
-        updateClientsRents();
-    }, [payload])
 
     return (
         <div>
@@ -63,10 +43,10 @@ function ClientOwnDetails() {
             <p>email: {client?.email}</p>
             <p>telefon: {client?.phone}</p>
             <h2>Twoje wypożyczenia:</h2>
-            <ul>
+            <ul className="border-amber-400 border-6 rounded-xl text-xl borde">
                 {clientsRents.map((rent: Rent) => (
                     <li key={rent.rentId}> {rent.rentId}, {rent.facilityName}, {rent.startDate.toLocaleString()},
-                        {rent.endDate.toLocaleString()}
+                        {rent.endDate?.toLocaleString()}
                         {rent.totalPrice}</li>
                 ))}
             </ul>

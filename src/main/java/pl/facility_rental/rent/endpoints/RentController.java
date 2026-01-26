@@ -63,13 +63,14 @@ public class RentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ReturnedRentDto deleteRent(@PathVariable String id){
         return rentMapper.getRentDetails(rentService.delete(id));
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ResourceMgr')")
+    @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedRentDto endRent(@PathVariable String id)  {
         return rentMapper.getRentDetails(rentService.endRent(id));

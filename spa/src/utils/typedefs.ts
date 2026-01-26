@@ -92,3 +92,25 @@ export interface changePasswordForm {
     password: string;
     newPassword: string;
 }
+
+
+export interface RentHateOas {
+    rentId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    facilityName: string;
+    streetNumber: string;
+    street: string;
+    city: string;
+    startDate: Date;
+    endDate: Date;
+    totalPrice: number;
+    links: HateOasLink[]
+}
+
+interface HateOasLink {
+    rel: string;
+    href: string;
+}

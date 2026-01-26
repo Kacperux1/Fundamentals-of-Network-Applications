@@ -17,14 +17,24 @@ export async function getClientsRents(clientId: string) {
 }
 
 
-export async function endRent(rentId: string) {
-    const response = await axios.patch(`/rents/${rentId}`);
+export async function endRent(url: string) {
+    const response = await axios.patch(url);
     return response.data;
 }
 
-export async function deleteRent(id: string) {
-    const response = await axios.delete(`/rents/${id}`);
+export async function deleteRent(url: string) {
+    const response = await axios.delete(url);
     return response.data;
 }
 
+
+export async function getClientForRentHateoas(url: string) {
+    const response = await axios.get(url);
+    return response.data;
+}
+
+export async function getFacilityForRentHateoa(url: string) {
+    const response = await axios.get(url);
+    return response.data;
+}
 export default getAllRents;
