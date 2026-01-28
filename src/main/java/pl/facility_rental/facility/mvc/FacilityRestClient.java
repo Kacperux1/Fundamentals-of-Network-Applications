@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
+import pl.facility_rental.facility.dto.UpdateFacilityDto;
 
 import java.util.List;
 
@@ -44,6 +45,15 @@ public class FacilityRestClient {
         return webClient
                 .get()
                 .uri("/{id}", id)
+                .retrieve()
+                .bodyToMono(ReturnedFacilityDto.class)
+                .block();
+    }
+
+    public ReturnedFacilityDto updateFacility(String id, UpdateFacilityDto dto) {
+        return webClient.put()
+                .uri("/{id}", id)
+                .bodyValue(dto)
                 .retrieve()
                 .bodyToMono(ReturnedFacilityDto.class)
                 .block();

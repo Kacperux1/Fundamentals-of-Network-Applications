@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.facility_rental.facility.dto.CreateFacilityDto;
 import pl.facility_rental.facility.dto.ReturnedFacilityDto;
+import pl.facility_rental.facility.dto.UpdateFacilityDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -46,8 +48,54 @@ public class FacilityViewController {
     }
 
     @PostMapping("/add")
-    public void addFacility(@ModelAttribute CreateFacilityDto facility) {
-        facilityClient.addFacility(facility);
+    public String addFacility(@RequestParam String name,
+                              @RequestParam(required = false) String streetNumber,
+                              @RequestParam String street,
+                              @RequestParam String city,
+                              @RequestParam(required = false) String postalCode,
+                              @RequestParam BigDecimal basePrice,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+
+        try {
+            CreateFacilityDto dto = new CreateFacilityDto(
+                    name,
+                    streetNumber,
+                    street,
+                    city,
+                    postalCode,
+                    basePrice
+            );
+
+            facilityClient.addFacility(dto);
+            redirectAttributes.addFlashAttribute("Message", "Dodano obiekt");
+            return "redirect:/view/facilities";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Błąd: " + e.getMessage());
+            return "addFacility";
+        }
+    }
+
+    @PostMapping("/edit")
+    public String updateFacility(@RequestParam String facilityId,
+                                 @RequestParam String name,
+                                 @RequestParam BigDecimal basePrice,
+                                 RedirectAttributes redirectAttributes,
+                                 Model model) {
+
+        try {
+            UpdateFacilityDto dto = new UpdateFacilityDto(name, basePrice);
+
+            facilityClient.updateFacility(facilityId, dto);
+
+            redirectAttributes.addFlashAttribute("Message", "Zapisano zmiany");
+            return "redirect:/view/facilities";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Błąd zapisu: " + e.getMessage());
+            return "updateFacility";
+        }
     }
 
     @GetMapping("/{id}")
