@@ -12,16 +12,17 @@ import pl.facility_rental.user.dto.UpdateUserDto;
 @Getter
 
 public class UpdateClientDto extends UpdateUserDto {
+
     @JsonProperty("first_name")
     @NotBlank
     @Size(min=1, message = "Imie jest zbyt krotki")
-    @Size(min=50, message = "Imie jest zbyt dlugi")
+    @Size(max=50, message = "Imie jest zbyt dlugi")
     private String firstName;
 
     @JsonProperty("last_name")
     @NotBlank
     @Size(min=1, message = "Nazwisko jest zbyt krotki")
-    @Size(min=50, message = "Nazwisko jest zbyt dlugi")
+    @Size(max=50, message = "Nazwisko jest zbyt dlugi")
     private String lastName;
 
     @NotBlank

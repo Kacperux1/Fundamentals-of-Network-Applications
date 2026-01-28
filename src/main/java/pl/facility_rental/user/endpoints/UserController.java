@@ -57,7 +57,17 @@ class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
-        return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
+        System.out.println("POJO MAPPING RESULT: " + createUserDto.getClass());
+        try {
+            User user = mapSubtypesToBusinessLayer(createUserDto);
+            System.out.println("Mapped to business: " + user.getClass());
+            User created = userService.createUser(user);
+            System.out.println("Created user: " + created.getId());
+            return mapSubtypes(created);
+        } catch (Exception e) {
+            e.printStackTrace(); // <- zobacz dokładnie co rzuca wyjątek
+            throw e;
+        }
     }
 
     @GetMapping("/clients")

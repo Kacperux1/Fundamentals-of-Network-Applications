@@ -14,15 +14,16 @@ import pl.facility_rental.user.dto.CreateUserDto;
 @Getter
 @NoArgsConstructor
 public class CreateClientDto extends CreateUserDto {
+
     @JsonProperty("first_name")
     @NotBlank
     @Size(min=1, message = "Imie jest zbyt krotki")
-    @Size(min=50, message = "Imie jest zbyt dlugi")
+    @Size(max=50, message = "Imie jest zbyt dlugi")
     private String firstName;
 
     @NotBlank
     @Size(min=1, message = "Nazwisko jest zbyt krotki")
-    @Size(min=50, message = "Nazwisko jest zbyt dlugi")
+    @Size(max=50, message = "Nazwisko jest zbyt dlugi")
     @JsonProperty("last_name")
     private String lastName;
 

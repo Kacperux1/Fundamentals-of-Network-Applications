@@ -7,23 +7,15 @@
 
     <h2>Edycja Zarządcy Zasobów</h2>
 
-    <form id="mgrForm">
+    <form th:action="@{/view/users/edit/manager}" method="post">
 
-        <input type="hidden" id="mgrId" th:value="${mgr.id}"/>
+        <input type="hidden" name="id" th:value="${mgr.id}"/>
 
         <label>Login</label>
-        <input type="text"
-               id="login"
-               th:value="${mgr.login}"
-               maxlength="50"
-               required/>
+        <input type="text" name="login" th:value="${mgr.login}" maxlength="50" required/>
 
         <label>Email</label>
-        <input type="email"
-               id="email"
-               th:value="${mgr.email}"
-               maxlength="50"
-               required/>
+        <input type="email" name="email" th:value="${mgr.email}" maxlength="50" required/>
 
         <br/><br/>
 
@@ -32,46 +24,7 @@
 
     </form>
 
-    <div id="message"></div>
-
-    <script>
-        document.getElementById("mgrForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-            const id = document.getElementById("mgrId").value;
-
-            const data = {
-                type: "resourceMgr",
-                login: document.getElementById("login").value,
-                email: document.getElementById("email").value,
-            };
-
-            const messageDiv = document.getElementById("message");
-            messageDiv.innerHTML = "";
-
-            try {
-                const response = await fetch(`/users/${id}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || "Błąd walidacji");
-                }
-
-                alert("Zapisano zmiany Zarządcy Zasobów");
-                window.location.href = "/view/users";
-
-            } catch (err) {
-                messageDiv.innerHTML =
-                    "<div class='error'>" + err.message + "</div>";
-            }
-        });
-    </script>
+    <div th:if="${errorMessage}" th:text="${errorMessage}" class="error"></div>
 
 </div>
 

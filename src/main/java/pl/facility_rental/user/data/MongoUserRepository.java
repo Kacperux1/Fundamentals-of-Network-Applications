@@ -102,6 +102,7 @@ class MongoUserRepository implements UserRepository {
         InsertOneResult result = userCollection.insertOne(mongoUser);
         ObjectId id = Objects.requireNonNull(result.getInsertedId()).asObjectId().getValue();
         MongoUser foundUser = userCollection.find(Filters.eq("_id", id)).first();
+        System.out.println("FOUND USER CLASS: " + (foundUser != null ? foundUser.getClass().getName() : "NULL"));
         return mapSubtypeToUserBusinessModel(foundUser);
     }
 

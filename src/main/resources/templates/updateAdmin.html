@@ -7,23 +7,15 @@
 
     <h2>Edycja Administratora</h2>
 
-    <form id="adminForm">
+    <form th:action="@{/view/users/edit/admin}" method="post">
 
-        <input type="hidden" id="adminId" th:value="${admin.id}"/>
+        <input type="hidden" name="id" th:value="${admin.id}"/>
 
         <label>Login</label>
-        <input type="text"
-               id="login"
-               th:value="${admin.login}"
-               maxlength="50"
-               required/>
+        <input type="text" name="login" th:value="${admin.login}" maxlength="50" required/>
 
         <label>Email</label>
-        <input type="email"
-               id="email"
-               th:value="${admin.email}"
-               maxlength="50"
-               required/>
+        <input type="email" name="email" th:value="${admin.email}" maxlength="50" required/>
 
         <br/><br/>
 
@@ -32,46 +24,7 @@
 
     </form>
 
-    <div id="message"></div>
-
-    <script>
-        document.getElementById("adminForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-            const id = document.getElementById("adminId").value;
-
-            const data = {
-                type: "administrator",
-                login: document.getElementById("login").value,
-                email: document.getElementById("email").value,
-            };
-
-            const messageDiv = document.getElementById("message");
-            messageDiv.innerHTML = "";
-
-            try {
-                const response = await fetch(`/users/${id}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || "Błąd walidacji");
-                }
-
-                alert("Zapisano zmiany Administratora");
-                window.location.href = "/view/users";
-
-            } catch (err) {
-                messageDiv.innerHTML =
-                    "<div class='error'>" + err.message + "</div>";
-            }
-        });
-    </script>
+    <div th:if="${errorMessage}" th:text="${errorMessage}" class="error"></div>
 
 </div>
 

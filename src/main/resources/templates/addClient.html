@@ -5,73 +5,30 @@
 
 <div layout:fragment="content">
 
-    <h1>Dodaj klienta</h1>
-
-    <form id="clientForm">
+    <form th:action="@{/view/users/add/client}" method="post">
 
         <label>Login</label>
-        <input type="text" id="login" required maxlength="50">
+        <input type="text" name="login" required maxlength="50">
 
         <label>Email</label>
-        <input type="email" id="email" required maxlength="50">
+        <input type="email" name="email" required maxlength="50">
 
         <label>Imię</label>
-        <input type="text" id="firstName" required maxlength="50">
+        <input type="text" name="firstName" required maxlength="50">
 
         <label>Nazwisko</label>
-        <input type="text" id="lastName" required maxlength="50">
+        <input type="text" name="lastName" required maxlength="50">
 
         <label>Telefon</label>
-        <input type="text" id="phone" placeholder="+48 123 456 789" required>
+        <input type="text" name="phone" required>
 
         <label>Aktywny</label>
-        <input type="checkbox" id="active" checked>
+        <input type="checkbox" name="active" checked>
 
-        <br><br>
         <button type="submit">Utwórz klienta</button>
     </form>
 
-    <div id="message" style="color:red;"></div>
-
-    <script>
-        document.getElementById("clientForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-            const data = {
-                type: "client",              // 🔥 KLUCZOWE
-                login: document.getElementById("login").value,
-                email: document.getElementById("email").value,
-                active: document.getElementById("active").checked,
-                first_name: document.getElementById("firstName").value,
-                last_name: document.getElementById("lastName").value,
-                phone: document.getElementById("phone").value
-            };
-
-            const messageDiv = document.getElementById("message");
-            messageDiv.innerHTML = "";
-
-            try {
-                const response = await fetch("view/users/add", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || "Błąd walidacji");
-                }
-
-                alert("Klient został utworzony");
-                window.location.href = "/view/users";
-
-            } catch (err) {
-                messageDiv.innerHTML = err.message;
-            }
-        });
-    </script>
+    <div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></div>
 
 </div>
 
