@@ -2,10 +2,11 @@ package pl.facility_rental.rent.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-
+@Builder
 public record CreateRentDto(
         @NotBlank(message = "clientId nie może być puste")
         String clientId,

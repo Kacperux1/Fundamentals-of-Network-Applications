@@ -8,6 +8,7 @@ import pl.facility_rental.facility.dto.ReturnedFacilityDto;
 import pl.facility_rental.user.dto.CreateUserDto;
 import pl.facility_rental.user.dto.ReturnedUserDto;
 import pl.facility_rental.user.dto.UpdateUserDto;
+import pl.facility_rental.user.dto.client.ReturnedClientDto;
 
 import java.util.List;
 
@@ -74,5 +75,14 @@ public class UserRestClient {
                 .retrieve()
                 .bodyToMono(ReturnedUserDto.class)
                 .block();
+    }
+
+
+    public List<ReturnedClientDto> getAllClients() {
+        return webClient.get()
+                .uri("/clients")
+                .retrieve()
+                .bodyToFlux(ReturnedClientDto.class)
+                .collectList().block();
     }
 }

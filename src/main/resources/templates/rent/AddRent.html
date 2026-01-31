@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org"
+       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+       layout:decorate="~{base}">
+
+
+<div layout:fragment="content">
+    <h1> Dodaj wypożyczenie</h1>
+    <form th:action="@{/view/rents/add}" method="post">
+        <label for="client-field"> Wybierz rezerwującego klienta:</label>
+        <select id="client-field" name="clientId" required>
+            <option th:each="client : ${clients}" th:value="${client.id}"
+                    th:text="${client.firstName} + '' + ${client.lastName}"></option>
+        </select>
+        <label for ="facility-field">Wybierz rezerwowany obiekt</label>
+        <select id="facility-field" name="facilityId" required>
+            <option th:each="facility : ${facilities}" th:value="${facility.id}"
+                    th:text="${facility.name}"></option>
+        </select>
+        <label for="start-date">Wybierz datę początkową: </label>
+        <input type="datetime-local" id="start-date" name="startDate" required>
+        <label for="end-date">Wybierz datę końcową (opcjonalnie): </label>
+        <input type="datetime-local" id="end-date" name = "endDate">
+        <button type="submit">Dodaj wypożyczenie</button>
+    </form>
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+</div>
+</html>
