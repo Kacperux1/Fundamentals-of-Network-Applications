@@ -9,9 +9,9 @@
 <header style="background:lightblue">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/}">Strona główna</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/view/users}">Użytkownicy</a></li>
             <li class="breadcrumb-item"><a th:href="@{/view/facilities}">Obiekty sportowe</a></li>
-
+            <li class="breadcrumb-item"><a th:href="@{/view/rents}">Wypożyczenia</a></li>
             <!-- tu każda podstrona wstawi swój własny tytuł -->
             <li class="breadcrumb-item active" aria-current="page"
                 th:text="${breadcrumb}">Bieżąca strona</li>
@@ -23,7 +23,7 @@
 <main layout:fragment="content">
 </main>
 
-<footer style="background:pink">FOOTER — base.html</footer>
+<footer style="background:pink; font-style: italic;">Łączna 43, 68-213 Lipinki Łużyckie</footer>
 
 </body>
 </html>
