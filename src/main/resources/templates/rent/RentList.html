@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<div layout:fragment="content">
+    <h1> Lista wypożyczeń</h1>
+    <table  border="1">
+        <tr>
+            <th>Id</th>
+            <th>Klient</th>
+            <th>Obiekt</th>
+            <th>Data rozpoczęcia</th>
+            <th>Data zakończenia</th>
+            <th>Cena wypożyczenia</th>
+        </tr>
+        <tr th:each="rent: ${rents}">
+            <td th:text="${rent.rentId}"></td>
+            <td th:text="${rent.firstName} + '' + ${rent.lastName}"></td>
+            <td th:text="${rent.facilityName}"></td>
+            <td th:text="${rent.startDate}"></td>
+            <td th:text="${rent.endDate}"></td>
+            <td th:text="${rent.totalPrice} + ' zł'"></td>
+        </tr>
+    </table>
+</div>
+
+</html>
