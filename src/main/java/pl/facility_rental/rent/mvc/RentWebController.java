@@ -2,10 +2,7 @@ package pl.facility_rental.rent.mvc;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.facility_rental.facility.mvc.FacilityRestClient;
 import pl.facility_rental.rent.business.Rent;
@@ -69,6 +66,22 @@ public class RentWebController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "rent/AddRent";
+        }
+    }
+
+    @PostMapping("/end/{rentId}")
+    public String endRent(RedirectAttributes redirectAttributes, @PathVariable String rentId, Model model) {
+        System.out.println("dupa");
+        try {
+            rentRestClient.endRent(rentId);
+            redirectAttributes.addFlashAttribute("Message", "Zakończono wypożyczenie" + rentId);
+            System.out.println("dupa1");
+            return "redirect:/view/rents";
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("dupa2");
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/view/rents";
         }
     }
 }

@@ -5,9 +5,14 @@
 
 <div layout:fragment="content">
     <h1> Lista wypożyczeń</h1>
+    <script th:if="${Message}"
+            th:inline="javascript">
+        /*<![CDATA[*/
+        alert([[${Message}]]); /*]]>*/
+    </script>
 
     <button onclick="window.location.href='/view/rents/add'">Dodaj nowe wypożyczenie</button>
-    <table  border="1">
+    <table border="1">
         <tr>
             <th>Id</th>
             <th>Klient</th>
@@ -15,14 +20,22 @@
             <th>Data rozpoczęcia</th>
             <th>Data zakończenia</th>
             <th>Cena wypożyczenia</th>
+            <th>Akcja</th>
         </tr>
         <tr th:each="rent: ${rents}">
             <td th:text="${rent.rentId}"></td>
-            <td th:text="${rent.firstName} + '' + ${rent.lastName}"></td>
+            <td th:text="${rent.firstName} + ' ' + ${rent.lastName}"></td>
             <td th:text="${rent.facilityName}"></td>
             <td th:text="${rent.startDate}"></td>
             <td th:text="${rent.endDate}"></td>
             <td th:text="${rent.totalPrice} + ' zł'"></td>
+            <td th:if="${rent.endDate} == null">
+                <form th:action="@{|/view/rents/end/${rent.rentId}|}" method="post"
+                      onsubmit="return confirm('Czy na pewno zakończyć wypożyczenie?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Usuń</button>
+                </form>
+            </td>
+
         </tr>
     </table>
 </div>
