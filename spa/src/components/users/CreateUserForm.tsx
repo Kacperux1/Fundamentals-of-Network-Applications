@@ -11,14 +11,13 @@ import {useParams} from "react-router-dom";
 import * as yup from 'yup';
 
 
-
 function CreateUserForm() {
 
     //const [userToSend, setUserToSend] = useState('');
 
-    const {userId} = useParams<{userId: string|undefined}>();
+    const {userId} = useParams<{ userId: string | undefined }>();
 
-    const updateMode:boolean = Boolean(userId);
+    const updateMode: boolean = Boolean(userId);
     const [typedLogin, setTypedLogin] = useState<string>('');
     const [typedEmail, setTypedEmail] = useState<string>('');
     const [chosenType, setChosenType] = useState<string>('');
@@ -30,6 +29,7 @@ function CreateUserForm() {
     const [currentUser, setCurrentUser] = useState<UserEtag | null>(null);
     const [validationErrorMessage, setValidationErrorMessage] = useState<string>('');
     const [updatedUser, setUpdatedUser] = useState<User | null>(null);
+    const [typedInitialPassword, setTypedInitialPassword] = useState<string>('');
 
     const createFormValidationSchema = yup.object(({
         login: yup.string().required("Login jest wymagany").max(50, "Login jest zbyt długi (max 50 znaków"),
@@ -51,7 +51,6 @@ function CreateUserForm() {
     createFormValidationSchema.concat(createClientValidationSchema);
 
 
-
     const updateUserValidationSchema = yup.object(({
         login: yup.string().max(50, "Login jest zbyt długi (max 50 znaków"),
         email: yup.string().email("Niewłaściwy format emaila")
@@ -69,10 +68,10 @@ function CreateUserForm() {
 
     updateUserValidationSchema.concat(updateClientValidationSchema);
 
-    function sendDataToCreateUser(userData:CreateUserFormData) {
-        if(!window.confirm(`Na pewno chcesz dodać użytkownika o loginie ${userData.login}, emailu: ${userData.email}, statusie:`
-        + (userData.active ? `aktywnym` : `nieaktywnym`) + 'roli: ' +
-            (userData.type ==='client'? 'klient': userData.type === 'administrator'? 'administrator': 'pracownik') + ' ?')) {
+    function sendDataToCreateUser(userData: CreateUserFormData) {
+        if (!window.confirm(`Na pewno chcesz dodać użytkownika o loginie ${userData.login}, emailu: ${userData.email}, statusie:`
+            + (userData.active ? `aktywnym` : `nieaktywnym`) + 'roli: ' +
+            (userData.type === 'client' ? 'klient' : userData.type === 'administrator' ? 'administrator' : 'pracownik') + ' ?')) {
             return;
         }
         createUser(userData).then((user: User) => {
@@ -81,28 +80,29 @@ function CreateUserForm() {
     }
 
     function getUpdatedUserInfo(userId: string | undefined) {
-        if(userId === undefined) {
+        if (userId === undefined) {
             return;
         }
         getUserById(userId).then((user: UserEtag) => {
             setUpdatedUser(user);
         })
     }
+
     useEffect(() => {
         getUpdatedUserInfo(userId);
     }, [userId])
 
-    function sendDataToUpdateUser(userData:UpdateUserFormData) {
-        if(userId === undefined) {
+    function sendDataToUpdateUser(userData: UpdateUserFormData) {
+        if (userId === undefined) {
             alert("Błont!!!! ni ma id usera");
             return;
         }
         getUserById(userId).then((user: UserEtag) => {
-            if(!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${userData.login} ?`)) {
+            if (!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${userData.login} ?`)) {
                 return;
             }
-            if(userId) {
-                updateUser(userId,userData , user.etag).then((user: User) => {
+            if (userId) {
+                updateUser(userId, userData, user.etag).then((user: User) => {
                     alert(`zaktualizowano użytkownika o ID ${user.id}`);
                 })
             }
@@ -134,7 +134,7 @@ function CreateUserForm() {
         }
 
         try {
-            if(chosenType === "client") {
+            if (chosenType === "client") {
                 await createClientValidationSchema.validate(userData, {abortEarly: true});
             } else {
                 await createFormValidationSchema.validate(userData, {abortEarly: true});
@@ -152,32 +152,32 @@ function CreateUserForm() {
     }
 
     async function handleUpdateSubmit() {
-        if(!typedLogin && !typedEmail && !clientFirstName && !clientLastName && !clientPhone) {
+        if (!typedLogin && !typedEmail && !clientFirstName && !clientLastName && !clientPhone) {
             alert("Wpisz jakieś dane do aktualizacji!");
             return;
         }
         setValidationErrorMessage('');
         let userData: UpdateUserFormData = {
-            login: typedLogin ===''?null : typedLogin,
-            email: typedEmail ===''?null : typedEmail,
+            login: typedLogin === '' ? null : typedLogin,
+            email: typedEmail === '' ? null : typedEmail,
         }
         if (updatedUser?.type === "client") {
             userData = {
-                login: typedLogin ===''?null : typedLogin,
-                email: typedEmail ===''?null : typedEmail,
-                first_name: clientFirstName ===''?null : clientFirstName,
-                last_name: clientLastName ===''?null : clientLastName,
-                phone: clientPhone ===''?null : clientPhone,
+                login: typedLogin === '' ? null : typedLogin,
+                email: typedEmail === '' ? null : typedEmail,
+                first_name: clientFirstName === '' ? null : clientFirstName,
+                last_name: clientLastName === '' ? null : clientLastName,
+                phone: clientPhone === '' ? null : clientPhone,
             } as UpdateClientData;
         }
         try {
-            if(updatedUser?.type === "client") {
+            if (updatedUser?.type === "client") {
                 await updateClientValidationSchema.validate(userData, {abortEarly: true});
             } else {
                 await updateUserValidationSchema.validate(userData, {abortEarly: true});
             }
         } catch (error) {
-            if(error instanceof Error) {
+            if (error instanceof Error) {
                 setValidationErrorMessage(error.message);
             } else {
                 setValidationErrorMessage('Wystompił nieznay błont');
@@ -203,10 +203,14 @@ function CreateUserForm() {
             {updateMode && <h2>Aktualizacja użytkownika o loginie {updatedUser?.login}</h2>
             }
             {validationErrorMessage !== '' &&
-            <h2>{validationErrorMessage}</h2>}
+                <h2>{validationErrorMessage}</h2>}
             <form onSubmit={(e) => {
                 e.preventDefault();
-                if (updateMode) { handleUpdateSubmit();} else { handleCreationSubmit();}
+                if (updateMode) {
+                    handleUpdateSubmit();
+                } else {
+                    handleCreationSubmit();
+                }
             }}>
                 <label htmlFor="login-field">Podaj nazwę(login) użytkownika:</label>
                 <input onChange={(e) => {
@@ -216,6 +220,13 @@ function CreateUserForm() {
                 <label htmlFor="email-field"> Podaj adres email:</label>
                 <input onChange={(e) => setTypedEmail(e.target.value)}
                        type="text" id="email-field" name="email-field" className="w-full"/>
+                {!updateMode &&
+                    <><label htmlFor="password-field">Podaj początkowe hasło do konta:</label>
+                        <input type="password" id="password-field" name="password-field" className="w-full"
+                               onChange={(e) => {
+                                   setTypedInitialPassword(e.target.value);
+                               }}/></>
+                }
                 {!updateMode && <fieldset>
                     <legend>Wybierz początkowy stan konta:</legend>
                     <label htmlFor="active-option">Aktywny</label>
@@ -256,8 +267,8 @@ function CreateUserForm() {
                     </div>
                 }
 
-                <button type="submit">{updateMode? "zaktualizuj użytkownika":"Dodaj użytkownika"}</button>
-                <button type="reset" onClick={ () => resetForm()}>Wyczyść formularz</button>
+                <button type="submit">{updateMode ? "zaktualizuj użytkownika" : "Dodaj użytkownika"}</button>
+                <button type="reset" onClick={() => resetForm()}>Wyczyść formularz</button>
             </form>
         </div>
     )

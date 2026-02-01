@@ -29,10 +29,6 @@ import pl.facility_rental.user.dto.manager.UpdateResourceMgrDto;
 @NoArgsConstructor
 public abstract class UpdateUserDto {
 
-    @Size(min=1, message = "email jest zbyt krotki")
-    @Size(max=50, message = "email jest zbyt dlugi")
-    private String login;
-
     @NotBlank
     @Size(min=1, message = "email jest zbyt krotki")
     @Size(max=50, message = "email jest zbyt dlugi")

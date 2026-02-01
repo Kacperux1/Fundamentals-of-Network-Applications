@@ -60,16 +60,17 @@ export interface CreateClientData extends CreateUserFormData {
     phone: string;
 }
 
-export interface UpdateUserFormData {
-    login: string |null;
-    email: string |null;
-}
+// export interface UpdateUserFormData {
+//     login: string |null;
+//     email: string |null;
+//     pass
+// }
 
-export interface UpdateClientData extends UpdateUserFormData {
-    first_name: string |null;
-    last_name: string |null;
-    phone: string |null;
-}
+// export interface UpdateClientData extends UpdateUserFormData {
+//     first_name: string |null;
+//     last_name: string |null;
+//     phone: string |null;
+// }
 
 
 export interface Jwt {
