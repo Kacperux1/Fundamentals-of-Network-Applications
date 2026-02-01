@@ -136,6 +136,7 @@ export interface ClientEtag extends UserEtag {
 
 
 export interface ClientOwnUpdateData {
+    type: string
     firstName: string|null;
     lastName: string|null;
     email: string|null;

@@ -44,8 +44,10 @@ function ClientOwnUpdate () {
     }
 
     async function handleSubmit(){
+        console.log("HANDLE SUBMIT");
         setValidationMessage('');
         const userNewData : ClientOwnUpdateData= {
+            type: "client",
             firstName: typedFirstName? typedFirstName : null,
             lastName: typedLastName? typedLastName : null,
             email: typedEmail? typedEmail :  null,
@@ -55,12 +57,15 @@ function ClientOwnUpdate () {
             await updateClientValidationSchema.validate(userNewData, {abortEarly: true});
         } catch (error) {
             if(error instanceof Error) {
+                console.log("VALIDATION ERROR", error);
                 setValidationMessage(error.message);
             } else {
                 setValidationMessage("ystompiłe nieznany błont");
             }
             return;
         }
+
+        console.log("VALIDATION OK");
         sendDataToUpdateSelf(userNewData);
     }
 

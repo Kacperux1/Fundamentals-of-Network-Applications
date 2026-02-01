@@ -23,7 +23,9 @@ export async function getUserById(id:string){
 
 export async function getUserByLogin(login:string){
     const response = await axios.get(`/users/login/${login}`);
-    return response.data;
+    const results = response.data;
+    results.etag = response.headers['etag'];
+    return results;
 }
 
 export async function createUser(user:CreateUserFormData) {
