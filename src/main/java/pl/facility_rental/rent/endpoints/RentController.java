@@ -44,6 +44,7 @@ public class RentController {
     }
 
     @PostMapping
+    @PreAuthorize("#rentDto.clientId == authentication.name")
     @ResponseStatus(HttpStatus.CREATED)
     public ReturnedRentDto createRent(@RequestBody CreateRentDto rentDto)  {
         return rentMapper.getRentDetails(rentService.save(rentMapper.CreateRentRequest(rentDto)));
