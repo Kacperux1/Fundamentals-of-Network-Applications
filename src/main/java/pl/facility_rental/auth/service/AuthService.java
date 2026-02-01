@@ -43,8 +43,6 @@ public class AuthService {
 
     public String authenticate(String username, String password) throws UserWithSuchLoginNotFoundException {
         Optional<User> user = userService.getUserByLoginStrict(username);
-        System.out.println(passwordEncoder.encode("admin"));
-        System.out.println(passwordEncoder.matches("admin", "$2a$12$c0VwB9.RSYqpi78kLALDLeROaxHKik1BcrG/0Ax6snMvNjdQkabPW"));
 
         if(user.isEmpty()){
             throw new UserWithSuchLoginNotFoundException("Nie istnieje użytkownik o takim loginie!");
@@ -53,8 +51,10 @@ public class AuthService {
             throw  new InactiveUserLoginAttemptException("To konto jest nieaktywne. Skontaktuj się z administracją.");
         }
         try {
+            System.out.println(passwordEncoder.encode("admin"));
+            System.out.println(passwordEncoder.matches("admin", "$2a$12$c0VwB9.RSYqpi78kLALDLeROaxHKik1BcrG/0Ax6snMvNjdQkabPW"));
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        }catch (BadCredentialsException e){
+        }catch (Exception e){
             e.printStackTrace();
             throw new InvalidCredentialsException("Niepoprawne dane logowania.");
         }

@@ -41,12 +41,7 @@ class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public SuccessfulLoginDto login(@RequestBody @Valid LoginDto loginDto) throws UserWithSuchLoginNotFoundException {
         System.out.println("Login attempt: " + loginDto.login());
-        try{
-            return new SuccessfulLoginDto(authService.authenticate(loginDto.login(), loginDto.rawPassword()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Login attempt failed");
-        }
+        return new SuccessfulLoginDto(authService.authenticate(loginDto.login(), loginDto.rawPassword()));
     }
 
     @PutMapping("/changePassword")

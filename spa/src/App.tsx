@@ -21,8 +21,8 @@ axios.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             sessionStorage.removeItem("jwt");
-            return Promise.reject(error);
         }
+        return Promise.reject(error);
     }
 )
 
