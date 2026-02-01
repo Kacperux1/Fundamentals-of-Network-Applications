@@ -26,7 +26,6 @@ function CreateUserForm() {
     const [clientLastName, setClientLastName] = useState<string>('');
     const [clientPhone, setClientPhone] = useState<string>('');
 
-    const [currentUser, setCurrentUser] = useState<UserEtag | null>(null);
     const [validationErrorMessage, setValidationErrorMessage] = useState<string>('');
     const [updatedUser, setUpdatedUser] = useState<User | null>(null);
     const [typedInitialPassword, setTypedInitialPassword] = useState<string>('');
@@ -99,7 +98,7 @@ function CreateUserForm() {
             return;
         }
         getUserById(userId).then((user: UserEtag) => {
-            if (!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${userData.login} ?`)) {
+            if (!window.confirm(`Na pewno chcesz dodać użytkownika o bieżącym loginie ${user.login} ?`)) {
                 return;
             }
             if (userId) {
@@ -119,7 +118,8 @@ function CreateUserForm() {
             login: typedLogin,
             email: typedEmail,
             active: willBeActive,
-            type: chosenType
+            type: chosenType,
+            password: typedInitialPassword
         }
         if (chosenType === "client") {
             userData = {
@@ -129,7 +129,8 @@ function CreateUserForm() {
                 type: chosenType,
                 first_name: clientFirstName,
                 last_name: clientLastName,
-                phone: clientPhone
+                phone: clientPhone,
+                password: typedInitialPassword
             } as CreateClientData;
 
         }
@@ -160,7 +161,8 @@ function CreateUserForm() {
         setValidationErrorMessage('');
         let userData: UpdateUserFormData = {
             email: typedEmail === '' ? null : typedEmail,
-            active: willBeActive === null ? null : willBeActive
+            active: willBeActive === null ? null : willBeActive,
+            type: updatedUser!.type
         }
         if (updatedUser?.type === "client") {
             userData = {
@@ -169,6 +171,7 @@ function CreateUserForm() {
                 last_name: clientLastName === '' ? null : clientLastName,
                 phone: clientPhone === '' ? null : clientPhone,
                 active: willBeActive === null ? null : willBeActive,
+                type: updatedUser!.type
             } as UpdateClientData;
         }
         try {

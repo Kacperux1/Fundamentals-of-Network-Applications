@@ -52,6 +52,7 @@ export interface CreateUserFormData {
     email: string;
     type: string| null;
     active: boolean |null;
+    password: string;
 }
 
 export interface CreateClientData extends CreateUserFormData {
@@ -63,6 +64,7 @@ export interface CreateClientData extends CreateUserFormData {
 export interface UpdateUserFormData {
     email: string |null;
     active: boolean |null;
+    type: string| null;
 }
 
 export interface UpdateClientData extends UpdateUserFormData {
