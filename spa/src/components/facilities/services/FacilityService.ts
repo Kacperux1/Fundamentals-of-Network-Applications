@@ -2,9 +2,14 @@ import axios, {AxiosError} from 'axios';
 import type {FacilityForm} from "../../../utils/typedefs.ts";
 
 async function getAllFacilities() {
-
-    const res = await axios.get('/facilities');
-    return res.data;
+    try {
+        const res = await axios.get('/facilities');
+        return res.data;
+    } catch (err) {
+        if (err instanceof AxiosError) {
+            alert(err.response?.data);
+        }
+    }
 }
 
 export async function createFacility(facilityForm: FacilityForm) {

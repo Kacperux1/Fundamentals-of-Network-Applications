@@ -70,7 +70,7 @@ public class RentController {
         return rentMapper.getRentDetails(rentService.delete(id));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.OK)
     public ReturnedRentDto endRent(@PathVariable String id)  {
