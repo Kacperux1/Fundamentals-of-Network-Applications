@@ -31,7 +31,7 @@ public class ResourceMgrMapper {
     }
 
     public ResourceMgr updateManager(UpdateResourceMgrDto updateResourceMgrDto) {
-        return new ResourceMgr(updateResourceMgrDto.getLogin(), updateResourceMgrDto.getEmail(),"", false);
+        return new ResourceMgr(null, updateResourceMgrDto.getEmail(),"", false);
     }
 
 }

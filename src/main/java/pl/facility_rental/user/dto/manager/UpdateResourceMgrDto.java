@@ -9,7 +9,7 @@ import pl.facility_rental.user.dto.UpdateUserDto;
 
 public class UpdateResourceMgrDto extends UpdateUserDto {
 
-    public UpdateResourceMgrDto(String login, String email) {
-        super(login, email);
+    public UpdateResourceMgrDto(String email) {
+        super(email);
     }
 }

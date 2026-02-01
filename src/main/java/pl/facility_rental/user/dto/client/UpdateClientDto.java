@@ -28,8 +28,8 @@ public class UpdateClientDto extends UpdateUserDto {
     @Pattern(regexp = "^\\+?\\d{1,3}?[- ]?\\d{3}[- ]?\\d{3}[- ]?\\d{3}$")
     private String phone;
 
-    public UpdateClientDto(String login, String email, String firstName, String lastName, String phone) {
-        super(login, email);
+    public UpdateClientDto(String email, String firstName, String lastName, String phone) {
+        super(email);
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
