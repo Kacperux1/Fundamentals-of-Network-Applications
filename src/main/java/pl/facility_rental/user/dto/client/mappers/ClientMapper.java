@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.facility_rental.user.business.model.Client;
 import pl.facility_rental.user.dto.UpdateUserDto;
+import pl.facility_rental.user.dto.client.ClientOwnUpdateRequest;
 import pl.facility_rental.user.dto.client.CreateClientDto;
 import pl.facility_rental.user.dto.client.ReturnedClientDto;
 import pl.facility_rental.user.dto.client.UpdateClientDto;
@@ -36,6 +37,12 @@ public class ClientMapper {
     public Client updateClient(UpdateClientDto updateClientDto) {
         return new Client(null, updateClientDto.getEmail(), false, "",updateClientDto.getFirstName(),
                 updateClientDto.getLastName(), updateClientDto.getPhone());
+    }
+
+    public Client updateSelf(ClientOwnUpdateRequest  clientOwnUpdateRequest) {
+        return new Client(null, clientOwnUpdateRequest.email(),
+                false, "",clientOwnUpdateRequest.firstName(),
+                clientOwnUpdateRequest.lastName(), clientOwnUpdateRequest.phone());
     }
 
 

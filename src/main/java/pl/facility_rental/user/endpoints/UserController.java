@@ -17,6 +17,7 @@ import pl.facility_rental.user.dto.UpdateUserDto;
 import pl.facility_rental.user.dto.admin.CreateAdminDto;
 import pl.facility_rental.user.dto.admin.UpdateAdminDto;
 import pl.facility_rental.user.dto.admin.mappers.AdminMapper;
+import pl.facility_rental.user.dto.client.ClientOwnUpdateRequest;
 import pl.facility_rental.user.dto.client.UpdateClientDto;
 import pl.facility_rental.user.dto.client.mappers.ClientMapper;
 import pl.facility_rental.user.dto.client.CreateClientDto;
@@ -62,7 +63,7 @@ public class UserController {
     @PutMapping("/self")
     @PreAuthorize("hasRole('Client')")
     public ResponseEntity<ReturnedUserDto> updateSelf(
-            @RequestBody UpdateClientDto updatedUserDto,
+            @RequestBody ClientOwnUpdateRequest clientOwnUpdateRequest,
             @RequestHeader("If-Match") String etag
     ) {
 
@@ -79,7 +80,7 @@ public class UserController {
         totalEtagCheck(user.getId(), etag);
 
         User updated = userService.update(user.getId(),
-                clientMapper.updateClient(updatedUserDto));
+                clientMapper.updateSelf(clientOwnUpdateRequest));
 
         return ResponseEntity.ok(mapSubtypes(updated));
     }
@@ -118,9 +119,12 @@ public class UserController {
     }
 
     @GetMapping("/login/{login}")
-    public ReturnedUserDto getUserByLoginStrict(@PathVariable String login) {
-        return userService.getUserByLoginStrict(login).map(this::mapSubtypes).orElseThrow(() ->
+    public ResponseEntity<ReturnedUserDto> getUserByLoginStrict(@PathVariable String login) {
+
+        var user = userService.getUserByLoginStrict(login).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with login " + login + " was not found"));
+        return ResponseEntity.ok().eTag(jwsUtil.generateJws(user.getId(), user.getLogin()))
+                .body(mapSubtypes(user));
     }
 
     @GetMapping("/login_matching/{loginPart}")

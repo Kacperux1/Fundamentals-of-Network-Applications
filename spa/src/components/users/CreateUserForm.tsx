@@ -52,17 +52,18 @@ function CreateUserForm() {
 
 
     const updateUserValidationSchema = yup.object(({
-        login: yup.string().max(50, "Login jest zbyt długi (max 50 znaków"),
-        email: yup.string().email("Niewłaściwy format emaila")
+        email: yup.string().nullable().notRequired().
+        email("Niewłaściwy format emaila")
             .max(50, "Email jest zbyt długi (max 50 znaków"),
     }));
 
     const updateClientValidationSchema = yup.object(({
-        first_name: yup.string()
+        first_name: yup.string().nullable().notRequired()
             .matches(/^[a-zA-Z]+$/, "Imię może się skłądać tylko z liter!"),
-        last_name: yup.string()
+        last_name: yup.string().nullable().notRequired()
             .matches(/^[a-zA-Z]+$/, "Nazwisko może się skłądać tylko z liter!"),
-        phone: yup.string().length(9, "Niepoprawna długość nr. telefonu")
+        phone: yup.string().nullable().notRequired()
+            .length(9, "Niepoprawna długość nr. telefonu")
             .matches(/^[0-9]+$/, "Nr telefonu może się składać tylko z cyfr")
     }));
 

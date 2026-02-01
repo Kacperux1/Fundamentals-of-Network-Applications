@@ -9,7 +9,7 @@ function Users() {
 
     const [currentUsers, setCurrentUsers] = useState<User[]>([]);
 
-    const [currentlyUpdatedUser, setCurrentlyUpdatedUser] = useState<UserEtag | null>(null);
+
     const [searchLogin, setSearchLogin] = useState('');
 
     const context = useContext(UserContext);

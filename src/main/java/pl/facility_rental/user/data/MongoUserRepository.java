@@ -134,8 +134,6 @@ class MongoUserRepository implements UserRepository {
             } if(((MongoDbClient) mappedUser).getPhone() != null && !((MongoDbClient) mappedUser).getPhone().isBlank()){
                 pipeline.add(Updates.set("phone", ((MongoDbClient) mappedUser).getPhone()));
             }
-            pipeline.add(Updates.set("active", ((MongoDbClient) mappedUser).isActive()));
-
         }
 
         Bson update = Updates.combine(

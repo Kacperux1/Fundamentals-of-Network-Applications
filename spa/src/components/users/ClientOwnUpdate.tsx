@@ -18,13 +18,14 @@ function ClientOwnUpdate () {
 
 
     const updateClientValidationSchema = yup.object(({
-        email: yup.string().email("Niewłaściwy format emaila")
+        email: yup.string().nullable().notRequired().email("Niewłaściwy format emaila")
             .max(50, "Email jest zbyt długi (max 50 znaków"),
-        firstName: yup.string()
+        first_name: yup.string().nullable().notRequired()
             .matches(/^[a-zA-Z]+$/, "Imię może się skłądać tylko z liter!"),
-        lastName: yup.string()
+        last_name: yup.string().nullable().notRequired()
             .matches(/^[a-zA-Z]+$/, "Nazwisko może się skłądać tylko z liter!"),
-        phoneNumber: yup.string().length(9, "Niepoprawna długość nr. telefonu")
+        phoneNumber: yup.string().nullable().notRequired()
+            .length(9, "Niepoprawna długość nr. telefonu")
             .matches(/^[0-9]+$/, "Nr telefonu może się składać tylko z cyfr")
     }));
 
@@ -38,6 +39,7 @@ function ClientOwnUpdate () {
             if (!window.confirm(`Na pewno chcesz dokonać zmian w informacjach wskazanych w formularzu?`)) {
                 return;
             }
+            console.log("ETAG:", user.etag);
             updateSelf(data, user.etag).then(() => {alert("Dokonano zmian."); navigator("/myAccount")});
             }
         )
@@ -47,11 +49,10 @@ function ClientOwnUpdate () {
         console.log("HANDLE SUBMIT");
         setValidationMessage('');
         const userNewData : ClientOwnUpdateData= {
-            type: "client",
-            firstName: typedFirstName? typedFirstName : null,
-            lastName: typedLastName? typedLastName : null,
+            first_name: typedFirstName? typedFirstName : null,
+            last_name: typedLastName? typedLastName : null,
             email: typedEmail? typedEmail :  null,
-            phoneNumber: typedPhone? typedPhone : null,
+            phone: typedPhone? typedPhone : null,
         }
         try{
             await updateClientValidationSchema.validate(userNewData, {abortEarly: true});

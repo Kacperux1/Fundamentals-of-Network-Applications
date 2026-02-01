@@ -1,5 +1,5 @@
 import  axios  from 'axios';
-import type {CreateUserFormData, UpdateUserFormData} from "../../../utils/typedefs.ts";
+import type {ClientOwnUpdateData, CreateUserFormData, UpdateUserFormData} from "../../../utils/typedefs.ts";
 
 
 export async function getAllUsers(){
@@ -25,6 +25,7 @@ export async function getUserByLogin(login:string){
     const response = await axios.get(`/users/login/${login}`);
     const results = response.data;
     results.etag = response.headers['etag'];
+    console.log(response.headers['etag']);
     return results;
 }
 
@@ -58,7 +59,6 @@ export async function deactivateUser(id:string,  etag: string){
 }
 
 export async function updateUser(id:string, userData:UpdateUserFormData, etag: string) {
-    console.log(etag);
     etag = etag.replace("\"", "");
     const response = await axios.put(`/users/${id}`,userData, {
         headers: {
@@ -69,7 +69,9 @@ export async function updateUser(id:string, userData:UpdateUserFormData, etag: s
 }
 
 
-export async function updateSelf(userData:UpdateUserFormData,  etag: string) {
+export async function updateSelf(userData:ClientOwnUpdateData,  etag: string) {
+    console.log(etag);
+    etag = etag.replace("\"", "");
     const response = await axios.put(`/users/self`, userData,  {headers: {
         'If-Match': etag
     }});
