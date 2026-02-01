@@ -158,16 +158,16 @@ function CreateUserForm() {
         }
         setValidationErrorMessage('');
         let userData: UpdateUserFormData = {
-            login: typedLogin === '' ? null : typedLogin,
             email: typedEmail === '' ? null : typedEmail,
+            active: willBeActive === null ? null : willBeActive
         }
         if (updatedUser?.type === "client") {
             userData = {
-                login: typedLogin === '' ? null : typedLogin,
                 email: typedEmail === '' ? null : typedEmail,
                 first_name: clientFirstName === '' ? null : clientFirstName,
                 last_name: clientLastName === '' ? null : clientLastName,
                 phone: clientPhone === '' ? null : clientPhone,
+                active: willBeActive === null ? null : willBeActive,
             } as UpdateClientData;
         }
         try {
@@ -212,11 +212,12 @@ function CreateUserForm() {
                     handleCreationSubmit();
                 }
             }}>
-                <label htmlFor="login-field">Podaj nazwę(login) użytkownika:</label>
-                <input onChange={(e) => {
-                    setTypedLogin(e.target.value)
-                }}
-                       type="text" id="login-field" name="login-field" className="w-full"/>
+                {!updateMode && <><label htmlFor="login-field">Podaj nazwę(login) użytkownika:</label><input
+                    onChange={(e) => {
+                        setTypedLogin(e.target.value);
+                    }}
+                    type="text" id="login-field" name="login-field" className="w-full"/></>}
+
                 <label htmlFor="email-field"> Podaj adres email:</label>
                 <input onChange={(e) => setTypedEmail(e.target.value)}
                        type="text" id="email-field" name="email-field" className="w-full"/>

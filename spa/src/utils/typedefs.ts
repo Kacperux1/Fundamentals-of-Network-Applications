@@ -60,17 +60,16 @@ export interface CreateClientData extends CreateUserFormData {
     phone: string;
 }
 
-// export interface UpdateUserFormData {
-//     login: string |null;
-//     email: string |null;
-//     pass
-// }
+export interface UpdateUserFormData {
+    email: string |null;
+    active: boolean |null;
+}
 
-// export interface UpdateClientData extends UpdateUserFormData {
-//     first_name: string |null;
-//     last_name: string |null;
-//     phone: string |null;
-// }
+export interface UpdateClientData extends UpdateUserFormData {
+    first_name: string |null;
+    last_name: string |null;
+    phone: string |null;
+}
 
 
 export interface Jwt {
@@ -133,6 +132,14 @@ export interface ClientEtag extends UserEtag {
     first_name: string;
     last_name: string;
     phone: string;
+}
+
+
+export interface ClientOwnUpdateData {
+    firstName: string|null;
+    lastName: string|null;
+    email: string|null;
+    phoneNumber: string|null;
 }
 
 

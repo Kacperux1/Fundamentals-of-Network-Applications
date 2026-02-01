@@ -60,12 +60,15 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<?> handleToken(TokenException ex) {
+        System.out.println("dupa");
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(body);
     }
+
+
 
 
 
