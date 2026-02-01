@@ -4,6 +4,7 @@ import type {Client, Rent} from '../../utils/typedefs.ts';
 import {getUserByLogin} from "./services/UserService.ts";
 import {getClientsRents} from "../rents/services/RentService.ts";
 import {UserContext} from "./context/UserContext.ts";
+import {NavLink} from "react-router-dom";
 
 //toDo: popsuty cykl zycia i sie nie odswieza tak samo jak lista usero
 
@@ -50,6 +51,9 @@ function ClientOwnDetails() {
                         {rent.totalPrice}</li>
                 ))}
             </ul>
+            <NavLink to="/clientOwnChange">
+                <button className=" m-4 border-b-fuchsia-500">Zmień swoje dane</button>
+            </NavLink>
         </div>
     )
 }

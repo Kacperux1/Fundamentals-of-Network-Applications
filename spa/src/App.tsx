@@ -73,7 +73,8 @@ function App() {
                         </NavLink>
                             <NavLink to="myAccount">
                             <button className=" m-4 border-b-fuchsia-500">Moje konto</button>
-                        </NavLink></>
+                        </NavLink>
+                        </>
                     }
                     <NavLink to="/">
                         <button className=" m-4">

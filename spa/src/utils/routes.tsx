@@ -11,6 +11,7 @@
     import CreateFacilityForm from "../components/facilities/CreateFacilityForm.tsx";
     import ClientOwnDetails from "../components/users/ClientOwnDetails.tsx";
     import ChangePasswordForm from "../components/auth/ChangePasswordForm.tsx";
+    import ClientOwnUpdate from "../components/users/ClientOwnUpdate";
 
     export const  router = createBrowserRouter([
         {
@@ -65,7 +66,12 @@
                 {
                     path: 'passwordChange',
                     element: <ChangePasswordForm/>
+                },
+                {
+                    path: 'clientOwnChange',
+                    element: <ClientOwnUpdate/>
                 }
+
             ]
         }
     ]);

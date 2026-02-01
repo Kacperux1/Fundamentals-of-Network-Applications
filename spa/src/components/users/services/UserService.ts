@@ -1,6 +1,7 @@
 import  axios  from 'axios';
 import type {CreateUserFormData, UpdateUserFormData} from "../../../utils/typedefs.ts";
 
+
 export async function getAllUsers(){
 
     const response = await axios.get('/users');
@@ -62,6 +63,15 @@ export async function updateUser(id:string, userData:UpdateUserFormData, etag: s
             'If-Match': etag
         }
     });
+    return response.data;
+}
+
+
+export async function updateSelf(userData:UpdateUserFormData,  etag: string) {
+    const response = await axios.put(`/users/self`, userData,  {headers: {
+        'If-Match': etag
+    }});
+
     return response.data;
 }
 
