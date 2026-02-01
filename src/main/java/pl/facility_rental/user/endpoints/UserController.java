@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.facility_rental.user.business.UserService;
@@ -55,6 +56,32 @@ public class UserController {
         this.adminMapper = adminMapper;
         this.resourceManagerMapper = resourceManagerMapper;
         this.jwsUtil = jwsUtil;
+    }
+
+
+    @PutMapping("/self")
+    @PreAuthorize("hasRole('Client')")
+    public ResponseEntity<ReturnedUserDto> updateSelf(
+            @RequestBody UpdateClientDto updatedUserDto,
+            @RequestHeader("If-Match") String etag
+    ) {
+
+        String login = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userService.getUserByLoginStrict(login)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Zalogowany użytkownik nie istnieje"
+                ));
+
+        totalEtagCheck(user.getId(), etag);
+
+        User updated = userService.update(user.getId(),
+                clientMapper.updateClient(updatedUserDto));
+
+        return ResponseEntity.ok(mapSubtypes(updated));
     }
 
 
