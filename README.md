@@ -22,7 +22,7 @@ Features:
 - Both databases are provided via Docker containers 
 
 #### Front-end:
-- React 19.2.5
+- React 19.2.5 using TypeScript
 - TailwindCSS 4.1.8
 
 ## Installation and running guide:
