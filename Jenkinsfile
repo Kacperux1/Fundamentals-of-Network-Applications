@@ -3,11 +3,9 @@ pipeline {
     stages {
         stage('utworzenie i uruchomienie kontenerów') {
             steps {
-                sh 'ls'
-                sh 'cd ./Docker_single'
-                sh 'ls'
-                sh 'docker compose up -d'
-            }
+                dir("Docker_single") {
+                    sh 'docker compose up -d'
+                }
         }
         stage ('zbudowanie aplikacji backendowej') {
             steps {
@@ -18,11 +16,11 @@ pipeline {
         }
         stage('zbudowanie aplikacji frontendowej') {
             steps {
-                sh 'cd ./spa'
-                sh 'npm run build'
-                sh 'cp -r ./build/* /var/www/html/'
-                sh 'systemctl restart apache2'
-            }
+                dir("spa") {
+                    sh 'npm run build'
+                    sh 'cp -r ./build/* /var/www/html/'
+                    sh 'systemctl restart apache2'
+                }    
         }
 
 
