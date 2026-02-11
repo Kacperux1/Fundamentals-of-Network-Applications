@@ -7,6 +7,7 @@ pipeline {
           stage('zbudowanie aplikacji frontendowej') {
             steps {
                 dir("spa") {
+                    sh 'npm ci'
                     sh 'npm run build'
                     sh 'cp -r ./build/* /var/www/html/'
                     sh 'systemctl restart apache2'
