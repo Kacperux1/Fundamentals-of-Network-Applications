@@ -4,6 +4,7 @@ pipeline {
         stage('utworzenie i uruchomienie kontenerów') {
             steps {
                 sh 'cd ./Docker_single'
+                sh 'ls'
                 sh 'docker compose up -d'
             }
         }
