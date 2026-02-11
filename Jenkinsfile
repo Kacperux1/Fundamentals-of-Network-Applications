@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    options {
+        disableResume()
+    }
     stages {
         stage('utworzenie i uruchomienie kontenerów') {
             steps {
