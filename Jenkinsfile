@@ -9,6 +9,7 @@ pipeline {
                 dir("spa") {
                     sh 'npm ci'
                     sh 'npm run build'
+                    sh 'rm -rf /var/www/html/*'
                     sh 'cp -r ./dist/* /var/www/html/'
                     sh 'systemctl restart apache2'
                 }
@@ -24,8 +25,6 @@ pipeline {
                 sh 'systemctl restart facility_rental'
             }
         }
-      
-       
     }
 }
     
