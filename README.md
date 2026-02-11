@@ -1,6 +1,6 @@
 # Sport facility rental system
 
-## This project was developed for *Fundamentals of Network Appliactions* course during 5th semester of Applied Computer Science faculty at Politechnika Łódzka.
+## This project was developed for *Fundamentals of Network Applications* course during 5th semester of Applied Computer Science faculty at Politechnika Łódzka.
 
 This is a simple application allowing to reservate various sport facilities (e. g. football fields, tennis courts, etc.).
 
