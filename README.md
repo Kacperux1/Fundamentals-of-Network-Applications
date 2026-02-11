@@ -1,6 +1,6 @@
-#Sport facility rental system#
+#Sport facility rental system
 
-#This project was developed for *Fundamentals of Network Appliactions* course during 5th semester of Applied Computer Science faculty at Politechnika Łódzka.##
+#This project was developed for *Fundamentals of Network Appliactions* course during 5th semester of Applied Computer Science faculty at Politechnika Łódzka.
 
 This is a simple application allowing to reservate various sport facilities (e. g. football fields, tennis courts, etc.).
 
@@ -13,19 +13,19 @@ Features:
 - unit tests using JUnit and Testcontainers
 - Integration test using RESTAssured
 
-###Tech stack:###
-####Backend:###
+###Tech stack:
+####Backend:
 - Java 21
 - Spring Boot 3.5
 - MongoDB database (version 8.0) 
 - Redis database (for cache, version 7.0)
 - Both databases are provided via Docker containers 
 
-###Front-end:###
+###Front-end:
 - React 19.2.5
 - TailwindCSS 4.1.8
 
-##Installation and running guide:##
+##Installation and running guide:
 Make sure following tools are installed on your machine:
 - node.js 22+
 - JDK 21+
@@ -55,7 +55,7 @@ Repository also contains:
 `quarkus` branch - REST application remade to the Quarkus application
 `mobile` directory - mobile application made basing on React web application using React Native
 
-###In development/marked to fix:###
+###In development/marked to fix:
 - adjusting the integration tests according to the addition of security features (authentication and access control)
 - investinagting the issue with replica-set cluster Mongo version and making it primary choice for database for the app in the future
 - complete remaking the UI appearance and styling, and also the responsibility for mobile devices
