@@ -11,7 +11,6 @@ pipeline {
                     sh 'npm run build'
                     sh 'rm -rf /var/www/html/*'
                     sh 'cp -r ./dist/* /var/www/html/'
-                    sh 'systemctl restart apache2'
                 }
             }
         }
