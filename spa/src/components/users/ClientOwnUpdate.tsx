@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useContext} from 'react';
 import {UserContext} from "./context/UserContext.ts";
 import * as yup from "yup";
 import type {ClientOwnUpdateData, UserEtag} from "../../utils/typedefs.ts";
@@ -82,6 +82,7 @@ function ClientOwnUpdate () {
     return(
         <>
             <h2>wprowadź dane, które chcesz zaktualizować:</h2>
+            <h3> { validationMessage} </h3>
             <form onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
                 <label htmlFor="firstname-field">Imię:</label>
                 <input type="text" id="firstname-field"
