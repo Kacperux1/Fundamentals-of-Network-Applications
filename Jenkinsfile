@@ -6,6 +6,7 @@ pipeline {
                 dir("Docker_single") {
                     sh 'docker compose up -d'
                 }
+            }
         }
         stage ('zbudowanie aplikacji backendowej') {
             steps {
@@ -20,12 +21,10 @@ pipeline {
                     sh 'npm run build'
                     sh 'cp -r ./build/* /var/www/html/'
                     sh 'systemctl restart apache2'
-                }    
+                }
+            }
         }
-
-
-
-        
-        
+       
     }
 }
+    
