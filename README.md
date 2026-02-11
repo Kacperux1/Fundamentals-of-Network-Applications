@@ -50,6 +50,11 @@ cd ./spa
 npm run dev
 ```
 
+User with admin access:
+login : *admin*
+password *admin*
+
+
 Repository also contains:
 `mvc` branch - simple MVC web applicatiopn for prevoius version of backend (with no auth)
 `quarkus` branch - REST application remade to the Quarkus application
