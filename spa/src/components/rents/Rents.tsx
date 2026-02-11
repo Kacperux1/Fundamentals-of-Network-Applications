@@ -64,7 +64,7 @@ function Rents(){
         if(!clientLink || !clientLink.href){
             alert("Ni ma linka dla klięta");
         }
-        getClientForRentHateoas(clientLink.href).then((client: Client) => {
+        getClientForRentHateoas(clientLink!.href).then((client: Client) => {
             alert(`login:  ${client.login}, email: ${client.email}, status:`
                 + (client.active ? `aktywny` : `nieaktywny` + `imię: ${client.first_name}, nazisko: ${client.last_name},
                  telefon : ${client.phone}`), );
@@ -77,7 +77,7 @@ function Rents(){
         if(!facilityLink || !facilityLink.href){
             alert("Ni ma linka dla obiektu");
         }
-        getFacilityForRentHateoa(facilityLink.href).then((facility: Facility) => {
+        getFacilityForRentHateoa(facilityLink!.href).then((facility: Facility) => {
             alert(`obiekt o nazwie ${facility.name},
             na ulicy ${facility.street} ${facility.streetNumber}, o kodzie pocztowym ${facility.postalCode} ${facility.city},
             o stawce za godzinę ${facility.price} zł?`)
