@@ -16,7 +16,7 @@ pipeline {
         }
         stage ('zbudowanie aplikacji backendowej') {
             steps {
-                sh 'mvn  -t clean package'
+                sh 'mvn package'
                 sh 'cp ./target/facility_rental-0.0.1-SNAPSHOT.jar /opt/facility_rental/facility_rental.jar'
                  dir("Docker_single") {
                     sh 'docker compose up -d'
