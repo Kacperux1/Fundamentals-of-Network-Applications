@@ -16,7 +16,7 @@ pipeline {
         }
         stage ('zbudowanie aplikacji backendowej') {
             steps {
-               sh 'MAVEN_OPTS="-Xmx512m -Xms256m" mvn clean package -DskipTests'
+               sh 'MAVEN_OPTS="-Xmx512m -Xms256m" mvn -T 1 clean package -DskipTests'
                 sh 'cp ./target/facility_rental-0.0.1-SNAPSHOT.jar /opt/facility_rental/facility_rental.jar'
                  dir("Docker_single") {
                     sh 'docker compose up -d'
