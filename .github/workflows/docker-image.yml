@@ -24,16 +24,16 @@ jobs:
     - name: Build the backend container image
       uses: docker/build-push-action@v6
       with:
-        context: ../
+        context: .
         push: true
-        file: ../Docker_single/rest/Dockerfile
+        file: ./Docker_single/rest/Dockerfile
         tags: kacpermaziarz/facility_rental:0.0.1
-    - name: Build the backend container image
+    - name: Build the nginx container image
       uses: docker/build-push-action@v6
       with:
-        context: ../
+        context: .
         push: true
-        file: ../Docker_single/spa/Dockerfile
+        file: ./Docker_single/spa/Dockerfile
         tags: kacpermaziarz/facility_rental_nginx:0.0.1
         
 
