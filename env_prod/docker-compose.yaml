@@ -3,6 +3,7 @@ services:
     image: mongo:8.0
     container_name: mongodb1_single
     hostname: mongodb1_single
+    mem_limit: 400m
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
     networks:
@@ -47,6 +48,7 @@ services:
   nginx:
     image: kacpermaziarz/facility_rental_nginx:0.0.1
     container_name: nginx
+    mem_limit: 128m
     ports:
       - "20217:80"
     hostname: nginx
