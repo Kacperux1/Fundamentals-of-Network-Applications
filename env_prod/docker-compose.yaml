@@ -33,11 +33,14 @@ services:
 
   backend:
     image: kacpermaziarz/facility_rental:0.0.1
+    mem_limit: 512m
     networks:
       - infrastructure
     depends_on:
       - mongo_1_single
       - redis
+    environment:
+       - JAVA_TOOL_OPTIONS:-XX:MaxRAMPercentage=60.0
 
   nginx:
     image: kacpermaziarz/facility_rental_nginx:0.0.1
