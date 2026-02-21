@@ -7,7 +7,9 @@ services:
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
     networks:
-      - infrastructure
+      infrastructure:
+        aliases:
+          - mongodb1_single
     tmpfs:
       - /data/db
     environment:
@@ -28,7 +30,9 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - infrastructure
+      infrastructure:
+        aliases:
+          - redis
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
       interval: 10s
@@ -40,7 +44,9 @@ services:
     container_name: backend
     hostname: backend
     networks:
-      - infrastructure
+      infrastructure:
+        aliases:
+          - backend
     depends_on:
       - mongo_1_single
       - redis
