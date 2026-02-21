@@ -1,0 +1,66 @@
+services:
+  mongo_1_single:
+    image: mongo:8.0
+    container_name: mongodb1_single
+    hostname: mongodb1_single
+    volumes:
+      - ./Docker_single/init:/docker-entrypoint-initdb.d
+    networks:
+      - infrastructure
+    tmpfs:
+      - /data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpassword
+      - MONGO_INITDB_DATABASE=facility_rental
+    healthcheck:
+      test: [ "CMD", "mongosh", "--port", "27017", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis
+    hostname: redis
+    command: [ "redis-server", "--appendonly", "yes" ]
+    volumes:
+      - redis_data:/data
+    networks:
+      - infrastructure
+    healthcheck:
+      test: [ "CMD", "redis-cli", "PING" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: ../Docker_single/rest/Dockerfile
+    container_name: backend
+    hostname: backend
+    networks:
+      - infrastructure
+    depends_on:
+      - mongo_1_single
+      - redis
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Docker_single/spa/Dockerfile
+    container_name: nginx
+    ports:
+      - "8080:80"
+    hostname: nginx
+    networks:
+      - infrastructure
+
+
+
+volumes:
+    redis_data:
+
+networks:
+  infrastructure:
