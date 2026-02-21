@@ -1,6 +1,8 @@
 services:
   mongo_1_single:
     image: mongo:8.0
+    container_name: mongodb1_single
+    hostname: mongodb1_single
     mem_limit: 400m
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
@@ -20,6 +22,8 @@ services:
 
   redis:
     image: redis:7
+    container_name: redis
+    hostname: redis
     command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
       - redis_data:/data
@@ -33,17 +37,17 @@ services:
 
   backend:
     image: kacpermaziarz/facility_rental:0.0.1
-    mem_limit: 512m
+    container_name: backend
+    hostname: backend
     networks:
       - infrastructure
     depends_on:
       - mongo_1_single
       - redis
-    environment:
-       - JAVA_TOOL_OPTIONS:-XX:MaxRAMPercentage=60.0
 
   nginx:
     image: kacpermaziarz/facility_rental_nginx:0.0.1
+    container_name: nginx
     mem_limit: 128m
     ports:
       - "20217:80"
@@ -54,7 +58,7 @@ services:
 
 
 volumes:
-    redis_data:
+  redis_data:
 
 networks:
   infrastructure:
