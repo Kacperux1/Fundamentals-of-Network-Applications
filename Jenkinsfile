@@ -1,27 +1,22 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_LOGIN = credentials("docker_login")
+        DOCKER_PASS = credentials("docker_pass")
+    }
     options {
         disableResume()
     }
     stages {
-          stage('zbudowanie aplikacji frontendowej') {
+          stage('Uruchomienie środowizka konteneryzacyjnego z pomocą zbudowanmych obrazów umieszczonych na Docker Hubie') {
             steps {
-                dir("spa") {
-                    sh 'npm ci'
-                    sh 'npm run build'
-                    sh 'rm -rf /var/www/html/*'
-                    sh 'cp -r ./dist/* /var/www/html/'
-                }
-            }
-        }
-        stage ('zbudowanie aplikacji backendowej') {
-            steps {
-               sh 'MAVEN_OPTS="-Xmx512m -Xms256m" mvn -T 1 clean package -DskipTests'
-                sh 'cp ./target/facility_rental-0.0.1-SNAPSHOT.jar /opt/facility_rental/facility_rental.jar'
-                 dir("Docker_single") {
+                dir("env_prod") {
+                    sh 'docker compose down'
+                    sh 'sleep 60'
+                    sh 'docker login -u ${DOCKER_LOGIN} -p ${DOCKER_PASS}'
                     sh 'docker compose up -d'
                 }
-                sh 'systemctl restart facility_rental'
             }
         }
     }
