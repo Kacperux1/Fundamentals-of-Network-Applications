@@ -15,7 +15,7 @@ pipeline {
                     sh 'docker compose down'
                     sh 'sleep 60'
                     sh 'docker login -u ${DOCKER_LOGIN} -p ${DOCKER_PASS}'
-                    sh 'docker compose up -d'
+                    sh 'docker compose up -d --force-recreate'
                 }
             }
         }
