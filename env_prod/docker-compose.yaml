@@ -58,6 +58,9 @@ services:
     ports:
       - "20217:80"
     hostname: nginx
+    depends_on:
+        - backend
+    restart: unless-stopped
     networks:
       - infrastructure
 
