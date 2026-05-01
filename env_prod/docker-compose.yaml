@@ -3,7 +3,7 @@ services:
     image: mongo:8.0
     container_name: mongo1
     hostname: mongo1
-    mem_limit: 400m
+    mem_limit: 800m
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
     networks:
