@@ -8,6 +8,10 @@ RUN npm ci
 
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
+RUN echo $VITE_API_URL
+
+ENV VITE_API_URL=http://jeff217.mikrus.xyz:20217
+
 COPY ./spa ./
 
 RUN npm run build
