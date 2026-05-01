@@ -42,7 +42,7 @@ jobs:
           tags: kacpermaziarz/facility_rental:0.0.1
       - name: Test Env
         run: |
-          echo "Moje API to: ${{ env.VITE_API_URL }}"
+          echo "Moje API to: ${{ vars.VITE_API_URL }}"
 
       - name: Build the nginx container image
         uses: docker/build-push-action@v6
@@ -51,7 +51,7 @@ jobs:
           push: true
           file: ./Docker_single/spa/Dockerfile
           tags: kacpermaziarz/facility_rental_nginx:0.0.1
-          build-args: VITE_API_URL=$VITE_API_URL
+          build-args: VITE_API_URL=${{ vars.VITE_API_URL }}
         
 
   
