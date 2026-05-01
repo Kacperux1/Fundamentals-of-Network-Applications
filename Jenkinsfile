@@ -13,6 +13,7 @@ pipeline {
             steps {
                 dir("env_prod") {
                     sh 'docker compose down'
+                    sh 'docker system prune -a -f'
                     sh 'sleep 60'
                     sh 'docker login -u ${DOCKER_LOGIN} -p ${DOCKER_PASS}'
                     sh 'docker compose up -d --force-recreate'
