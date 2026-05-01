@@ -3,7 +3,7 @@ import type {changePasswordForm} from "../../../utils/typedefs.ts";
 
 export default async function login(username: string, password: string) {
     try {
-        const response = await axios.post("http://localhost:8080/auth/login",
+        const response = await axios.post("/auth/login",
             { login: username, rawPassword: password });
         console.log("Login response:", response.data);
         return response.data;
@@ -26,7 +26,7 @@ export function decodePayload(token: string) {
 
 export async function changePassword(data: changePasswordForm) {
     try {
-        const response = await axios.put("http://localhost:8080/auth/changePassword",
+        const response = await axios.put("/auth/changePassword",
             data);
         return response.data;
     } catch (err: unknown) {

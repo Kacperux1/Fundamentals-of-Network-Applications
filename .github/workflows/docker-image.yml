@@ -40,9 +40,6 @@ jobs:
           push: true
           file: ./Docker_single/rest/Dockerfile
           tags: kacpermaziarz/facility_rental:0.0.1
-      - name: Test Env
-        run: |
-          echo "Moje API to: ${{ vars.VITE_API_URL }}"
 
       - name: Build the nginx container image
         uses: docker/build-push-action@v6
