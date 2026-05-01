@@ -46,6 +46,8 @@ services:
     hostname: backend
     networks:
       - infrastructure
+    expose:
+      - "8080"
 
     depends_on:
       - mongo_1_single
