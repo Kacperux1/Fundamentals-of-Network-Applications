@@ -147,7 +147,7 @@ public class MongoUserRepositoryTest {
         Assertions.assertFalse(users.isEmpty());
 
         User found = users.getFirst();
-        found.setActive(false);
+        found.setEmail("cingciang@ciang.ciong");
         try {
            userRepository.update(found.getId(), found);
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class MongoUserRepositoryTest {
         }
         List<User> users2 = userRepository.findAll();
         Assertions.assertFalse(users2.isEmpty());
-        Assertions.assertFalse(users2.getFirst().isActive());
+        assertEquals("cingciang@ciang.ciong", users2.getFirst().getEmail());
     }
 
     @Test

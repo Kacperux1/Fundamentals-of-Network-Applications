@@ -1,5 +1,6 @@
 package pl.facility_rental.rent.endpoints;
 
+import jakarta.validation.Valid;
 import org.apache.catalina.connector.Response;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -44,9 +45,9 @@ public class RentController {
     }
 
     @PostMapping
-    @PreAuthorize("#rentDto.clientId == authentication.name")
+    @PreAuthorize("#rentDto.clientId == authentication.name or hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedRentDto createRent(@RequestBody CreateRentDto rentDto)  {
+    public ReturnedRentDto createRent(@RequestBody @Valid CreateRentDto rentDto)  {
         return rentMapper.getRentDetails(rentService.save(rentMapper.CreateRentRequest(rentDto)));
     }
 

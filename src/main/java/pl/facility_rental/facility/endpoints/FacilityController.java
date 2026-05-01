@@ -1,5 +1,6 @@
 package pl.facility_rental.facility.endpoints;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ import java.util.Map;
 @CrossOrigin(
         origins = "*",
         allowedHeaders = "*",
-        methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 @RequestMapping("/facilities")
 public class FacilityController {
@@ -48,14 +49,18 @@ public class FacilityController {
     @GetMapping("/{id}")
     public ResponseEntity<ReturnedFacilityDto> getFacilityById(@PathVariable String id) {
         //pozniej dodac wyjatek
-        return ResponseEntity.ok().body(facilityService.findById(id).map(facilityMapper::getFacilityDetails).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "facility with given id was not found")));
+        return ResponseEntity.ok()
+                .body(facilityService.findById(id)
+                        .map(facilityMapper::getFacilityDetails)
+                        .orElseThrow(() ->
+                                new FacilityNotFoundException
+                                        ("facility with given id was not found")));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedFacilityDto createFacility(@RequestBody CreateFacilityDto createFacilityDto) {
+    public ReturnedFacilityDto createFacility(@RequestBody @Valid CreateFacilityDto createFacilityDto) {
         return facilityMapper.getFacilityDetails(facilityService.save(facilityMapper.CreateFacilityRequest(createFacilityDto)));
     }
 
@@ -68,7 +73,7 @@ public class FacilityController {
     @PutMapping("/{facilityId}")
     @PreAuthorize("hasAnyRole('Administrator', 'ResourceMgr')")
     public ReturnedFacilityDto updateFacility(@PathVariable String facilityId,
-                                              @RequestBody UpdateFacilityDto updateFacilityDto) throws Exception {
+                                              @RequestBody @Valid UpdateFacilityDto updateFacilityDto) throws Exception {
         return facilityMapper.getFacilityDetails(facilityService
                 .update(facilityId, facilityMapper.updateFacilityRequest(updateFacilityDto)));
     }

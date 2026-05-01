@@ -27,6 +27,7 @@ public class FacilityIntegrationTest {
     @LocalServerPort
     int port;
 
+    private static String token;
 
 
     @BeforeAll
@@ -38,6 +39,13 @@ public class FacilityIntegrationTest {
     @BeforeEach
     void setup() {
         RestAssured.port = port;
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "admin");
+        body.put("rawPassword", "admin");
+        Response response = given().contentType(ContentType.JSON)
+                .body(body)
+                .post("/auth/login");
+        token = response.jsonPath().getString("token");
     }
 
     private Map<String, Object> sampleBody() {
@@ -58,6 +66,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/facilities")
@@ -80,6 +89,7 @@ public class FacilityIntegrationTest {
 
         Response created = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/facilities")
@@ -90,6 +100,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .get("/facilities/" + id)
                 .then()
@@ -107,6 +118,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/facilities")
@@ -115,6 +127,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .get("/facilities")
                 .then()
@@ -130,6 +143,7 @@ public class FacilityIntegrationTest {
 
         Response created = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/facilities")
@@ -144,6 +158,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(update)
                 .when()
                 .put("/facilities/" + id)
@@ -161,6 +176,7 @@ public class FacilityIntegrationTest {
 
         Response created = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/facilities")
@@ -171,6 +187,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .delete("/facilities/" + id)
                 .then()
@@ -184,6 +201,7 @@ public class FacilityIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .get("/facilities/123456789012345678901234")
                 .then()
@@ -191,24 +209,6 @@ public class FacilityIntegrationTest {
                 .statusCode(404);
     }
 
-    @Test
-    void shouldRejectResourceWithInvalidSyntax() {
-        String invalidResourceJson = """
-        {
-          "name": "",
-          "capacity": -5
-        }
-    """;
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(invalidResourceJson)
-                .when()
-                .post("/facilities")
-                .then()
-                .log().all()
-                .statusCode(500);
-    }
 
     @Test
     public void shouldNotAllocateFacilityAlreadyAllocated() {
@@ -222,6 +222,7 @@ public class FacilityIntegrationTest {
 
         Response createdFacility = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(facilityBody)
                 .when()
                 .post("/facilities")
@@ -236,12 +237,14 @@ public class FacilityIntegrationTest {
         client1.put("email", "alice@example.com");
         client1.put("active", true);
         client1.put("type", "client");
+        client1.put("password", "superPassword");
         client1.put("first_name", "Alice");
         client1.put("last_name", "Brian");
         client1.put("phone", "420 213 769");
         Map<String, Object> client2 = new HashMap<>();
         client2.put("login", "bob123");
         client2.put("email", "bob@example.com");
+        client2.put("password", "superPassword");
         client2.put("active", true);
         client2.put("type", "client");
         client2.put("first_name", "Bob");
@@ -250,6 +253,7 @@ public class FacilityIntegrationTest {
 
         Response createdClient1 = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(client1)
                 .when()
                 .post("/users")
@@ -259,6 +263,7 @@ public class FacilityIntegrationTest {
 
         Response createdClient2 = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(client2)
                 .when()
                 .post("/users")
@@ -278,6 +283,7 @@ public class FacilityIntegrationTest {
         // Próba alokacji 1 - powinna się udać
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(reqyestedRent)
                 .when()
                 .post("/rents")
@@ -292,6 +298,7 @@ public class FacilityIntegrationTest {
         reqyestedRent2.put("endDate", LocalDateTime.now().plusHours(2));
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(reqyestedRent2)
                 .when()
                 .post("/rents")

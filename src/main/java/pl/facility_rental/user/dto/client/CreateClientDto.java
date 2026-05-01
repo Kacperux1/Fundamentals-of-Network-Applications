@@ -18,18 +18,18 @@ public class CreateClientDto extends CreateUserDto {
     @NotBlank
     @Size(min=1, message = "Imie jest zbyt krotki")
     @Size(max=50, message = "Imie jest zbyt dlugi")
-    @Pattern(regexp = "^[\\p{L}]+([\\s-][\\p{L}]+)*$\n")
+    @Pattern(regexp = "^[\\p{L}]+([\\s-][\\p{L}]+)*$")
     private String firstName;
 
     @NotBlank
     @Size(min=1, message = "Nazwisko jest zbyt krotki")
     @Size(max=50, message = "Nazwisko jest zbyt dlugi")
     @JsonProperty("last_name")
-    @Pattern(regexp = "^[\\p{L}]+([\\s-][\\p{L}]+)*$\n")
+    @Pattern(regexp = "^[\\p{L}]+([\\s-][\\p{L}]+)*$")
     private String lastName;
 
     @NotBlank
-    @Pattern(regexp = "^\\+?\\d{1,3}?[- ]?\\d{3}[- ]?\\d{3}[- ]?\\d{3}$")
+    @Pattern(regexp = "^[0-9+ \\-]+$")
     private String phone;
 
     public CreateClientDto(String login, String email, String password, boolean active, String firstName, String lastName, String phone) {

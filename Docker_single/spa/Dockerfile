@@ -13,6 +13,7 @@ RUN npm run build
 FROM nginx:stable-alpine3.23-perl
 RUN mkdir -p /static
 RUN rm /etc/nginx/conf.d/default.conf
-COPY ./Docker_single/spa/proxy.conf /etc/nginx/nginx.conf
+COPY ./Docker_single/spa/nginx.conf /etc/nginx/nginx.conf
+COPY ./Docker_single/spa/0.0.1-prod.conf /etc/nginx/conf.d/0.0.1-prod.conf
 COPY --from=build /spa/dist/ /static/
 CMD ["nginx", "-g", "daemon off;"]

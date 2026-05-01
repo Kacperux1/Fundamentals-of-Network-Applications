@@ -24,7 +24,7 @@ public class UserCreateReadUpdateIntegrationTest {
     @LocalServerPort
     int port;
 
-
+    private static String token;
 
     @BeforeAll
     static void beforeAll() {
@@ -35,6 +35,13 @@ public class UserCreateReadUpdateIntegrationTest {
     @BeforeEach
     void setup() {
         RestAssured.port = port;
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "admin");
+        body.put("rawPassword", "admin");
+        Response response = given().contentType(ContentType.JSON)
+                .body(body)
+                .post("/auth/login");
+        token = response.jsonPath().getString("token");
     }
 
     @Test
@@ -45,11 +52,13 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("email", "example321@com.com");
         body.put("active", true);
         body.put("type", "client");
+        body.put("password", "superPassword");
         body.put("first_name", "John");
         body.put("last_name", "Standish");
         body.put("phone", "555 555 555");
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
@@ -73,6 +82,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("login", "superLogin1");
         body.put("email", "example@com.com");
         body.put("active", true);
+        body.put("password", "superPassword");
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Standish");
@@ -83,12 +93,14 @@ public class UserCreateReadUpdateIntegrationTest {
         body1.put("email", "example123@com.com");
         body1.put("active", false);
         body1.put("type", "client");
+        body1.put("password", "superPassword");
         body1.put("first_name", "John");
         body1.put("last_name", "Standish");
         body1.put("phone", "123 456 789");
         //w
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
@@ -98,13 +110,16 @@ public class UserCreateReadUpdateIntegrationTest {
         //t
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body1)
+                .log().all()
                 .when()
+                .log().all()
                 .post("/users")
                 .then()
                 .log().all()
 
-                .statusCode(500); //bezwzglednie do zmiany!!!
+                .statusCode(409); //bezwzglednie do zmiany!!!
 
 
     }
@@ -117,12 +132,14 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("email", "przyklad@com.com");
         body.put("active", true);
         body.put("type", "client");
+        body.put("password", "superPassword");
         body.put("first_name", "John");
         body.put("last_name", "Doe");
         body.put("phone", "987 654 321");
         //w
         Response response = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
@@ -131,8 +148,9 @@ public class UserCreateReadUpdateIntegrationTest {
         //th
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
-                .get("/users/"+response.jsonPath().getString("id"))
+                .get("/users/" + response.jsonPath().getString("id"))
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -151,6 +169,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("login", "wow");
         body.put("email", "siemanko@com.com");
         body.put("active", true);
+        body.put("password", "superPassword");
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Doe");
@@ -159,6 +178,7 @@ public class UserCreateReadUpdateIntegrationTest {
         //w
         Response response = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
@@ -167,9 +187,10 @@ public class UserCreateReadUpdateIntegrationTest {
 
         //th
         given()
-        .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
-                .get("/users/login/"+response.jsonPath().getString("login"))
+                .get("/users/login/" + response.jsonPath().getString("login"))
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -189,6 +210,7 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("email", "kacper@com.com");
         body.put("active", true);
         body.put("type", "client");
+        body.put("password", "superPassword");
         body.put("first_name", "John");
         body.put("last_name", "Doe");
         body.put("phone", "987 654 321");
@@ -196,6 +218,7 @@ public class UserCreateReadUpdateIntegrationTest {
         //w
         Response response = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
@@ -205,12 +228,13 @@ public class UserCreateReadUpdateIntegrationTest {
         //th
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .get("/users/login_matching/kacper")
                 .then()
                 .log().all()
                 .statusCode(200)
-                .body("id", notNullValue())
+                .body("[0].id", notNullValue())
                 .body("[0].login", equalTo("kacperux"))
                 .body("[0].active", equalTo(true))
                 .body("[0].type", equalTo("client"))
@@ -225,57 +249,90 @@ public class UserCreateReadUpdateIntegrationTest {
         body.put("login", "King");
         body.put("email", "kingdom@com.com");
         body.put("active", true);
+        body.put("password", "superPassword");
         body.put("type", "administrator");
 
         //w
         Response response = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
                 .then()
                 .extract().response();
+        String id = response.jsonPath().getString("id");
+        //wh& th
+        //etag
+        String etag = given().header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .when().get("/users/" + id)
+                .then()
+                .extract().header("ETag");
+
         Map<String, Object> bodyUpdate = new HashMap<>();
-        bodyUpdate.put("login", "Queen");
         bodyUpdate.put("email", "duchy@com.com");
         bodyUpdate.put("type", "administrator");
-        //th
+        //w
         given()
-        .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .header("If-Match", etag)
                 .body(bodyUpdate)
                 .when()
-                .put("/users/"+response.jsonPath().getString("id"))
+                .put("/users/" + response.jsonPath().getString("id"))
                 .then()
                 .log().all()
-                    .statusCode(200)
-                .body("id", notNullValue())
-                .body("login", equalTo("Queen"))
+                .statusCode(200);
+
+        //th
+        given()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .get("/users/" + response.jsonPath().getString("id"))
+                .then()
+                .statusCode(200)
                 .body("email", equalTo("duchy@com.com"))
                 .body("active", equalTo(true))
                 .body("type", equalTo("administrator"));
+
     }
 
     @Test
     public void shouldSuccesfullyDeactivateUser() {
+        //g
         Map<String, Object> body = new HashMap<>();
         body.put("login", "Duke");
         body.put("email", "forest@com.com");
+        body.put("password", "superPassword");
         body.put("active", true);
         body.put("type", "resourceMgr");
 
-        //w
         Response response = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
                 .then()
                 .extract().response();
-        //th
+        String id = response.jsonPath().getString("id");
+
+        //etag
+        String etag = given().header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .when().get("/users/" + id)
+                .then()
+                .extract().header("ETag");
+        System.out.println("DEBUG: Pobrany ETag to: " + etag);
+        //wh& th
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .header("If-Match", etag)
                 .when()
-                .patch("/users/deactivate/"+response.jsonPath().getString("id"))
+                .put("/users/deactivate/" + id)
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -290,25 +347,22 @@ public class UserCreateReadUpdateIntegrationTest {
     public void shouldReturn() {
 
         String invalidUserJson = """
-        {
-          "name": "",
-          "email": "not-an-email"
-          "type": "client"
-        }
-    """;
+                    {
+                      "name": "",
+                      "email": "not-an-email",
+                      "type": "client"
+                    }
+                """;
 
         given()
+                .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .body(invalidUserJson)
                 .when()
                 .post("/users")
                 .then()
                 .statusCode(400);
-                //.body("message", containsString("validation"));
+        //.body("message", containsString("validation"));
     }
 
-    @Test
-    public void view(){
-
-    }
 }

@@ -2,6 +2,7 @@ package integration;
 
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ public class RentIntegrationTest {
     @LocalServerPort
     int port;
 
+    private static String token;
 
 
     @BeforeAll
@@ -35,6 +37,13 @@ public class RentIntegrationTest {
     @BeforeEach
     void setup() {
         RestAssured.port = port;
+        Map<String, Object> body = new HashMap<>();
+        body.put("login", "admin");
+        body.put("rawPassword", "admin");
+        Response response = given().contentType(ContentType.JSON)
+                .body(body)
+                .post("/auth/login");
+        token = response.jsonPath().getString("token");
     }
 
     @Test
@@ -43,6 +52,7 @@ public class RentIntegrationTest {
         body.put("login", "superLogin123");
         body.put("email", "example1234567@com.com");
         body.put("active", true);
+        body.put("password", "superPassword");
         body.put("type", "client");
         body.put("first_name", "John");
         body.put("last_name", "Standish");
@@ -50,13 +60,14 @@ public class RentIntegrationTest {
 
         Response userResponse = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
                 .post("/users")
                 .then()
                 .log().all().extract().response();
 
-        Map<String,Object> facilityMap = new HashMap<>();
+        Map<String, Object> facilityMap = new HashMap<>();
         facilityMap.put("name", "boisko");
         facilityMap.put("streetNumber", "9a");
         facilityMap.put("street", "Politechniki");
@@ -66,6 +77,7 @@ public class RentIntegrationTest {
 
         Response facilityResponse = given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(facilityMap)
                 .when()
                 .post("/facilities")
@@ -79,7 +91,8 @@ public class RentIntegrationTest {
         rentMap.put("endDate", LocalDateTime.of(2025, 11, 12, 14, 0));
 
         given()
-        .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .body(rentMap)
                 .when()
                 .post("/rents")
@@ -89,8 +102,9 @@ public class RentIntegrationTest {
 
         given()
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .when()
-                .get("/rents/client/"+userResponse.jsonPath().getString("id"))
+                .get("/rents/client/" + userResponse.jsonPath().getString("id"))
                 .then()
                 .log().all()
                 .statusCode(200)

@@ -1,15 +1,15 @@
 services:
   mongo_1_single:
     image: mongo:8.0
-    container_name: mongodb1_single
-    hostname: mongodb1_single
+    container_name: mongo1
+    hostname: mongo1
     mem_limit: 400m
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
     networks:
-      infrastructure:
-        aliases:
-          - mongodb1_single
+       - infrastructure
+    expose:
+      - "27017"
     tmpfs:
       - /data/db
     environment:
@@ -30,9 +30,10 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      infrastructure:
-        aliases:
-          - redis
+      - infrastructure
+    expose:
+      - "6379"
+
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
       interval: 10s
@@ -44,9 +45,8 @@ services:
     container_name: backend
     hostname: backend
     networks:
-      infrastructure:
-        aliases:
-          - backend
+      - infrastructure
+
     depends_on:
       - mongo_1_single
       - redis
@@ -63,11 +63,16 @@ services:
     restart: unless-stopped
     networks:
       - infrastructure
+      - dmz
 
 
 
 volumes:
   redis_data:
 
+
 networks:
   infrastructure:
+    internal: true
+  dmz:
+    internal: false

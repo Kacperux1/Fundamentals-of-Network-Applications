@@ -1,6 +1,7 @@
 package pl.facility_rental.user.endpoints;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,7 +64,7 @@ public class UserController {
     @PutMapping("/self")
     @PreAuthorize("hasRole('Client')")
     public ResponseEntity<ReturnedUserDto> updateSelf(
-            @RequestBody ClientOwnUpdateRequest clientOwnUpdateRequest,
+            @RequestBody @Valid ClientOwnUpdateRequest clientOwnUpdateRequest,
             @RequestHeader("If-Match") String etag
     ) {
 
@@ -89,7 +90,7 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasRole('Administrator')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReturnedUserDto createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
+    public ReturnedUserDto createUser(@RequestBody @Valid CreateUserDto createUserDto) throws Exception {
         return mapSubtypes(userService.createUser(mapSubtypesToBusinessLayer(createUserDto)));
     }
 
@@ -137,7 +138,7 @@ public class UserController {
     @PutMapping("/{userId}")
     @PreAuthorize("hasRole('Administrator')")
     //@ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ReturnedUserDto> updateUser(@PathVariable String userId, @RequestBody UpdateUserDto updatedUserDto,
+    public ResponseEntity<ReturnedUserDto> updateUser(@PathVariable String userId, @RequestBody @Valid UpdateUserDto updatedUserDto,
                                       @RequestHeader("If-Match") String etag)  throws ResponseStatusException{
         totalEtagCheck(userId, etag);
 
@@ -193,6 +194,7 @@ public class UserController {
 
     private boolean checkEtag(String etag, String urlUserId) {
         String tokenUrl ="";
+        etag = etag.replace("\"", "");
         try {
             tokenUrl = jwsUtil.parseId(etag);
             if(!tokenUrl.equals(urlUserId)) {

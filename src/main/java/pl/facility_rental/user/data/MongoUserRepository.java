@@ -121,9 +121,7 @@ class MongoUserRepository implements UserRepository {
 
         Bson filter = Filters.eq("_id", new ObjectId(userId));
         List<Bson> pipeline = new ArrayList<>();
-        if(user.getLogin() !=null && !user.getLogin().isEmpty()) {
-            pipeline.add(Updates.set("login", user.getLogin()));
-        } if(user.getEmail() !=null && !user.getEmail().isEmpty()) {
+        if(user.getEmail() !=null && !user.getEmail().isEmpty()) {
             pipeline.add(Updates.set("email", user.getEmail()));
         } MongoUser mappedUser = mapSubtypeToUserDataModel(user);
         if(mappedUser instanceof MongoDbClient) {
