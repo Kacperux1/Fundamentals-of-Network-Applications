@@ -47,6 +47,7 @@ jobs:
           push: true
           file: ./Docker_single/spa/Dockerfile
           tags: kacpermaziarz/facility_rental_nginx:0.0.1
+          build-args: VITE_API_URL=$VITE_API_URL
         
 
   

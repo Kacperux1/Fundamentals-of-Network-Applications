@@ -6,6 +6,7 @@ COPY ./spa/package-lock.json /spa/package-lock.json
 WORKDIR /spa
 RUN npm ci
 
+ARG VITE_API_URL
 COPY ./spa ./
 
 RUN npm run build
