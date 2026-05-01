@@ -30,8 +30,8 @@ jobs:
       - name: Set up the test containers
         run: docker compose -f ./Docker_single/compose.yaml up -d --wait
 
-      - name: Set up the test containers
-        run: mvn test -Dspring.active.profiles=test
+      - name: test the backend code
+        run: mvn test
 
       - name: Build the backend container image
         uses: docker/build-push-action@v6
