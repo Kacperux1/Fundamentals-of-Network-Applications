@@ -55,6 +55,9 @@ services:
     image: kacpermaziarz/facility_rental_nginx:0.0.1
     container_name: nginx
     mem_limit: 128m
+    environment:
+      - VITE_API_URL = ${VITE_API_URL}
+
     ports:
       - "20217:80"
     hostname: nginx

@@ -1,9 +1,8 @@
 import "./global.css";
 import {Pressable, Text, View, SafeAreaView} from "react-native";
-import axios from "axios";
 import {useNavigation, useRouter} from "expo-router";
 
-axios.defaults.baseURL = 'http://31.3.218.72:8080';
+
 
 export default function App() {
     const navigation = useRouter();
