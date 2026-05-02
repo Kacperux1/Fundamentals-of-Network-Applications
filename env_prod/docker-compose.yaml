@@ -3,7 +3,7 @@ services:
     image: mongo:8.0
     container_name: mongo1
     hostname: mongo1
-    mem_limit: 800m
+    mem_limit: 1500m
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
     networks:
@@ -18,9 +18,9 @@ services:
       - MONGO_INITDB_DATABASE=facility_rental
     healthcheck:
       test: [ "CMD", "mongosh", "--port", "27017", "--eval", "db.adminCommand('ping')" ]
-      interval: 10s
+      interval: 30s
       timeout: 5s
-      retries: 5
+      retries: 3
 
   redis:
     image: redis:7
@@ -36,7 +36,7 @@ services:
 
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
-      interval: 10s
+      interval: 20s
       timeout: 5s
       retries: 5
 
