@@ -3,15 +3,14 @@ services:
     image: mongo:8.0
     container_name: mongo1
     hostname: mongo1
-    mem_limit: 1500m
+    mem_limit: 2200m
     volumes:
       - ./Docker_single/init:/docker-entrypoint-initdb.d
+      - mongo_data:/data/db
     networks:
        - infrastructure
     expose:
       - "27017"
-    tmpfs:
-      - /data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=adminpassword
@@ -73,6 +72,8 @@ services:
 
 volumes:
   redis_data:
+
+  mongo_data:
 
 
 networks:
