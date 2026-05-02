@@ -1,5 +1,5 @@
 services:
-  mongo_1_single:
+  mongo1:
     image: mongo:5.0
     container_name: mongo1
     hostname: mongo1
