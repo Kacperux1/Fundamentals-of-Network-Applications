@@ -1,6 +1,6 @@
 services:
   mongo_1_single:
-    image: mongo:8.0
+    image: mongo:5.0
     container_name: mongo1
     hostname: mongo1
     mem_limit: 2200m
