@@ -59,7 +59,7 @@ services:
 
 
     ports:
-      - "20217:80"
+      - "80:80"
     hostname: nginx
     depends_on:
         - backend
