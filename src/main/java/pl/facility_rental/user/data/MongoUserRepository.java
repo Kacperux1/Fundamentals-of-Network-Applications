@@ -110,6 +110,7 @@ class MongoUserRepository implements UserRepository {
     public Optional<User> findById(String id) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("_id", new ObjectId(id));
+        System.out.println("dupa");
         return Optional.ofNullable(mapSubtypeToUserBusinessModel(userCollection.find(filter).first()));
 
     }
@@ -248,6 +249,7 @@ class MongoUserRepository implements UserRepository {
     public Optional<User> findByStrictLogin(String login) throws RecognizingUserTypeException {
         MongoCollection<MongoUser> userCollection = sportFacilityRentalDatabase.getCollection("users", MongoUser.class);
         Bson filter = Filters.eq("login", login);
+        System.out.println("dupa");
         return Optional.ofNullable
                 (userCollection.find(filter).first()).map(this::mapSubtypeToUserBusinessModel);
     }
