@@ -44,6 +44,7 @@ cd ./target
 java -jar facility_rental-0.0.1-SNAPSHOT.jar
 ```
 
+
 To run the client application use npm:
 ```bash
 cd ./spa
